@@ -1,0 +1,21 @@
+apply from: rootProject.file('spring.gradle')
+
+dependencies {
+
+}
+
+jar {
+    manifest {
+        attributes(
+                'Implementation-Version': project.version
+        )
+    }
+}
+
+tasks.named("processResources") {
+    filesMatching("banner.txt") {
+        filter {
+            it.replace("%version%", project.version.toString())
+        }
+    }
+}

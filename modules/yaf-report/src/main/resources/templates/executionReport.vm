@@ -1,0 +1,17 @@
+/*/*/*/*/*/* YAF tests execution report /*/*/*/*/*/*/
+/* -- Start $r.startTime
+/* -- End $r.endTime
+/*
+/*
+/* Profile: [$r.profile] ENV: [$r.testEnv]
+/* ENV_CONFIG: [$r.envConfigName]
+/*
+/* -------------------- Results -----------------
+/*
+#foreach ($s in $r.suiteReports.values())
+/* [$s.suiteId)] ($s.name)
+/* $s.getStringStats()
+/*
+#end
+/*
+/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/

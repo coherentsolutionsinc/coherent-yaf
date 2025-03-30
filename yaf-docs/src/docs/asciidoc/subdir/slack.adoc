@@ -1,0 +1,208 @@
+==== Slack integration
+
+Integration with Slack allows the user to post test report to the specified channel.
+
+Following ways to utilize Slack's API are supported.
+
+==== [underline]#1. OAuth-Based#
+
+Slack requires that all tokens used to interact with their API be generated through an official Slack app. This is due to Slack's security policies and their OAuth 2.0 system, which ensures that only authorized apps can access workspace data.
+
+===== Step 1: Create a Slack App
+1. Go to Slack API: Visit https://api.slack.com/apps
+2. Create a New App:
+* Click on "Create New App."
+* Select "From Scratch."
+* Give your app a name and choose the Slack workspace where you want to install it.
+* Click "Create App."
+
+===== Step 2: Configure OAuth Scopes
+1. Navigate to OAuth & Permissions:
+* In the left-hand sidebar, click on "OAuth & Permissions."
+2. Add Bot Token Scopes:
+* Under "Scopes," you'll find two sections: Bot Token Scopes and User Token Scopes. Since you'll likely be posting messages as a bot, scroll down to Bot Token Scopes.
+* Add the chat:write scope to allow your app to post messages to channels.
+* Optionally, add channels:read and groups:read if you need to read channel lists.
+
+===== Step 3: Install the App to Your Workspace
+1. Scroll to the top of the "OAuth & Permissions" page and find the section labeled OAuth Tokens for Your Workspace.
+2. Click the "Install App to Workspace" button.
+3. Authorize the App: You'll be redirected to Slack to grant the necessary permissions. Once authorized, you’ll be redirected back to the app settings.
+
+===== Step 4: Retrieve the OAuth Token
+1. After installation, you'll see an OAuth Access Token at the top of the page under the "OAuth Tokens for Your Workspace" section.
+2. Copy this OAuth Token.
+
+This token will be used to authenticate API requests from your Java app. You should keep it secure, as it grants your app access to your Slack workspace.
+
+===== Step 5: Update `application.properties`:
+
+****
+yaf.slack.enabled=true
+
+yaf.slack.apiToken=${SLACK_API_TOKEN}
+
+yaf.slack.channelId=${SLACK_CHANNEL_ID} (Optional)
+****
+
+Values should be set as environment variables.
+
+===== Client example when channelId is specified in `application.properties`
+
+[source,java]
+----
+@Slf4j
+public class DemoTest extends YafTestNgTest {
+
+    @Autowired
+    private SlackService slackService;
+
+    @Test
+    public void testMethod() {
+        ChatPostMessageRequest request = ChatPostMessageRequest.builder().text("Text").build();
+        slackService.chatPostMessage(request);
+    }
+}
+----
+
+===== Client example when channelId isn't specified in `application.properties`
+
+[source,java]
+----
+@Slf4j
+public class DemoTest extends YafTestNgTest {
+
+    @Autowired
+    private SlackService slackService;
+
+    @Test
+    public void testMethod() {
+        ChatPostMessageRequest request = ChatPostMessageRequest.builder().text("Text").build();
+        slackService.chatPostMessage(request, "channelId");
+    }
+}
+----
+
+Examples how to compose chat message available by the link https://tools.slack.dev/java-slack-sdk/guides/composing-messages/.
+
+==== [underline]#2. Incoming Webhoks#
+
+Incoming Webhooks allow you to post messages to Slack channels without needing to deal with OAuth tokens, though you still need to set up a Slack app to get the Webhook URL.
+
+To create a webhook, create a Slack app and configure an Incoming Webhook under the Features section in the app settings.
+You’ll get a Webhook URL that you can use to send JSON payloads to Slack.
+
+===== Step 1: Create a Slack App
+1. Go to Slack API: Visit https://api.slack.com/apps
+2. Create a New App:
+* Click on "Create New App."
+* Select "From Scratch."
+* Give your app a name and choose the Slack workspace where you want to install it.
+* Click "Create App."
+
+===== Step 2: Enable Incoming Webhooks
+1. In your app settings, go to the "Incoming Webhooks" section.
+2. Toggle the switch to enable Incoming Webhooks.
+
+===== Step 3: Create a Webhook URL
+1. After enabling, you’ll see an option to add a new webhook. Click "Add New Webhook to Workspace."
+2. Select the channel where you want to post messages and click "Allow."
+3. Copy the generated webhook URL; you’ll use it to send messages.
+
+===== Step 4: Update `application.properties`:
+
+****
+yaf.slack.enabled=true
+
+yaf.slack.webhookUrl=${SLACK_WEBHOOK_URL}
+****
+
+Value should be set as environment variable.
+
+===== Step 5: Client setup example
+
+[source,java]
+----
+@Slf4j
+public class DemoTest extends YafTestNgTest {
+
+    @Autowired
+    private SlackService slackService;
+
+    @Test
+    public void testMethod() {
+        Payload payload = Payload.builder().text("Text").build();
+        slackService.sendWebHookMessage(payload);
+    }
+}
+----
+
+Examples how to compose WebHook message available by the link https://tools.slack.dev/java-slack-sdk/guides/incoming-webhooks.
+
+====== How to extend
+
+There is another way how string that is sent to Slack can be customized, apart from using `chatPostMessage(ChatPostMessageRequest chatPostMessageRequest)`, `chatPostMessage(ChatPostMessageRequest chatPostMessageRequest, String channelId)` or `sendWebHookMessage(Payload payload)` methods defined in `SlackService` class. Either use packaged `BaseSlackExecutionReportMessagePayload` or implement `SlackExecutionReportMessagePayload` interface and override its methods to customize `Payload` and `ChatPostMessageRequest` by adding values available in `ExecutionReport`.
+
+====== Example how to use `BaseSlackExecutionReportMessagePayload`
+
+===== Step 3:
+Then, based on selected way to utilize Slack's API, additionally update `application.properties`
+
+****
+yaf.slack.slackReport=true
+
+yaf.report.enabled=true
+****
+
+===== Step 4
+Client example
+
+[source,java]
+----
+public class BaseTest extends YafTestNgTest {
+
+    @Autowired
+    private SlackService slackService;
+}
+----
+
+Once done, results will be automatically published to Slack with custom string implementation.
+
+====== Example how to implement custom `SlackExecutionReportMessagePayload`
+
+===== Step 1
+
+[source,java]
+----
+@Primary
+@Component
+public class CustomPayload implements SlackExecutionReportMessagePayload {
+
+    @Override
+    public Payload getReportPayload(ExecutionReport report) {
+        return Payload.builder().text("Test environment: " + report.getTestEnv()).build();
+    }
+
+    @Override
+    public ChatPostMessageRequest getReportChatPostMessageRequest(ExecutionReport report) {
+        return ChatPostMessageRequest.builder().text("Test environment: " + report.getTestEnv()).build();
+    }
+}
+----
+
+Note @Primary annotation, it's mandatory to use it for YAF to use your custom `SlackExecutionReportMessagePayload` implementation.
+
+===== Step 2
+Once custom `SlackExecutionReportMessagePayload` implementation is created, make sure its package is in @ComponentScan of `ProjectConfig` class
+
+[source,java]
+----
+@ComponentScan(basePackages = {"com.coherentsolutions.yaf", "com.example.test"})
+public class ProjectConfig extends YafConfig {
+
+    public ProjectConfig(ApplicationArguments args) {
+        super(args);
+    }
+----
+
+Once implemented and `application.properties` updated YAF will automatically post Slack messages.

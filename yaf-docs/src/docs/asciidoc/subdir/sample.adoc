@@ -1,0 +1,10 @@
+= Sample Document
+Doc Writer <doc@example.com>
+
+== Section 1
+
+This is a sample AsciiDoc document.
+
+== Section 2
+
+Here's another section.

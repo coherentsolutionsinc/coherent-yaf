@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+    <include resource="/org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="Console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%white(%d{yyyy-MM-dd HH:mm:ss.SSS}) | %blue(%t){10} | %highlight(%-5level) |
+                %yellow(%30.30logger{15})::%3.3L | %m%n%throwable{5}
+            </pattern>
+
+        </layout>
+    </appender>
+    <root level="info">
+        <appender-ref ref="Console"/>
+    </root>
+    <logger name="org.springframework" level="error"/>
+</configuration>

@@ -1,0 +1,63 @@
+=== Conditions
+
+To provide a flexible test configuration with the necessary beans, a special mechanism was designed.
+If you mark a certain bean with a specialized annotation, the necessary implementation will be selected at the moment of its injection, depending on the test execution context.
+
+For example, you have several implementations of a page (PageObject) depending on the screen resolution.
+In the test class, the basic implementation of this page is declared, different inheritors ("child-objects") are labeled with special annotations.
+When a page is initialized, depending on the conditions described in the annotations and the test context, a necessary implementation will be injected.
+
+==== How to
+
+===== How to use
+
+In specific framework modules, there is a standard set of conditional annotations, such as `@Android`, `@Chrome`, and so on.
+
+To use them, you need to:
+
+. Create an abstract core page (or any other yaf bean), such as `LoginPage`, which is inherited from `Page` or `Component` or `Utils` or any of their inheritors.
+. Create its inheritors, which will define the conditions of their creation.
+. Annotate the inheritors with necessary annotations.
+
+You can also use core annotation `@YafCondition` and specify the necessary parameters in it.
+
+If you need more than standard annotations, you can create your own annotation, the inheritor of YafCondition, by specifying necessary parameters in it.
+
+[source,java]
+----
+public @interface YafCondition {
+
+    DeviceType deviceType() default DeviceType.OTHER;
+
+    OS os() default OS.OTHER;
+
+    MobileOS mobileOs() default MobileOS.OTHER;
+
+    String mobileOsVersion() default Strings.EMPTY;
+
+    Browser browser() default Browser.OTHER;
+
+    String browserVersion() default Strings.EMPTY;
+
+    String appVersion() default Strings.EMPTY;
+
+    String osVersion() default Strings.EMPTY;
+
+    int width() default 0;
+
+    int height() default 0;
+
+    boolean simulator() default false;
+}
+----
+
+===== How to extend
+
+As mentioned above, you can create your own annotations.
+In case you are not going to simply "fix" some annotation parameters, as for example *browser = chrome*, you will need your own implementation of `ConditionMather`.
+An example can be seen here - `BaseConditionMatcher` _#(!!ссылка на класс)#_
+
+===== How it works
+
+At the time the field is processed by `YafContextFieldPostProcessor`, information about the implementations (inheritors) of the given type is analyzed and if there are several ones, the `ConditionMatchService` is used to calculate points (score) on how well the given implementation matches the environment of the current test.
+The scoring is based on the comparison between the given properties in the condition annotation and the devices for which the test is performed.

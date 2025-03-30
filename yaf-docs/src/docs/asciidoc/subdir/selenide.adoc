@@ -1,0 +1,8 @@
+==== Selenide integration
+
+To integrate YAF and https://selenide.org/[Selenide], `SelenideDriverManager` class is used.
+Its main task is to listen to a driver creation event and, if it is a web driver, pass it to the Selenide driver repository.
+
+Also, in case of selenide, in order for `YafLocatorFactory` #(! ссылка на доку# to work correctly, you must skip processing `SelenideElement` on the page.
+
+

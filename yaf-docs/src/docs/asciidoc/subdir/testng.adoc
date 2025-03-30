@@ -1,0 +1,35 @@
+==== TestNg integration
+
+This module is designed to integrate YAF and TestNG.
+
+It includes:
+
+1. Spring Boot tests support
+2. Modification of the test run
+3. Basic test when work with TestNG
+
+
+===== Spring Boot support
+
+Since YAF is based on the Spring Boot platform, the user needs to perform the adaptation of TestNG tests and make them Spring managed (to have the ability to work with Spring context).
+A special class `BaseTestNgTest` is provided for this purpose, which in turn almost fully corresponds to the default Spring adapter for TestNG, except for reporting changes (link:allureTestNg.adoc[Allure TestNg])
+
+===== Test suite execution
+
+A mechanism of management of test execution configurations is implemented in YAF #(!!Ссылка)#.
+To make it works correctly the user needs to make changes in the test execution mechanism: duplication and parameterization of suites according to the required tests execution configuration.
+
+For example, if you want to run tests in 2 different browsers, `YafTransformer` will create 2 suites with different browser configurations before processing the suite file and then execute them.
+Read more here #(!!ссылка на код трансфомер)#
+
+===== Base test class for TestNG
+
+If TestNG is chosen as a runner, to ensure correct work of YAF, all tests must inherit this class which provides the following features:
+
+1. As you know, YAF has a mechanism of its own events (!!ссылка) and such events as (!!список своих ивентов) are generated in this class.
+2. This class is the entry point to the global data provider (!!ссылка).
+3. In this class the mechanism of YAF's own test processing triggers before the test method is executed #(!!ссылка на кастом бины)#.
+
+
+
+

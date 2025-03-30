@@ -1,0 +1,495 @@
+== Extending first web application test
+
+This guide will help you to apply automation best practices using YAF.
+This guide is recommended to use before link:firstWebTest.adoc[First web test]
+
+.Topics covered there:
+
+* PageObject pattern implementation
+* <<web_component, Creating and using of Web Components>>
+* <<waiters, Creating and using waiters>>
+* HackLoginPage
+
+[[page_object]]
+=== PageObject pattern implementation
+You would probably like to use link:https://medium.com/@swapnay1506/page-object-model-and-page-factory-in-selenium-738661c88857[Page Object Model and Page Factory] in your test automation, so the usage could look like:
+
+[source,java]
+----
+@Component // <1>
+public class FirstPage extends WebPage { // <2>
+    @FindBy(css = ".sampleClass") // <3>
+    WebElement button;
+
+    public void firstAction(){
+        button.click();
+    }
+}
+----
+
+IMPORTANT: <1> Mark class as Spring Component
+<2> Extend base WebPage or any of its children
+<3> Use PageFactory (by default) or plain PageObject approach (set yaf.driver.web.usePageFactory property to false)
+
+And your test will looks like:
+[source,java]
+----
+public class FirstTest extends YafTestNgTest {
+    FirstPage firstPage;
+
+    @Test
+    public void sampleTest(){
+        WebDriver driver = getWebDriver().getDriver();
+        driver.get("https://www.coherentsolutions.com/");
+        firstPage.firstAction();
+        //...
+    }
+}
+----
+For multiple POM's implementation see link:conditions.adoc[Conditions]
+
+[[web_component]]
+=== Web Components
+
+Web applications contains web elements everywhere from buttons to more complex like dropdowns or custom ones. YAF provides a set of classes to create web components classes to encapsulate and reuse your code. Below are an examples of how to create a custom WebComponent and use in tests.
+
+==== Custom WebComponent with root element
+
+[source,java]
+----
+@Component
+public class Button extends WebComponent<WebElement> { // <1>
+
+    @Setter // <2>
+    @Getter // <3>
+    @InheritedRoot  // <4>
+    @FindBy(xpath = "//button[@id='${buttonId}']")  // <5>
+    WebElement root;
+
+    @FindBy(css = "label")
+    private WebElement label;
+
+    public void click() {
+        getRoot().click();
+    }
+}
+----
+
+IMPORTANT: <1> Every web component class inherits WebComponent or one of WebComponent's children.<2> For YAF to be able to initialize component's root element, setter is required.<3> Getter is required to access component's root element.<4> Optional @InheritedRoot annotation is used to define that root element should be found in the context of parent component.<5> Optional @FindBy annotation is used to define locator for root element.
+
+When WebComponent has `root` WebElement then all other elements defined via @FindBy will be searched in the context of that 'root' WebElement, so in the example above `label` WebElement will be searched in the context of `root` WebElement like this: root.findElement(By.cssSelector("label")) when for e.g. calling getButton().getLabel().isDisplayed().
+
+==== Custom WebComponent without root element
+
+[source,java]
+----
+@Component
+public class RootlessButton extends WebComponent<WebElement> implements RootlessWebComponent<WebElement> { // <1>
+
+    private YafBy uniqueElement;
+
+    public void click() {
+        getDriver().findElement(uniqueElement).click();
+    }
+}
+----
+
+IMPORTANT: When creating WebComponent without root element, it's required to implement RootlessWebComponent interface and define all logic to find elements in the class.
+
+In this case all the logic to find elements should be implemented in that WebComponent class as shown in the example above.
+
+==== Usage of the new WebComponent in PageObject class
+
+[source,java]
+----
+@Component
+public class FirstPage extends WebPage {
+
+    @YafSetParam(key = "buttonId", value = "formButton")
+    Button buttonOne;
+    @YafSetSelector(locator = "//button[@id='formButton']", type = SelectorType.XPATH)
+    Button buttonTwo;
+    @YafSetSelector(field = "uniqueElement", locator = "//button[@id='formButton']", type = SelectorType.XPATH)
+    RootlessButton rootlessButton;
+
+    public void firstAction() {
+        button.click();
+    }
+}
+----
+
+YAF comes with special annotations to work with locators such as `@YafSetParam`, `@FindBy` and `@YafSetSelector`.
+
+`@YafSetParam` is annotation used to define a parameter that will be passed to the WebComponent class and this parameter is global which mean it will replace the "${key}" placeholder specified in "key" with value from "value" in every @FindBy in WebComponent on which it's defined.
+
+`@YafSetSelector` is annotation used to define a selector for the WebComponent when used as:
+
+- `@YafSetSelector(locator = "//button[@id='formButton']", type = SelectorType.XPATH)`` then WebElement with `root` name will have its locator updated.
++
+There is another one alternative way to init the same component:
+`@FindBy(xpath = "//button[@id='formButton']")`
++
+To easier understanding selenium `@FindBy` is highly recommended to use for root web element instead `@YafSetSelector`.
+
++
+- `@YafSetSelector(field = "label", locator = "//button[@id='formButton']", type = SelectorType.XPATH)` then WebElement with `label` name will have its  locator updated
+
+- `@YafSetSelector(field = "uniqueElement", locator = "//button[@id='formButton']", type = SelectorType.XPATH)` then uniqueElement YafBy field will be updated with the locator
+
+==== Nested components
+
+For more complex components it turns to be necessary to WebComponent(s) inside the another WebComponent. For such case by default nested element's root will be set in the following way: first find `root` of parent WebComponent and then find child `root` element from it.
+
+Parent component:
+[source,java]
+----
+@Component
+public class AnotherButton extends WebComponent<WebElement> {
+
+    @Setter
+    @Getter
+    @FindBy(xpath = "//button")
+    WebElement root;
+
+    ButtonColor buttonColor;
+}
+----
+
+Child component:
+[source,java]
+----
+@Component
+public class ButtonColor extends WebComponent<WebElement> {
+
+    @Setter
+    @Getter
+    @FindBy(css = "/buttonColor")
+    WebElement root;
+}
+----
+
+Page object class:
+[source,java]
+----
+@Component
+public class FirstPage extends WebPage {
+
+    AnotherButton anotherButton;
+
+    public void getButtonColor() {
+        anotherButton.getButtonColor().getText();
+    }
+}
+----
+
+In this case, `ButtonColor` component will have `root` element set in the following way: getDriver().findElement(By.xpath("//button")).findElement(By.cssSelector("/buttonColor")) when calling like anotherButton.getButtonColor().getText().
+
+===== NotInheritedRoot annotation
+
+In case a WebCcomponent is defined inside another one but expected to be searched from the page root  NotInheritedRoot is used. The annotation could be applied to:
+
+- root element to change the default behavior on the component description level for every component usage.
+
+[source,java]
+----
+@Component
+public class ButtonColor extends WebComponent<WebElement> {
+
+    @Setter
+    @Getter
+    @NotInheritedRoot
+    @FindBy(css = "/buttonColor")
+    WebElement root;
+}
+----
+- component variable definition to change the default behavior on current definition
+[source,java]
+----
+@Component
+public class AnotherButton extends WebComponent<WebElement> {
+
+    @Setter
+    @Getter
+    @FindBy(xpath = "//button")
+    WebElement root;
+
+    @NotInheritedRoot
+    ButtonColor buttonColor;
+}
+----
+
+In this case, `ButtonColor` component will have `root` element set in the following way: getDriver().findElement(By.cssSelector("/buttonColor")).
+
+==== Creating WebComponent without PageFactory mechanism
+
+Any WebComponent that extends WebComponent<T> class or PageObject that extends WebPage<T> class have access to WebComponent builder. Below are examples for both cases.
+
+[source,java]
+----
+@Component
+public class AnotherButton extends WebComponent<WebElement> {
+
+    @Setter
+    @Getter
+    @FindBy(xpath = "//button")
+    WebElement root;
+
+    @FindBy(css = "#${someId}")
+    WebElement someElement;
+
+    public ButtonColor getButtonColor() {
+        createWebComponentBuilder(ButtonColor.class)
+        .rootElement(root)
+        .build();
+    }
+}
+----
+
+[source,java]
+----
+@Component
+public class FirstPage extends WebPage {
+
+    public ButtonColor getButtonColor() {
+        createWebComponentBuilder(AnotherButton.class)
+        .rootBy(findElement(By.xpath("//button")))
+        .build();
+    }
+}
+----
+
+WebComponent builder allows to specify @YafSetParam and @YafSetSelector annotations for the WebComponent:
+
+[source,java]
+----
+@Component
+public class FirstPage extends WebPage {
+
+    public void getAnotherButton() {
+        createWebComponentBuilder(AnotherButton.class)
+        .withYafSetSelector("root", "button[1]", SelectorType.XPATH)
+        .build();
+    }
+
+    public void getSomeElement() {
+        createWebComponentBuilder(AnotherButton.class)
+        .withYafSetParam("someId", "id1", SelectorType.XPATH)
+        .build()
+        .getSomeElement();
+    }
+}
+----
+
+NOTE: When using builder with `@YafSetSelector` it's required to explicitly specify `root` element name for the WebComponent.
+
+[[waiters]]
+=== Waiters
+
+Any action performed on application require time to get data from backend and load actual state that sometimes isn't mentioned be human but leads to automation script failure or instability. The decision is to make the script wait for some time(Implicit waits) or condition is true (Explicit waits). See
+link:https://www.selenium.dev/documentation/webdriver/waits/[Selenium Waiters] details
+
+==== Implicit waits
+
+Implicit waits are configured in the property file the following way. There are no default values, if any of following properties isn't defined not timeouts is set
+
+[source,properties]
+----
+yaf.wait.implicit.timeOut=5
+yaf.wait.implicit.pageLoad=5
+yaf.wait.implicit.script=5
+----
+
+. timeOut - corresponds to driver.manage().timeouts().implicitlyWait - Specifies the amount of time the driver should wait when searching for an element if it is not immediately present
+. pageLoad - corresponds to driver.manage().timeouts().pageLoadTimeout - Sets the amount of time to wait for a page load to complete before throwing an error
+. script - corresponds to driver.manage().timeouts().scriptTimeout - Sets the amount of time to wait for an asynchronous script to finish execution before throwing an error
+
+==== Explicit waits
+
+Explicit waits could be used:
+
+. automatically on component usage using following annotations:
+.. WaitForAttribute
+.. WaitForClickable
+.. WaitForPresence
+.. WaitForText
+.. WaitForVisible
+.. WaitFor - base Wait annotation
+. called directly by user at any place it's needed
+
+YAF provides the most commonly used wait methods that could be find in `DriverWaitService`. Each such method accepts an WebElement(s) itself or it's locator as a link:https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/By.html[By] and a link:{javadocdir}/com/coherentsolutions/yaf/web/wait/driver/WaitConsts.html[WaitConsts]. WaitConsts enum contains different configs that include timeout in seconds and polling period in milliseconds
+
+WaitConsts argument is optional. If it is not provided config defined in application properties file will be used. If these properties is not defined default values are 3 seconds for timeout and 200 milliseconds for interval
+[source,properties]
+----
+yaf.wait.explicit.time-out=3
+yaf.wait.explicit.intervalt=200
+----
+
+`DriverWaitService` allow to wait until:
+
+ - element is clickable/non-clickable
+ - element(s) is(are) present/absent
+ - element(s) is(are) visible/invisible
+ - element's attribute state equals to/contains/ not equals to/ not contains provided value
+ - element's text is equals to/contains provided value
+ - element's attribute/text/position is loaded (the value remain the same for at least two consecutive checks)
+ - browser cookie is present/absent
+
+Here is an example of a usage:
+[source, java]
+----
+@Chrome
+@Component
+public class ChromeFirstPage extends BaseFirstPage {
+
+    @Autowired
+    DriverWaitService waitService;
+
+    @FindBy(id = "button")
+    Button button;
+
+    public void firstAction() {
+        waitService.clickable(button, WaitConsts.FAST); // <1>
+        button.click();
+        waitService.absenceOfElementLocatedBy(By.tagName("form")); // <2>
+    }
+
+}
+----
+
+NOTE: <1> Here the script execution stops to wait button WebElement to have clickable state with particular FAST WaitConst(5 seconds timeout, 50 milliseconds polling interval). And then <2> to wait element not to present in DOM. In compliance with <1> element to wait for is represented by its locator and default timeout and polling period used
+
+==== How to
+===== How does it work
+
+. `DriverWaitService` on wait method invocation creates an appropriate Wait instance with provided parameters
+. Receives selenium WebDriverWait based on current driver and WaitConst config
+. Call wait method of instance created in step 1 with WebDriverWait created in step 2 as a method argument
+
+In case of annotations while field processing field marked by Wait annotation is initialized by proxy(using link:https://docs.spring.io/spring-framework/reference/core/aop.html[Spring AOP]) that will invoke steps 2(using constructor with annotations arguments) and 3 when the component will be used
+
+===== How to extend
+
+Highly possible you may have to create your own waiter. The base class for all waiters in YAF is `BaseWait`, so to define own waiter class it is required to extend `BaseWait` or `BaseWaitWithoutCustomAnnotation` if auto waiting support won't be used
+
+[source, java]
+----
+@Setter
+public class VisibilityWait extends BaseWaitWithoutCustomAnnotation {
+
+    boolean visible = true; //<1>
+
+    public VisibilityWait(WebElement element, WaitConsts... waitConsts) {
+        super(element, waitConsts);
+    }
+
+    public VisibilityWait(By by, WaitConsts... waitConsts) {
+        super(by, waitConsts);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <R> R wait(WebDriverWait wait) {
+        if (getElements() == null || getElements().isEmpty()) {
+            if (visible) {
+                return (R) wait.until(CustomExpectedConditions.visibilityOfAllElementsLocatedBy(getLocators()));//<4>
+            } else {
+                return (R) wait.until(ExpectedConditions.not(CustomExpectedConditions.visibilityOfAllElementsLocatedBy(getLocators())));
+            }
+        } else {
+            if (visible) {
+                return (R) wait.until(ExpectedConditions.visibilityOfAllElements(getElements()));
+            } else {
+                return (R) wait.until(ExpectedConditions.invisibilityOfAllElements(getElements()));
+            }
+        }
+
+    }
+}
+----
+
+NOTE: <1> Additional custom waiter specific parameter. It is better to set them via setter methods not to repeat it for each constructor
+The key method here is wait method where
+waiting itself happens using selenium WebDriverWait <3>. Until method here accepts link:https://www.browserstack.com/guide/expectedconditions-in-selenium[`ExpectedCondition] instance. One of link:https://www.selenium.dev/selenium/docs/api/java/org/openqa/selenium/support/ui/ExpectedConditions.html[Selemiun predifined conditions], YAF CustomExpectedConditions (as in example) or your own implementation could be used
+
+Next step is to use just created Wait. For this purpose it is enough to extend DriverWaitService to extend its functionality and what is useful to mark it as primary bean <1>
+
+[source, java]
+----
+@Service
+@Primary// <1>
+public class WaitService extends DriverWaitService {
+
+	public void invisible(By locator, WaitConsts... waitConsts) {
+        this.waitFor((new VisibilityWait(by, waitConsts)).visible(false));
+	}
+
+	public void invisible(WebElement element, WaitConsts... waitConsts) {
+		this.waitFor((new VisibilityWait(element, waitConsts)).visible(false));
+	}
+
+	public void visible(By locator, WaitConsts... waitConsts) {
+		this.waitFor((new VisibilityWait(locator, waitConsts)));
+	}
+
+	public void visible(WebElement element, WaitConsts... waitConsts) {
+		this.waitFor((new VisibilityWait(element, waitConsts)));
+	}
+}
+----
+
+Then, lets extend VisibilityWait to support annotation usage
+First of all, change the class extended to BaseWait<1>. So this step will obligate to add processCustomWaitAnnotation method implementation that should assign current Wait variables values by corresponding annotation attributes values(here, visible)<2>. This method is called inside BaseWait constructor that accents WaitFor and Annotation parameters. This constructor should be defined in our custom Wait as well <2> as YAF will search constructor with such signature to create VisibilityWait object before wait execution
+
+[source, java]
+----
+@Setter
+public class VisibilityWait extends BaseWait  { // <1>
+
+    boolean visible = true;
+
+    //...
+
+    public VisibilityWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) { // <2>
+        super(waitFor, waitAnnotation, elements);
+    }
+
+    @Override
+    protected void processCustomWaitAnnotation() { // <3>
+        try {
+            WaitForVisible waitForVisible = (WaitForVisible) waitAnnotation;
+            visible = waitForVisible.visible();
+        } catch (ClassCastException ex) {
+            // to support default behaviour for waitFor annotation
+        }
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <R> R wait(WebDriverWait wait) {
+        //...
+
+    }
+}
+----
+
+In the example there is WaitForVisible mentioned. That annotations class should be created as well with same properties as VisibilityWait have:
+
+[source, java]
+----
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
+@WaitFor(waitClass = VisibilityWait.class) //<1>
+public @interface WaitForVisible {
+
+    boolean visible() default true;
+
+}
+----
+
+IMPORTANT: It is required to be annotated by @WaitFor annotation with a class created on previous step assigned as waitClass. Another optional WaitFor's elements could be customized as well as waitClass was (see link:{javadocdir}/com/coherentsolutions/yaf/web/wait/driver/WaitFor.html[WaitFor])
+
+
+
+
+

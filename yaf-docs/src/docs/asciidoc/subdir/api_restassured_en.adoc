@@ -1,0 +1,120 @@
+=== Rest Assured API implementation sample
+
+The implementation of the  link:api.adoc[request contract] above the https://rest-assured.io/[RestAssured] library can be found in the `RestAssuredYafRequest` class. It is recommended to be familiar with link:api.adoc[common API guide] first.
+
+The input arguments of this object include:
+
+- AuthProvider;
+- Default user;
+- The initial parametrization of the quest.
+
+//TODO
+IMPORTANT: do not forget to implement custom logging filter and append this logs to the test end event
+
+==== How to use
+
+. To start off add corresponding module dependency to the project
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+        <dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-api-restassured</artifactId>
+            <version>${yaf.version}</version>
+        </dependency>
+
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-api-restassured:${yaf.version}")
+}
+----
+====
++
+. Create your own auth layer (if you need any).
++
+[source,java]
+----
+
+public class SampleAuthProvider extends RestAssuredAuthProvider {
+
+    @Override
+    protected AuthToken getAuthToken(YafApiUser user) throws YafApiRequestException {
+        UserToken userToken = ((RequestSpecification) request.anonymousReq()).body(user)
+                .post("/api/auth/password")
+                .as(UserToken.class);//<1>
+        //convert token to AuthToken
+        AuthToken token = new AuthToken();
+        token.setToken(userToken.getAccessToken());
+        return token;
+    }
+----
+NOTE: <1> UserToken is a model class represents particular auth response(here it is POST "/api/auth/password") body(usually json)
+
+. Create a user POJO that will be used for auth.
++
+[source,java]
+----
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class UserLogin implements YafApiUser {
+    @JsonProperty("login")
+    private String login;
+
+    @JsonProperty("password")
+    private String password;
+}
+----
+
+. Choose an api req implementation (for now only restAssured supported).
+In your config (link:firstWebTest.adoc#app_config[see]) class declares a bean for `YafRequest` with proper implementation and auth provider (if you need any)
++
+[source,java]
+----
+
+    @Bean
+    public RestAssuredYafRequest req() {
+        return RestAssuredYafRequest.builder()
+                .withAuthProvider(new SampleAuthProvider()) // <1>
+                .withDefaultUser(new UserLogin("xxx", "yyy")) // <2>
+                .build();
+    }
+----
++
+NOTE: <1> Set AuthProvider
+<2> Specify default user
+Both are optional so current bean definition step could be skipped if your API accepts requests without authorization and RestAssuredYafRequest's anonymousReq method could be used (RestAssuredYafRequest's req method usage will throw the exception).
+Default user could be also skipped if user configuration defined (link:config.adoc#additional_config[see])
++
+. Configure appropriate properties in `application.properties` file (see link:api.adoc#set_properties[here])
+
+. @Autowire your request bean, and use it
++
+[source,java]
+----
+
+    @Autowired
+    RestAssuredYafRequest request; //yes, we autowire final impl, cause base class is generic one, and we'll think how to deal with it later)
+
+    @Test
+    public void sampleApiTest() throws YafApiRequestException {
+        String roles = request.get("api/settings").asString();
+        // code
+    }
+
+----
+
+

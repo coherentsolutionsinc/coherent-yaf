@@ -1,0 +1,187 @@
+=== API
+
+To simplify the work with API requests, several items have been implemented in YAF:
+
+. Special abstraction level of API client.
+. Authorization provider mechanism.
+
+==== API Client abstraction level
+
+A special abstraction level of API client allows replacing API client implementation.
+This level operates such classes as `YafRequest`, `AuthProvider`,
+`YafApiUser`, thereby allowing the user to override any of the components on this level.
+
+The basic `YafRequest` contract has a support for 4 main HTTP methods, both anonymous and authorized.
+
+==== Implementation
+YAF provide a RestAssured implementation (the guide link:api_restassured_en.adoc[RestAssured sample]). To write own implementation (Java HTTP Client or other framework) it is required to implement your own YafRequest
+
+===== How to use
+
+. Implement YafRequest. YafRequest is a generic type so two types should be defined implementing it. T type is a type representing request as configuration before it is sent, R is a type represents a response (should be mutable, so it will be called as request config further). The following YafRequest interface methods are required to implement defining you own api implementation:
++
+* T anonymousReq() - get default request config without auth applied
+* T req() - get request config with default user auth applied. the source of default user could be taken from link:config.adoc[config], properties or constructor/builder
+* T req(YafApiUser user) - get request config with provided user auth applied. YafApiUser here is an interface and before using this method in tests it is useful to implement it as a POJO with required for auth info (usually login/password)
+* YafRequest addHeader(String key, String value)
+* YafRequest queryParam(String key, String value)
+* YafRequest queryParams(Map params)
+* ApiProperties getProps() - return api properties
+* R anonymousReq(String method, String url, Object... body) - execute request with no auth applied. Do not forget to use headers and queryParams set before send the request (valid for every req method)
+* R req(String method, String url, Object... body) - execute request with default user auth applied
+* R req(YafApiUser user, String method, String url, Object... body) - execute request with provided user auth applied
++
+For following examples java.net.http is used:
++
+[source, java]
+----
+public class HttpYafRequest implements YafRequest<HttpRequest.Builder, HttpResponse<String>> {
+
+    AuthProvider authProvider;//<1>
+
+    @Autowired
+    ApiProperties properties;//<2>
+
+    // builder or constructor
+
+    // abstract methods implementation
+
+    @PostConstruct // <3>
+    public void init() {
+        reqSpec.uri(new URI(properties.getBaseUrl()));
+        //...
+    }
+}
+----
++
+IMPORTANT: <1> To perform request required authorization using user YafApiUser AuthProvider is used. On the YafRequest initialization authProvider entity must be wierd with its yaf request entity using setRequest method of AuthProvider to set authorization headers to request config when your yaf request implementation suggest to make authorized requests to api.
+That also means one thing waste to remember setting provider entity from outside (for example through constructor/builder): new provider entity should be used for each yaf request entity.
++
+IMPORTANT: <2> To read api properties from application properties ApiProperties or child type field is required. The main nuance the Autowired annotation is used to organize a Spring easy access to properties defined in properties files via using @ConfigurationProperties on a @Bean Method defining a YafRequest bean. Pay attention that these properties are set after constructor invocation, so in case of using properties for initialization(for ex, set some common or base url/header/queryParams, logging) it is recommended to perform it inside bean @PostConstruct method or afterPropertiesSet method of InitializingBean interface <3>
++
+. AuthProvider
++
+The main role of AuthProvider is management of token-user pair, execution of authorization requests, tracking the token's lifetime and "signing" the requests.
++
+*How does it work?* There are three stages AuthProvider is responsible for. auth method aimed to manage tokens: provide actual token if exists for the user or init the request to api for the new one (getAuthToken method) and finally trigger apply auth stage (applyAuth method) where token is applied on request config in defined way. Creating your own AuthProvider you are obligated to provide your own getAuthToken and applyAuth methods.
++
+[source, java]
+----
+public class HttpAuthProvider extends AuthProvider<HttpRequest.Builder> {
+
+    @Override
+    protected AuthToken getAuthToken(YafApiUser user) throws YafApiRequestException {
+        HttpResponse<String> response = ((HttpResponse<String>) request.anonymousReq(
+                    "post", "/api/auth/password", user));
+        if(response.statusCode() != 200) {
+            throw new YafApiRequestException("Faild to get token: status: " + response.statusCode());
+        }
+        String userToken = response.body();
+        //convert token to AuthToken
+        AuthToken token = new AuthToken();
+        token.setToken(userToken);
+        return token;
+    }
+
+    @Override
+    protected void applyAuth(AuthToken token, HttpRequest.Builder req) {
+        req.header(AUTHORIZATION, BEARER + " " + token.getToken());
+    }
+}
+----
++
+Also, in your config class define a bean for each API
++
+[source,java]
+----
+    @Bean("one")
+    @Primary
+    @ConfigurationProperties(prefix="yaf.api.first-api")
+    public HttpYafRequest one() { <1>
+        //...
+    }
+
+    @Bean("two")
+    @ConfigurationProperties(prefix="yaf.api.second-api")
+    public HttpYafRequest two() {
+        //...
+    }
+----
+To use this requests define dependence in your test class
++
+[source,java]
+----
+
+//for first API
+    @Autowired
+    YafRequest yafRequest;
+
+//or
+    @Autowired
+    YafRequest one;
+
+//or
+    @Autowired
+    @Qualifier("one")
+    YafRequest one;
+
+///------------------
+
+//for second API
+
+    @Autowired
+    YafRequest two;
+
+//or
+    @Autowired
+    @Qualifier("two")
+    YafRequest two;
+
+----
++
+. [[set_properties]]In your `application.properties` file add props for several APIs like below (using additional name after `api`, unique for each API). The example shows how to define more than one api
++
+[source,properties]
+----
+yaf.api.first-api.props.baseUrl=https://xxxx
+yaf.api.second-api.props.baseUrl=https://yyyy
+// <1>
+yaf.api.first-api.props.{apiPropertiesClassFieldName}={value}
+yaf.api.second-api.props.baseUrl.{apiPropertiesClassMapFieldName}.key=value
+----
++
+NOTE: <1> You can specify all options you need from link:{javadocdir}/com/coherentsolutions/yaf/core/api/ApiProperties.html[ApiProperties] class.
++
+. Extending APIs properties (optional)
++
+Create class `XXXProperties` and extend it from `ApiProperties` class, adding your custom properties as fields. Mark this class with `@Primary` annotation.
+
+[source,java]
+----
+@Primary
+@Data
+@EqualsAndHashCode(callSuper = true)
+@Configuration
+public class SApiProperties extends ApiProperties {
+
+    String extKey;
+}
+----
+
+Use it in your YafRequest class as it showed above just changing properties field type. As well, it is possible to use in AuthProvider or somewhere else with `cast`:
+
+[source,java]
+----
+public class SAuthProvider extends AuthProvider {
+
+    @Override
+    protected AuthToken getAuthToken(ApiUser user) throws YafApiRequestException {
+        SApiProperties properties = (SApiProperties) request.getProps();
+        properties.getExtKey();
+
+    }
+}
+----
+
+
+

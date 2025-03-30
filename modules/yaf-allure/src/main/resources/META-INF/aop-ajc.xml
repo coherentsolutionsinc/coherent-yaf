@@ -1,0 +1,5 @@
+<aspectj>
+	<aspects>
+		<include within="io.qameta.allure..*" />
+	</aspects>
+</aspectj>

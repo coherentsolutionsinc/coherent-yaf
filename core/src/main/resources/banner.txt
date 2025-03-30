@@ -1,0 +1,10 @@
+
+
+_//      _//     _//        _////////
+ _//    _//     _////       _//              ${AnsiColor.BLUE}Yet ${AnsiColor.DEFAULT}
+  _// _//      _// _//      _//              ${AnsiColor.BLUE}Another ${AnsiColor.DEFAULT}
+    _//       _//   _//     _//////          ${AnsiColor.BLUE}Framework ${AnsiColor.DEFAULT}
+    _//      _////// _//    _//
+    _//     _//       _//   _//              ${AnsiColor.RED}v. %version% ${AnsiColor.DEFAULT}
+    _//    _//         _//  _//              ${AnsiColor.YELLOW}Coherent Solutions Inc. ${AnsiColor.DEFAULT}
+

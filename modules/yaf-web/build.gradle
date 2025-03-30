@@ -1,0 +1,12 @@
+
+dependencies {
+    implementation project(":core")
+    implementation "org.seleniumhq.selenium:selenium-java:${seleniumVersion}"
+    implementation "ru.yandex.qatools.ashot:ashot:${ashotVersion}"
+    implementation "io.github.bonigarcia:webdrivermanager:${webDriverManager}"
+    implementation "org.seleniumhq.selenium:htmlunit-driver:${htmlUnitDriverVersion}"
+
+    implementation("org.testcontainers:selenium:${testContainersVersion}") {
+        exclude group: "io.opentelemetry"
+    }
+}

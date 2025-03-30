@@ -1,0 +1,160 @@
+==== DataProviders
+
+Some inconveniences might arise when you use the basic TestNG data providers (*DP*), such as the complexity of creating an array of objects (Object[][]), the difficulty of DP reusing and the impossibility of configuring.
+
+A wrapper for TestNG has been created to solve these problems.
+It simplifies the work with data providers, and allows you to create your own.
+
+===== How to
+
+====== How to use
+
+1. Above the test method add any of the possible `@...Source` annotations
+2. Parameterize it as needed.
+
++
+[source,java]
+----
+
+    @Test
+    @RandomIntSource(size = 5, min = 1, max = 40) // <1>
+    public void yafDataProviderIntTest(int x) {
+        // test code
+    }
+
+    @Test
+    @RandomStringSource(size = 5) // <2>
+    public void yafDataProviderStringTest(String x) {
+        // test code
+    }
+
+    @Test
+    @LangSource(value = {EN, RU}) // <3>
+    public void yafDataProviderLangTest(Locale x) {
+        // test code
+    }
+
+    @Test
+    @FakerDataSource(value = "country.currencyCode", size = 5) // <4>
+    public void yafDataProviderFakerTest(String x) {
+        // test code
+    }
+
+    @Test
+    @ApiDataSource(apiCall = CustomApiCall.class) // <5>
+    public void yafDataProviderApiTest(Entity x) {
+        // test code
+    }
+----
+
+<1> generates an array of five integers between 1 and 40
+<2> generates an array of five strings
+<3> generates an array of provided link:{javadocdir}/com/coherentsolutions/yaf/core/l10n/Lang.html[Lang]
+<4> generates an array of five strings(or other, depends on the result type of `value` expression) calculated using expression provided in value. The expression is a link:https://javadoc.io/doc/com.github.javafaker/javafaker/latest/com/github/javafaker/Faker.html[Java Faker] methods chain
+<5> generates an array of objects gotten via api. To Use ApiDataSource it is requited to provide ApiDataSource.ApiDataCall implementation like in example. Define the class using `apiCall` attribute while using of the annotation
+
+[source,java]
+----
+@Component
+public class CustomApiCall implements ApiDataSource.ApiDataCall {
+
+    @Autowired
+    RestAssuredYafRequest httpYafRequest;
+
+
+    @Override
+    public List<Args> getData(Method method, Annotation annotation, TestExecutionContext testExecutionContext) {
+        String url = "{url}";
+        List<Pet> pets = httpYafRequest.anonymousReq(YafRequest.GET, url).jsonPath().getList("", Entity.class);
+        return pets.stream().map(Args::build).toList();
+    }
+}
+----
+
+NOTE: The implementation of the only one method includes a request and converting a response body to Arg list. `url` is a path to resource that represents an array of entities(here it is an Entity class, the instances of this class is used are accepted as a test class parameter). See link:api_restassured_en.adoc[Rest Assured] to know details how api call is performed
+
+====== How to extend
+
+If you need to create your own data provider, you should:
+
+. Create an annotation `@xxxSource`.
+. Describe there all the necessary parameterization.
+. Create a handler class (Processor).
+. Relink it with the annotation
++
+[source,java]
+----
+@Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@Target({METHOD})
+@Source(processor = RandomIntSource.Processor.class)
+public @interface RandomIntSource {
+//...
+----
++
+and in the processor method
++
+[source,java]
+----
+@Override
+public Class getSupportedAnnotationClass() {
+    return RandomIntSource.class;
+}
+----
+
+. Implement business logic to prepare data packed in `List<Args>` as a result
++
+
+[source,java]
+----
+
+    @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @Target({METHOD})
+    @Source(processor = RandomIntSource.Processor.class) // <4>
+    public @interface RandomIntSource { // <1>
+
+        // <2>
+        int size() default 1;
+        int min() default Integer.MIN_VALUE;
+        int max() default Integer.MAX_VALUE;
+        boolean onlyPositive() default true;
+        boolean commonRange() default true;
+
+        // <3>
+        @Component
+        class Processor extends DataProcessor<Args> {
+
+            @Override
+            public Class getSupportedAnnotationClass() {
+                return RandomIntSource.class; // <4>
+            }
+
+            // <5>
+            @Override
+            public List<Args> process(Method method, Annotation annotation, TestExecutionContext testExecutionContext) {
+                RandomIntSource source = (RandomIntSource) annotation;
+                int min = source.commonRange() ? -100 : source.min();
+                int max = source.commonRange() ? 100 : source.max();
+                min = source.onlyPositive() ? 0 : min;
+                return new Random().ints(source.size(), min, max).boxed().map(i -> Args.build(i))
+                    .collect(Collectors.toList());
+            }
+        }
+    }
+----
+
+====== How it works
+
+The concept of own DPs based on 2 mechanisms:
+
+. Before the start of the tests, the built-in listener `YafTransformer` runs and processes the annotations on the test methods.
++
+In case a method lacks @DataProvider annotation, but the number of parameters is not equal to zero, a global YAF data-provider is assigned to this method.
+
+. The YAF-global data provider analyzes the test method, finds the custom DP and calls it together with all the meta-information about the test method.
++
+Apart from that, it can mix in parameters from DP and global test parameters (from suite file).
++
+After the processor processes custom data provider, data from `List<Args>` is converted into standard `Object[][]` and returned by global data provider to the test method.
+
+
+

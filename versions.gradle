@@ -1,0 +1,30 @@
+ext {
+    springBootVersion = '3.2.0'
+    fakerVersion = '1.0.1'
+    logbackVersion = '1.4.14'
+    lombokVersion = '1.18.30'
+
+// modules
+    allureVersion = '2.25.0'
+    restAssuredVersion = '5.3.0'
+    testNgVersion = '7.7.0'
+    rocksDbVersion = '8.9.1'
+    velocityVersion = '1.7'
+    velocityToolsVersion = '2.0'
+    selenideVersion = '7.0.1'
+    ashotVersion = '1.5.4'
+    seleniumVersion = '4.17.0'
+    webDriverManager = '5.7.0'
+    testContainersVersion = '1.18.3'
+    jakartaMailVersion='2.0.1'
+    jsoupVersion='1.7.2'
+    pdfbox='3.0.2'
+    slackApiVersion='1.43.0'
+    htmlUnitDriverVersion = '4.13.0'
+
+// plugins
+
+    gradleDepManagerPluginVersion = '1.1.4'
+    gradleLicencePluginVersion = '2.0.1'
+
+}

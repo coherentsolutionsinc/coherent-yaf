@@ -1,0 +1,33 @@
+apply from: rootProject.file('versions.gradle')
+
+bootJar.enabled = false
+
+
+dependencies {
+
+    implementation "org.projectlombok:lombok"
+    annotationProcessor "org.projectlombok:lombok"
+
+    implementation "org.springframework.boot:spring-boot-starter-cache"
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:spring-boot-starter-test"
+
+    implementation "com.fasterxml.jackson.core:jackson-databind"
+    implementation("com.github.javafaker:javafaker:${fakerVersion}") { exclude module: "snakeyaml" }
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+
+    //test dependencies
+    testRuntimeOnly "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "ch.qos.logback:logback-core:${logbackVersion}"
+    testImplementation "org.springframework.boot:spring-boot-starter-logging"
+    testImplementation "org.projectlombok:lombok"
+    testAnnotationProcessor "org.projectlombok:lombok"
+}
+
+test {
+    useJUnitPlatform()
+}
+

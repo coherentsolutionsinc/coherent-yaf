@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot' version '3.2.0'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id 'org.quiltmc.gradle.licenser' version '2.0.1'
+}
+
+group = 'com.coherentsolutions.yaf'
+version = '1.3.4'
+
+apply from: rootProject.file('versions.gradle')
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    apply from: rootProject.file('spring.gradle')
+    apply from: rootProject.file('publish.gradle')
+    apply from: rootProject.file('license.gradle')
+
+    repositories {
+        mavenCentral()
+    }
+
+    version = rootProject.version
+
+    dependencies {
+        implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
+        implementation 'org.springframework.boot:spring-boot-starter'
+    }
+}
+
+tasks.register('alljavadoc', Javadoc) {
+    source subprojects.collect { it.sourceSets.main.allJava }
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    options.memberLevel = JavadocMemberLevel.PRIVATE
+    destinationDir = project(':yaf-docs').file("docs/javadoc")
+}
+

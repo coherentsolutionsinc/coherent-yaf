@@ -1,0 +1,24 @@
+==== Allure Test NG integration
+
+Due to the fact that the framework uses a large number of wrappers and special hooks, they all end up in the base report and thus clutter it up.
+
+===== How to
+
+====== How to use
+
+To exclude unnecessary methods from the report, a special annotation `@SkipReport` is used.
+
+//TODO: does not work
+====== Example
+[source, java]
+----
+    @SkipReport
+    @BeforeClass
+    public void skipReportBeforeClass(ITestContext testContext) {
+        super.beforeClass(testContext);
+    }
+----
+
+====== How it works
+
+There is a special aspect in the module that intercepts the execution of methods in the standard TestNG adapter, and if a method is marked with this annotation, it is "skipped" (not included in the report).

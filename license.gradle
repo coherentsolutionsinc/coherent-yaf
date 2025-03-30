@@ -1,0 +1,7 @@
+apply plugin: 'org.quiltmc.gradle.licenser'
+
+license {
+    rule rootProject.file('LICENSE.txt')
+    include '**/*.java' // Specify the file types to include
+    exclude '**/Generated*' // Exclude generated files
+}

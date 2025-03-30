@@ -1,0 +1,7 @@
+{
+  "startDate": "{{faker.date.past()}}",
+  "aaa": "{{cf.date}}",
+  "aaa2": "{{cf2.date}}",
+  "name": "{{cf.name}}",
+  "endDate": "faker.date.future(100, java.util.concurrent.TimeUnit.DAYS)"
+}

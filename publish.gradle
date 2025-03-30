@@ -1,0 +1,62 @@
+apply plugin: 'maven-publish'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+javadoc {
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+//    def exportedProjects = [
+//            ":",
+//            ":yaf-web",
+//            ":yaf-allure",
+//            ":yaf-mail"
+//    ]
+//    source exportedProjects.collect { project(it).soumain.allJava }
+//    classpath = files(exportedProjects.collect { project(it).sourceSets.main.compileClasspath })
+    destinationDir = project(':yaf-docs').file("docs/html")
+}
+
+tasks.jar {
+    enabled = true
+    // Remove `plain` postfix from jar file name
+    archiveClassifier.set("")
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.coherentsolutions.yaf'
+            artifactId = project.name
+            version = rootProject.version
+
+            from components.java
+
+            pom.withXml {
+                def dependenciesNode = asNode().dependencies[0]
+                if (dependenciesNode != null && dependenciesNode.children() != null) {
+                    dependenciesNode.children().each { child ->
+                        def scopeNode = child.scope
+                        if (scopeNode != null) {
+                            child.remove(scopeNode)
+                        }
+                        child.appendNode('scope', 'compile')
+                    }
+                }
+
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("https://coherentsolutions.jfrog.io/artifactory/yaf-java")
+            credentials {
+                username = (project.findProperty("artifactory_user") ?: System.getenv("artifactory_user"))
+                password = (project.findProperty("artifactory_password") ?: System.getenv("artifactory_password"))
+            }
+        }
+    }
+}

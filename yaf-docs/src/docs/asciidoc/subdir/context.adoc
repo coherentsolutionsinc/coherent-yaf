@@ -1,0 +1,62 @@
+=== Drivers
+
+In Yaf Selenium WebDriver is represented by link:{javadocdir}/com/coherentsolutions/yaf/core/drivers/model/DriverHolder.html[`DriverHolder`]. In its turn they are stored inside DriversStore under corresponding Yaf Device key. DriverHolder contains additional driver information that helps operate drivers. One on the usefull driver's characteristic is scope. There are four of these:
+
+. EXECUTION - for common/default driver, only one per execution exist. Used in case no link:config.adoc[configurations] is used
+. SUITE - for suite specific driver, stored in suit name - driverHolder map, is there is no driver for corresponding suite EXECUTION scope driver is used
+. CLASS - is assigned to the driver in case parallelization by classes
+. METHOD - is assigned to the driver in case parallelization by medhods
+
+=== Context
+
+In addition to the standard link:https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/context/ApplicationContext.html[Spring context], there are two extra custom contexts in YAF.
+
+The context's tasks are:
+
+. To store all information about the test execution process;
+. To be the basis for decision-making about the type of object that needs to be injected.
+
+The framework has two custom contexts:
+
+. `ExecutionContext` - a global test execution context.
+. `TestExecutionContext` - a local test execution context.
+
+==== ExecutionContext
+
+ExecutionContext contains global information and launch parameters, also manages drivers with *Execution* and *Suite* scopes.
+
+This context is created when the application starts and is cleared after the application quits.
+
+==== TestExecutionContext
+
+TestExecutionContext manages drivers with *Test* and *Class* scopes, and contains information about the current test, such as:
+
+- test name;
+- suite name;
+- current environment;
+- start time
+- current link:config.adoc#additional_config[additional config]
+- a link:{javadocdir}/com/coherentsolutions/yaf/core/test/model/TestInfo.html[`TestInfo`] object with a lot of additional information about the test.
+
+This context is created when the test starts (TestStartEvent) and is cleared when the test ends.
+
+==== How is it used
+These contexts are accessible inside BaseYafTest, Component and Utils classes and its inheritor classes
+Contexts are participate in the one of the first command trying to start your first test (link:firstWebTest.adoc):
+
+[source,java]
+----
+public class FirstTest extends YafTestNgTest { // <1>
+
+    @Test
+    @YafTest
+    public void sampleTest(){
+        WebDriver driver = (WebDriver) getWebDriver().getDriver(); //<1>
+        WebDriver firefoxDriver = (WebDriver) getWebDriver("ff").getDriver(); //<2>
+    }
+}
+----
+
+NOTE: <1> getWebDriver()/getMobileDriver()/getDesktopDriver() of BaseYafTest return a Driver Holder instance of corresponding type Web/Mobile/Desktop. It applies to testExecutionContext and then to executionContext driver store for the required driver, created new and add it to testContext if existing one was not found. In <2> case to type filter device name(one of devices that are defined for current environment, link:config.adoc[see]) will be added
+
+By YAF getDriver methods are used during pages and components class files initializing to assign to each of them a driverHolder for further usage orchestrating app's pages and components

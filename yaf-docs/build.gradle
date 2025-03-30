@@ -1,0 +1,95 @@
+buildscript {
+    configurations.classpath {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'com.burgstaller' && details.requested.name == 'okhttp-digest' && details.requested.version == '1.10') {
+                details.useTarget "io.github.rburgst:${details.requested.name}:1.21"
+                details.because 'Dependency has moved'
+            }
+        }
+    }
+}
+
+plugins {
+    id("org.asciidoctor.jvm.pdf") version "4.0.3"
+    id("org.asciidoctor.jvm.gems") version "4.0.3"
+    id("org.asciidoctor.jvm.convert") version "4.0.3"
+}
+
+apply plugin: 'idea'
+
+repositories {
+    jcenter()
+    ruby.gems()
+}
+
+asciidoctor {
+
+    dependsOn rootProject.alljavadoc
+
+    baseDirFollowsSourceFile()
+
+    outputDir = file("./docs/html")
+
+    asciidoctorj {
+        requires 'rouge'
+        attributes 'build-gradle': file('build.gradle'),
+                'sourcedir': project.sourceSets.main.java.srcDirs[0],
+                'endpoint-url': 'http://example.org',
+                'source-highlighter': 'rouge',
+                'imagesdir': './images',
+                'toc': 'left',
+                'icons': 'font',
+                'idprefix': '',
+                'idseparator': '-',
+                'javadocdir': "../javadoc",
+                'javadocbasepath': "com/coherentsolutions/yaf"
+    }
+
+}
+
+
+asciidoctorPdf {
+    dependsOn asciidoctorGemsPrepare
+    baseDirFollowsSourceFile()
+
+    outputDir = file("./docs/pdf")
+//
+//   asciidoctorj {
+//     requires 'rouge'
+//     attributes 'build-gradle': file('build.gradle'),
+//         'sourcedir': project.sourceSets.main.java.srcDirs[0],
+//         'endpoint-url': 'http://example.org',
+//         'source-highlighter': 'rouge',
+//         'imagesdir': './images',
+//         'toc': 'left',
+//         'icons': 'font',
+//         'idprefix': '',
+//         'idseparator': '-'
+//   }
+}
+
+// // alias
+// task asciidoctor(dependsOn: asciidoctorPdf)
+
+
+// asciidoctor {
+//     sourceDir  file('docs')
+//     sources {
+//         include '**/*.adoc'
+//     }
+//    // dependsOn tasks.asciidoctorInclude
+//    dependsOn 'clean'
+// }
+
+
+// asciidoctorPdf {
+//     sourceDir  file('docs')
+//     sources {
+//         include '**/*.adoc'
+//     }
+//     dependsOn asciidoctor
+// }
+
+dependencies {
+    asciidoctorGems 'rubygems:rouge:3.15.0'
+}

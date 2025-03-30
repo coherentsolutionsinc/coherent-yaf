@@ -1,0 +1,52 @@
+== Overview
+
+The goal of this document is to provide comprehensive reference documentation for qa engineers and module authors.
+
+This document is also available as a http://xxxx[PDF download].
+
+=== What is YAF
+
+YAF - Yet Another Framework, is a modular test automation framework that helps QA engineers to solve common problems in automation and ...
+
+=== Requirements
+
+The only requirement is https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html[Java 1.8+]
+
+=== Navigation
+
+==== Common
+
+. Get link:core_index.adoc[in-depth information] about how the framework works.
+. Listen to a wide variety of link:events.adoc[events] about the status of your tests.
+. Get information about your test meta info from link:context.adoc[test execution context].
+. Use helpful link:utils.adoc[utilities].
+
+==== WEB
+
+. Get started with link:firstWebTest.adoc[First Web Test] guide
+. Enreach your tests learning how to implement automation best practices using YAF using link:firstWebTestExtended.adoc[First Web Test Extended] guide
+. Extending link:firstWebTestExtended.adoc#page_object[Page objects] with link:conditions.adoc[conditional pages].
+. Test data parametrization via POJO classes with link:data.adoc[data manager].
+. Create link:config.adoc[advanced execution configuration] to your tests.
+
+==== API
+. Add link:api.adoc[API] support (including link:api_restassured_en.adoc[RestAssured]).
+. Using link:dataproviders_en.adoc[YAF data providers].
+
+
+//. Masterfully link:drivers_en.adoc[manage your drivers].
+
+
+
+
+=== Getting Help
+
+Email us ....
+
+=== Sample projects
+
+1. http://xxx[Project 1]
+2. http://xxx[Project 2]
+3. http://xxx[Project 3]
+
+

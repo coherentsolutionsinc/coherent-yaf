@@ -1,0 +1,131 @@
+=== YAF reporting
+
+YAF contains basic reporting functionality.
+This implementation is a basic one, and we suggest extending it or using a production one.
+
+==== How to
+
+===== How to use
+
+. Add a report module dependency
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+<dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-report</artifactId>
+            <version>${yaf.version}</version>
+</dependency>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-report:${yaf.version}")
+}
+----
+====
++
+. Enable the reporting service `yaf.report.enabled=true` in YAF configuration file.
+. Configure it if necessary based on available options (`YafReportProperties`):
+- enable report logging (by default, it is shown in the console);
+- change/create a new report template (using the link:https://velocity.apache.org/engine/1.7/user-guide.html[Velocity] templating tool).
+- specify the path to the report template or default one will be used;
+
+NOTE: There is one more property in `YafReportProperties` contextName that is a name of variable in template to map the result report to. Pay attention on its value creating your own report
+
+[source,properties]
+----
+yaf.report.enabled=true
+yaf.report.logReport=true
+yaf.report.template="templates/report.vm";
+----
+
+===== How to extend
+
+There are two options to modify the reporter:
+
+. Changing the report template (see example `templates/executionReport.vm`).
+. Change the algorithm of the report processing. You can not just output it to the console, but, for instance, form a pdf document and send it via email. For this, you need to subscribe to the event `ExecutionReportReadyEvent` and add aditional processing logic.
+
+[source,java]
+----
+@Service
+@Slf4j
+public class SendEmailPdfReportService {
+
+    @EventListener
+    public void sendPdfReport(ExecutionReportReadyEvent event) {
+        PdfDocument pdf = pdfService.generate(event.getReport());
+        emailService.sendPdf(getSubEmailList(), pdf);
+    }
+
+    ...
+}
+----
+
+===== How it works
+
+The `ReportService` class listens to events as the tests are running, aggregates them in the `ExecutionReport` object and when the `ExecutionFinishEvent` event occurs, this class completes the `ExecutionReport`, prints it (outputs to the console) using the `PrintReportService` and also generates the `ExecutionReportReadyEvent` event, which can be further processed by custom handlers.
+
+=== Slack
+
+One such handler implemented by YAF is an event processor that sends a report to a Slack
+
+==== How to use
+
+. To use the functionality it is required to add slack module dependency (the module is already includes report module):
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+<dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-slack</artifactId>
+            <version>${yaf.version}</version>
+</dependency>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-slack:${yaf.version}")
+}
+----
+====
++
+. Continue adding Slack properties in properties file.
+There are two ways how to get access to the channel to send the report to. Every require to create an App for Slack Workspace:
+- using apiToken and channelId, see link:https://api.slack.com/messaging/sending#getting_started[how to get permissions]
+- usinga webhook, see link:https://api.slack.com/messaging/webhooks[how to create a Webhook] for the channel
++
+[source,properties]
+----
+yaf.report.enabled=true
+# yaf.report. ...
+yaf.slack.enabled=true
+yaf.slack.sendReport=true
+
+yaf.slack.apiToken=xoxb-111-111-xxxxxxxxx
+yaf.slack.channelId=XX1XX111X
+# or
+yaf.slack.webhookUrl=https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+----
+
+NOTE: apiToken is a bot(starts with `xoxb-`) or user(starts with `xoxp-`) token.
+channelId is the ID of the Slack channel where the message will be posted, could be found at the bottom of the channel 'About' tab in slack application
+
+IMPORTANT: yaf.report.enabled=true is required or else ExecutionReport won't be collected and `ExecutionReportReadyEvent` event won't be published
