@@ -37,6 +37,9 @@ import org.springframework.test.context.TestExecutionListener;
 
 import java.util.HashMap;
 
+/**
+ * The type J unit listener.
+ */
 @Component
 @Slf4j
 public class JUnitListener implements TestExecutionListener {

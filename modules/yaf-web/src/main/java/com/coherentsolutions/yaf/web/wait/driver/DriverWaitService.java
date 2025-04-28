@@ -284,9 +284,9 @@ public class DriverWaitService {
      * has stabilized, meaning its value has remained the same for at least two consecutive checks.
      * </p>
      *
-     * @param by               the locator of the web element to check
+     * @param by            the locator of the web element to check
      * @param attributeName the CSS attribute to check
-     * @param waitConsts       optional wait constants
+     * @param waitConsts    optional wait constants
      */
     public void attributeIsLoaded(By by, String attributeName, WaitConsts... waitConsts) {
         waitFor(new LoadWait(by, waitConsts).forAttribute(attributeName));
@@ -299,9 +299,9 @@ public class DriverWaitService {
      * has stabilized, meaning its value has remained the same for at least two consecutive checks.
      * </p>
      *
-     * @param element          the web element to check
+     * @param element       the web element to check
      * @param attributeName the CSS attribute to check
-     * @param waitConsts       optional wait constants
+     * @param waitConsts    optional wait constants
      */
     public void attributeIsLoaded(WebElement element, String attributeName, WaitConsts... waitConsts) {
         waitFor(new LoadWait(element, waitConsts).forAttribute(attributeName));
@@ -390,7 +390,8 @@ public class DriverWaitService {
     /**
      * Waits for the presence of the given web element.
      *
-     * @param element the web element
+     * @param element    the web element
+     * @param waitConsts the wait consts
      */
     public void presenceOf(WebElement element, WaitConsts... waitConsts) {
         waitFor(new PresenceWait(element, waitConsts));
@@ -399,7 +400,8 @@ public class DriverWaitService {
     /**
      * Waits for the presence of the web element located by the given locator.
      *
-     * @param by the locator of the web element
+     * @param by         the locator of the web element
+     * @param waitConsts the wait consts
      */
     public void presenceOfElementLocatedBy(By by, WaitConsts... waitConsts) {
         waitFor(new PresenceWait(by, waitConsts));
@@ -408,7 +410,8 @@ public class DriverWaitService {
     /**
      * Waits for the absence of the given web element.
      *
-     * @param element the web element
+     * @param element    the web element
+     * @param waitConsts the wait consts
      */
     public void absenceOf(WebElement element, WaitConsts... waitConsts) {
         waitFor(new PresenceWait(element, waitConsts).presence(false));
@@ -417,7 +420,8 @@ public class DriverWaitService {
     /**
      * Waits for the absence of the web element located by the given locator.
      *
-     * @param by the locator of the web element
+     * @param by         the locator of the web element
+     * @param waitConsts the wait consts
      */
     public void absenceOfElementLocatedBy(By by, WaitConsts... waitConsts) {
         waitFor(new PresenceWait(by, waitConsts).presence(false));

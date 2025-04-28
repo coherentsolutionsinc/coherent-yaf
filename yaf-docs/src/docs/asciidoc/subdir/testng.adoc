@@ -26,8 +26,8 @@ Read more here #(!!ссылка на код трансфомер)#
 
 If TestNG is chosen as a runner, to ensure correct work of YAF, all tests must inherit this class which provides the following features:
 
-1. As you know, YAF has a mechanism of its own events (!!ссылка) and such events as (!!список своих ивентов) are generated in this class.
-2. This class is the entry point to the global data provider (!!ссылка).
+1. As you know, YAF has a mechanism of its own events (!TBD link) and such events as (!!список своих ивентов) are generated in this class.
+2. This class is the entry point to the global data provider (!TBD link).
 3. In this class the mechanism of YAF's own test processing triggers before the test method is executed #(!!ссылка на кастом бины)#.
 
 

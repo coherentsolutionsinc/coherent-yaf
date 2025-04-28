@@ -33,26 +33,65 @@ import java.util.Map;
 /**
  * Default Model for Emails of any Mail Type
  *
- * @param <T>
+ * @param <T> the type parameter
  */
 @Data
 public class Email<T> {
 
+    /**
+     * The Id.
+     */
     Object id;
+    /**
+     * The Subject.
+     */
     String subject;
 
+    /**
+     * The From.
+     */
     List<String> from;
+    /**
+     * The To.
+     */
     List<String> to;
+    /**
+     * The Cc list.
+     */
     List<String> ccList;
+    /**
+     * The Bcc list.
+     */
     List<String> bccList;
 
+    /**
+     * The Received date.
+     */
     Date receivedDate;
+    /**
+     * The Sent date.
+     */
     Date sentDate;
+    /**
+     * The Read.
+     */
     boolean read;
+    /**
+     * The Starred.
+     */
     boolean starred;
 
+    /**
+     * The Content.
+     */
     Object content;
+    /**
+     * The Headers.
+     */
     Map<String, String> headers;
+    /**
+     * The Reply to.
+     */
     String replyTo;
 
     /**

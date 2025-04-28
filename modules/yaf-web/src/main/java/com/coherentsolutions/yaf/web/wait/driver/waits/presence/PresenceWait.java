@@ -53,17 +53,42 @@ import java.util.List;
 @Accessors(fluent = true)
 public class PresenceWait extends BaseWait {
 
+    /**
+     * The Presence.
+     */
     boolean presence = true;
+    /**
+     * The Any element match.
+     */
     boolean anyElementMatch;
 
+    /**
+     * Instantiates a new Presence wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public PresenceWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }
 
+    /**
+     * Instantiates a new Presence wait.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public PresenceWait(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Presence wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public PresenceWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }

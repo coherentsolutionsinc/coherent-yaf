@@ -99,7 +99,7 @@ abstract class BaseTestNgTest extends BaseYafTest implements IHookable {
 
     /**
      * Delegates to the configured {@link TestContextManager} to call {@linkplain TestContextManager#beforeTestClass()
-     * 'before test class'}* callbacks.
+     * 'before test class'}*** callbacks.
      *
      * @throws Exception if a registered TestExecutionListener throws an exception
      */
@@ -194,7 +194,7 @@ abstract class BaseTestNgTest extends BaseYafTest implements IHookable {
 
     /**
      * Delegates to the configured {@link TestContextManager} to call {@linkplain TestContextManager#afterTestClass()
-     * 'after test class'}* callbacks.
+     * 'after test class'}*** callbacks.
      *
      * @throws Exception if a registered TestExecutionListener throws an exception
      */

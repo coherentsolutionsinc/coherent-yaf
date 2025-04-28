@@ -69,9 +69,9 @@ public class BrowserDevice extends Device {
      * Browser options arguments.
      * for ex,
      * args: [
-     *       "--start-maximized",
-     *       "--allow-file-access-from-files"
-     *     ]
+     * "--start-maximized",
+     * "--allow-file-access-from-files"
+     * ]
      */
     List<String> args;
 

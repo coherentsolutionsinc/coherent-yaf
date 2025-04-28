@@ -37,9 +37,38 @@ import com.coherentsolutions.yaf.core.events.test.TestFinishEvent;
  */
 public interface ZephyrScaleStrategy {
 
+    /**
+     * Create folders.
+     *
+     * @param executionStartEvent the execution start event
+     */
     void createFolders(ExecutionStartEvent executionStartEvent);
+
+    /**
+     * Create cycle.
+     *
+     * @param executionStartEvent the execution start event
+     */
     void createCycle(ExecutionStartEvent executionStartEvent);
+
+    /**
+     * Capture test keys.
+     */
     void captureTestKeys();
+
+    /**
+     * Create test execution.
+     *
+     * @param testKey         the test key
+     * @param testFinishEvent the test finish event
+     */
     void createTestExecution(String testKey, TestFinishEvent testFinishEvent);
+
+    /**
+     * Update test execution.
+     *
+     * @param testKey         the test key
+     * @param testFinishEvent the test finish event
+     */
     void updateTestExecution(String testKey, TestFinishEvent testFinishEvent);
 }

@@ -42,6 +42,9 @@ import org.springframework.stereotype.Component;
 @Order()
 public class GridCell<T extends WebElement> extends WebComponent<T> {
 
+    /**
+     * The Root.
+     */
     T root;
     /**
      * The Text.

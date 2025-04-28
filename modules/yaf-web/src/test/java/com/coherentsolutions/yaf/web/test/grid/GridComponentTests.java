@@ -10,30 +10,51 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The type Grid component tests.
+ */
 public class GridComponentTests extends BaseJUnitWebTest {
 
-	static String filePath;
-	@Autowired
+    /**
+     * The File path.
+     */
+    static String filePath;
+    /**
+     * The Grid sample page.
+     */
+    @Autowired
 	GridSamplePage gridSamplePage;
 
-	@BeforeAll
+    /**
+     * Sets up.
+     */
+    @BeforeAll
 	public static void setUp() {
 		filePath = getUrl("nestedGridComponent");
 	}
 
-	@BeforeEach
+    /**
+     * Open url.
+     */
+    @BeforeEach
 	public void openUrl() {
 		((WebDriver) getWebDriver().getDriver()).get(filePath);
 	}
 
-	@Test
+    /**
+     * Check default grid initialization.
+     */
+    @Test
 	public void checkDefaultGridInitialization() {
 		NestedGrid nestedSampleGrid = gridSamplePage.getNestedGrid().getNestedSampleGrid();
 		String headerTextForDefaultLocator = nestedSampleGrid.getHeaderElements().get(1).getText();
 		Assertions.assertEquals("T2 Header 2", headerTextForDefaultLocator);
 	}
 
-	@Test
+    /**
+     * Check custom locator grid initialization.
+     */
+    @Test
 	public void checkCustomLocatorGridInitialization() {
 		NestedGrid nestedCustomGrid = gridSamplePage.getNestedGrid().getNestedCustomGrid();
 		String headerTextForCustomLocator = nestedCustomGrid.getHeaderElements().get(1).getText();

@@ -37,6 +37,9 @@ import java.util.List;
 import static com.slack.api.model.block.Blocks.*;
 import static com.slack.api.model.block.composition.BlockCompositions.markdownText;
 
+/**
+ * The type Base slack execution report message payload.
+ */
 @Component
 public class BaseSlackExecutionReportMessagePayload implements SlackExecutionReportMessagePayload {
 
@@ -52,6 +55,12 @@ public class BaseSlackExecutionReportMessagePayload implements SlackExecutionRep
         return ChatPostMessageRequest.builder().blocks(asBlocks(blocks)).build();
     }
 
+    /**
+     * Prepare blocks layout block [ ].
+     *
+     * @param report the report
+     * @return the layout block [ ]
+     */
     public LayoutBlock[] prepareBlocks(ExecutionReport report) {
         List<LayoutBlock> sectionBlocks = new ArrayList<>();
         sectionBlocks.add(SectionBlock.builder().text(markdownText("*Test Result Report*")).build());

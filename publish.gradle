@@ -5,26 +5,22 @@ java {
     withSourcesJar()
 }
 
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-//    def exportedProjects = [
-//            ":",
-//            ":yaf-web",
-//            ":yaf-allure",
-//            ":yaf-mail"
-//    ]
-//    source exportedProjects.collect { project(it).soumain.allJava }
-//    classpath = files(exportedProjects.collect { project(it).sourceSets.main.compileClasspath })
-    destinationDir = project(':yaf-docs').file("docs/html")
-}
+//javadoc {
+//    if (JavaVersion.current().isJava9Compatible()) {
+//        options.addBooleanOption('html5', true)
+//    }
+////    def exportedProjects = [
+////            ":",
+////            ":yaf-web",
+////            ":yaf-allure",
+////            ":yaf-mail"
+////    ]
+////    source exportedProjects.collect { project(it).soumain.allJava }
+////    classpath = files(exportedProjects.collect { project(it).sourceSets.main.compileClasspath })
+//    destinationDir = project(':yaf-docs').file("docs/html")
+//}
 
-tasks.jar {
-    enabled = true
-    // Remove `plain` postfix from jar file name
-    archiveClassifier.set("")
-}
+
 
 publishing {
     publications {
@@ -54,8 +50,8 @@ publishing {
         maven {
             url = uri("https://coherentsolutions.jfrog.io/artifactory/yaf-java")
             credentials {
-                username = (project.findProperty("artifactory_user") ?: System.getenv("artifactory_user"))
-                password = (project.findProperty("artifactory_password") ?: System.getenv("artifactory_password"))
+                username = (project.findProperty("artifactory_user") ?: System.getenv("ARTIFACTORY_USER"))
+                password = (project.findProperty("artifactory_password") ?: System.getenv("ARTIFACTORY_PASSWORD"))
             }
         }
     }

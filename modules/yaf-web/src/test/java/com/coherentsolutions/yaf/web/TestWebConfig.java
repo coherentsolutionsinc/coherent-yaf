@@ -31,9 +31,17 @@ import com.coherentsolutions.yaf.core.exec.model.device.Device;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 
+/**
+ * The type Test web config.
+ */
 @TestConfiguration
 public class TestWebConfig {
 
+    /**
+     * Stub environment.
+     *
+     * @return the environment
+     */
     @Bean
     public Environment stub() {
         Environment environment = Environment.getDefaultEnv();

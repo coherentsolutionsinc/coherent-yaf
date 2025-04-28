@@ -29,10 +29,18 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.METHOD;
 
+/**
+ * The interface Env skip test.
+ */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD})
 public @interface EnvSkipTest {
 
+    /**
+     * Skip string [ ].
+     *
+     * @return the string [ ]
+     */
     String[] skip() default {};
 
 }

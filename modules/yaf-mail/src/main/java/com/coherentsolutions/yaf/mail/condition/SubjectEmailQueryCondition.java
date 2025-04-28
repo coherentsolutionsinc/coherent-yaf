@@ -37,6 +37,9 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class SubjectEmailQueryCondition implements EmailQueryCondition<Email> {
 
+    /**
+     * The Subject.
+     */
     String subject;
 
     /**

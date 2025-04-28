@@ -29,40 +29,44 @@ import jakarta.mail.Session;
 
 import java.util.List;
 
+/**
+ * The interface Email processor.
+ *
+ * @param <T> the type parameter
+ */
 public interface EmailProcessor<T> {
-	/**
-	 * Method which gets default information from email
-	 *
-	 * @param originalEmails
-	 * @return
-	 */
-	List<Email> processDefaultEmailInfo(List<T> originalEmails);
+    /**
+     * Method which gets default information from email
+     *
+     * @param originalEmails the original emails
+     * @return list
+     */
+    List<Email> processDefaultEmailInfo(List<T> originalEmails);
 
-	/**
-	 * Method for a possibility to get extra info during initial email reding.
-	 * Added for a possibility to override the method in case extra info is required by default
-	 *
-	 * @param email
-	 * @param originalEmail
-	 * @return
-	 */
-	Email processAdditionalEmailInfo(Email email, T originalEmail);
+    /**
+     * Method for a possibility to get extra info during initial email reding.
+     * Added for a possibility to override the method in case extra info is required by default
+     *
+     * @param email         the email
+     * @param originalEmail the original email
+     * @return email
+     */
+    Email processAdditionalEmailInfo(Email email, T originalEmail);
 
-	/**
-	 * Read more info for filtered emails only.
-	 *
-	 * @param emails
-	 * @return
-	 */
+    /**
+     * Read more info for filtered emails only.
+     *
+     * @param emails the emails
+     * @return list
+     */
+    List<Email> processExtraInfoForFilteredEmails(List<Email> emails);
 
-	List<Email> processExtraInfoForFilteredEmails(List<Email> emails);
-
-	/**
-	 * Method which allows us convert Email to an object which will be used by Email Service type
-	 *
-	 * @param email
-	 * @param session
-	 * @return
-	 */
-	T processEmail(Email email, Session session);
+    /**
+     * Method which allows us convert Email to an object which will be used by Email Service type
+     *
+     * @param email   the email
+     * @param session the session
+     * @return t
+     */
+    T processEmail(Email email, Session session);
 }

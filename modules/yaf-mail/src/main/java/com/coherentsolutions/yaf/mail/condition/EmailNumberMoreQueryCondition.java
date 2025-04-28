@@ -37,7 +37,10 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class EmailNumberMoreQueryCondition implements EmailQueryCondition<Email> {
 
-	int id;
+    /**
+     * The Id.
+     */
+    int id;
 
 	/**
 	 * Method to build Predicate for future email filtering

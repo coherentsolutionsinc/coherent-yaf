@@ -37,7 +37,17 @@ import org.openqa.selenium.WebElement;
  */
 public interface RootedWebComponent<T extends WebElement> {
 
+    /**
+     * Gets root.
+     *
+     * @return the root
+     */
     T getRoot();
 
+    /**
+     * Sets root.
+     *
+     * @param root the root
+     */
     void setRoot(T root);
 }

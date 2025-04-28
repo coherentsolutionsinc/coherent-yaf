@@ -88,7 +88,7 @@ public class YafByUtils {
      * @param findBy the FindBy annotation to convert
      * @return a YafBy instance
      */
-    //TODO add support of findBys and FindAll
+//TODO add support of findBys and FindAll
     public static YafBy convert(FindBy findBy) {
         if (findBy != null) {
             if (!"".equals(findBy.css())) {
@@ -161,6 +161,12 @@ public class YafByUtils {
                 YafByUtils.convert(findBy);
     }
 
+    /**
+     * Gets yaf by from field.
+     *
+     * @param field the field
+     * @return the yaf by from field
+     */
     public static YafBy getYafByFromField(Field field) {
         return getYafByFromField(field, (YafSetSelector) null);
     }

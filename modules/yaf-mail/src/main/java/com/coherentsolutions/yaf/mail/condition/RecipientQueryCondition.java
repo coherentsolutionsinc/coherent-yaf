@@ -38,6 +38,9 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class RecipientQueryCondition implements EmailQueryCondition<Email> {
 
+    /**
+     * The Recipient.
+     */
     String  recipient;
 
     /**

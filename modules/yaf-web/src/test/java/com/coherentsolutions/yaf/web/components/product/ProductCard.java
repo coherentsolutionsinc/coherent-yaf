@@ -32,6 +32,9 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Product card.
+ */
 @Data
 @Component
 public class ProductCard extends WebComponent<WebElement> {
@@ -43,8 +46,16 @@ public class ProductCard extends WebComponent<WebElement> {
     @FindBy(css = ".product-price")
     private WebElement price;
 
+    /**
+     * The Unique element.
+     */
     YafBy uniqueElement;
 
+    /**
+     * Gets product price.
+     *
+     * @return the product price
+     */
     public String getProductPrice() {
         return getWebDriver().findElement(uniqueElement).findElement(By.cssSelector(".product-price")).getText();
     }

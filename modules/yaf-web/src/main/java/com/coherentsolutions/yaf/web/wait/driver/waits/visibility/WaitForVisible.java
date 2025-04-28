@@ -49,10 +49,25 @@ import java.lang.annotation.Target;
 @WaitFor()
 public @interface WaitForVisible {
 
+    /**
+     * Visible boolean.
+     *
+     * @return the boolean
+     */
     boolean visible() default true;
 
+    /**
+     * Is for load boolean.
+     *
+     * @return the boolean
+     */
     boolean isForLoad() default false;
 
+    /**
+     * Wait const wait consts.
+     *
+     * @return the wait consts
+     */
     WaitConsts waitConst() default WaitConsts.EMPTY;
 
 }

@@ -26,11 +26,19 @@ package com.coherentsolutions.yaf.web.pom.by;
 
 import java.lang.annotation.*;
 
+/**
+ * The interface Yaf set params.
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
 public @interface YafSetParams {
 
+    /**
+     * Value yaf set param [ ].
+     *
+     * @return the yaf set param [ ]
+     */
     YafSetParam[] value() default {};
 }

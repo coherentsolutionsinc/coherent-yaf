@@ -5,9 +5,10 @@ plugins {
 }
 
 group = 'com.coherentsolutions.yaf'
-version = '1.3.4'
+version = '0.3.4'
 
 apply from: rootProject.file('versions.gradle')
+def ep = [':yaf-docs', ':modules']
 
 subprojects {
     apply plugin: 'java'
@@ -24,16 +25,43 @@ subprojects {
 
     version = rootProject.version
 
+
     dependencies {
         implementation platform("org.springframework.boot:spring-boot-dependencies:${springBootVersion}")
         implementation 'org.springframework.boot:spring-boot-starter'
     }
+    def excludedProjects = ep;
+    tasks.jar {
+        enabled = !(project.name in excludedProjects)
+        // Remove `plain` postfix from jar file name
+        archiveClassifier.set("")
+    }
 }
 
-tasks.register('alljavadoc', Javadoc) {
-    source subprojects.collect { it.sourceSets.main.allJava }
-    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+//ext {
+//    excludedProjects = [':yaf-docs', ':modules']
+//}
+
+tasks.register('allJavaDoc', Javadoc) {
+    def includedProjects = subprojects.findAll { !ep.contains(it.path) }
+
+    source includedProjects.collect { it.sourceSets.main.allJava }
+    classpath = files(includedProjects.collect { it.sourceSets.main.compileClasspath })
     options.memberLevel = JavadocMemberLevel.PRIVATE
     destinationDir = project(':yaf-docs').file("docs/javadoc")
+
+    if (JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
+tasks.register('generateAllDocs') {
+    dependsOn(
+            project(':yaf-docs').tasks.named('asciidoctor'),
+            project(':yaf-docs').tasks.named('asciidoctorPdf'),
+            tasks.named('allJavaDoc')
+    )
+    group = 'publishing'
+    description = 'Publishes all documentation to GitHub Pages'
 }
 

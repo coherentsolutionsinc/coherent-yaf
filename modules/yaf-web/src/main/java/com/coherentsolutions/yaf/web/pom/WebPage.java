@@ -28,6 +28,8 @@ import org.openqa.selenium.WebElement;
 
 /**
  * The type Web page.
+ *
+ * @param <T> the type parameter
  */
 public class WebPage<T extends WebElement> extends WebComponent<T> {
     @Override

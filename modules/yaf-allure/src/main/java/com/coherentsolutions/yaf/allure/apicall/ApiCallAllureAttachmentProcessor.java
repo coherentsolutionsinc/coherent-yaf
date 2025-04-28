@@ -26,7 +26,15 @@ package com.coherentsolutions.yaf.allure.apicall;
 
 import com.coherentsolutions.yaf.core.api.processor.log.ApiCallLog;
 
+/**
+ * The interface Api call allure attachment processor.
+ */
 public interface ApiCallAllureAttachmentProcessor {
 
+    /**
+     * Sets attachments from api call log.
+     *
+     * @param apiCallLog the api call log
+     */
     void setAttachmentsFromApiCallLog(ApiCallLog apiCallLog);
 }

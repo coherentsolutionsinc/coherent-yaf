@@ -4,7 +4,7 @@ There are numerous utilities in YAF that are designed to make test development e
 
 ==== Localization
 
-The standard Spring localization mechanism #(!!ссылка)# and the main class that implements it - `L10nService` - are used to provide localization in YAF.
+The standard Spring localization mechanism #(!TBD link)# and the main class that implements it - `L10nService` - are used to provide localization in YAF.
 This service can use resources both with an explicitly specified locale and with a locale set in `TestExecutionContext` (accordingly, the localization may be test-dependent).
 
 This mechanism is also automatically used in the templating engine.
@@ -21,9 +21,9 @@ Two template engines are supported:
 
 In YAF two types of additional storage are implemented:
 
-. `FileStore` #(!!ссылка)# - a wrapper over the usual file storage.
+. `FileStore` #(!TBD link)# - a wrapper over the usual file storage.
 For example, it is used to store downloaded versions of mobile apps.
-. `YafDbRepository` #(!!ссылка)# - Spring boot repository on top of https://rocksdb.org/[RocksDB]  (key-value store).
+. `YafDbRepository` #(!TBD link)# - Spring boot repository on top of https://rocksdb.org/[RocksDB]  (key-value store).
 Objects that are stored in this DB should be Serializable.
 To use this store just @Autowire `YafDbRepository` and use provided methods.
 Default DB name is `tmpdb`, you can change it in properties `yaf.tempdb.name=...`.

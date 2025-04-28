@@ -66,6 +66,9 @@ public class RestAssuredLoggingFilter implements Filter, ApiLogger {
     @Autowired
     TestFinishProperties properties;
 
+    /**
+     * The Events service.
+     */
     /*
      * Event Listener
      */
@@ -107,6 +110,12 @@ public class RestAssuredLoggingFilter implements Filter, ApiLogger {
         return null;
     }
 
+    /**
+     * Build api call event api call start event.
+     *
+     * @param apiCallLog the api call log
+     * @return the api call start event
+     */
     public ApiCallStartEvent buildApiCallEvent(ApiCallLog apiCallLog) {
         return new ApiCallStartEvent().setApiCallLog(apiCallLog);
     }

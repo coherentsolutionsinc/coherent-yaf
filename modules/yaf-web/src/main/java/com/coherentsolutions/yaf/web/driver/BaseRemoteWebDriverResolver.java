@@ -42,6 +42,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import static com.coherentsolutions.yaf.core.consts.Consts.DEFAULT_REMOTE_FARM;
 
+/**
+ * The type Base remote web driver resolver.
+ */
 @Service
 @Slf4j
 public class BaseRemoteWebDriverResolver extends AbstractWebDriverResolver {

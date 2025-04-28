@@ -130,7 +130,8 @@ public abstract class BaseWait {
     /**
      * Instantiates a new Base wait.
      *
-     * @param by the by
+     * @param by         the by
+     * @param waitConsts the wait consts
      */
     public BaseWait(By by, WaitConsts... waitConsts) {
         this.locators = Collections.singletonList(by);

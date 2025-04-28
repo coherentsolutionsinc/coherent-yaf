@@ -364,6 +364,6 @@ As conversion to DefaultYafUser is used json data must have the same structure a
 
 ==== Config reading
 
-The framework allows you to store configurations in various forms, and for this it is necessary to implement the `BaseExecutionReader`.Basically, the framework implements reading from JSON. #(!!ссылка)#
+The framework allows you to store configurations in various forms, and for this it is necessary to implement the `BaseExecutionReader`.Basically, the framework implements reading from JSON. #(!TBD link)#
 
 

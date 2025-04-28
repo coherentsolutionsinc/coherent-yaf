@@ -33,18 +33,17 @@ import org.springframework.stereotype.Service;
 
 /**
  * Service class which helps to get content of attachments in readable format.
- *
  */
-
 @Service
 public class EmailContentParser {
 
-	/**
-	 * Method which parses PDF attachment content to readable format
-	 * @param attachment provide email attachment which jas PDF content type
-	 * @return parsef pdf content in String
-	 */
-	@SneakyThrows
+    /**
+     * Method which parses PDF attachment content to readable format
+     *
+     * @param attachment provide email attachment which jas PDF content type
+     * @return parsef pdf content in String
+     */
+    @SneakyThrows
 	public static String parsePDFContent (Attachment attachment) {
 		String content = null;
 		if (attachment.getContentType().toLowerCase().contains(Consts.PDF_TYPE.toLowerCase())) {

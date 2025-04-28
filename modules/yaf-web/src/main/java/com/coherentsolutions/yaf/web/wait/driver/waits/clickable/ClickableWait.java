@@ -56,16 +56,38 @@ import java.util.List;
 @Accessors(fluent = true)
 public class ClickableWait extends BaseWait {
 
+    /**
+     * The Clickable.
+     */
     boolean clickable = true;
 
+    /**
+     * Instantiates a new Clickable wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public ClickableWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }
 
+    /**
+     * Instantiates a new Clickable wait.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public ClickableWait(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Clickable wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public ClickableWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }

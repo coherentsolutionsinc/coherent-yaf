@@ -26,9 +26,18 @@ package com.coherentsolutions.yaf.zephyr.scale.constant;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * The type Zephyr scale api url.
+ */
 @UtilityClass
 public class ZephyrScaleApiUrl {
 
+    /**
+     * The Create issue link.
+     */
     public final String CREATE_ISSUE_LINK = "testexecutions/%s/links/issues";
+    /**
+     * The Update executions.
+     */
     public final String UPDATE_EXECUTIONS = "testexecutions/%s";
 }

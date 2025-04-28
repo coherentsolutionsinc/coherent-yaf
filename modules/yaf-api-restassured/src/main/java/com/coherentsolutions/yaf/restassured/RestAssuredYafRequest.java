@@ -59,6 +59,7 @@ import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
 import com.coherentsolutions.yaf.restassured.log.RestAssuredLoggingFilter;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.filter.Filter;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
@@ -70,9 +71,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 
@@ -139,6 +138,8 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     @Autowired
     YafBeanUtils beanUtils;
     private Boolean baseUrlEndsWithSlash;
+
+    ThreadLocal<List<Filter>> customFilters;
 
     /**
      * Instantiates a new Rest assured yaf request.
@@ -321,6 +322,29 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         } finally {
             queryParams = null;
             headers = null;
+            cleanCustomFilters();
+        }
+    }
+
+    public RestAssuredYafRequest withCustomFilter(Filter... filter) {
+        if (customFilters == null) {
+            customFilters = ThreadLocal.withInitial(ArrayList::new);
+        }
+        for (Filter f : filter) {
+            customFilters.get().add(f);
+            this.requestSpecification.filter(f);
+        }
+        return this;
+    }
+
+    private void cleanCustomFilters(){
+        if (customFilters != null && customFilters.get() != null) {
+            for (Filter customFilter : customFilters.get()) {
+                this.requestSpecification.noFiltersOfType(customFilter.getClass());
+            }
+            customFilters.get().clear();
+            customFilters.remove();
+            customFilters = null;
         }
     }
 }

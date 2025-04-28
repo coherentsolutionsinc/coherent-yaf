@@ -27,5 +27,8 @@ package com.coherentsolutions.yaf.web.components.product;
 import com.coherentsolutions.yaf.web.pom.WebComponent;
 import org.openqa.selenium.WebElement;
 
+/**
+ * The type Base web comp.
+ */
 public abstract class BaseWebComp extends WebComponent<WebElement> {
 }

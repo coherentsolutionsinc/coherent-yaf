@@ -105,7 +105,7 @@ public interface YafWebComponent<T extends WebElement> extends RootedWebComponen
      * allowing for the construction and configuration of web components.
      * </p>
      *
-     * @param <C> the type of the web component
+     * @param <C>            the type of the web component
      * @param componentClass the class of the web component to be built
      * @return a new `WebComponentBuilder` for the specified component class
      */

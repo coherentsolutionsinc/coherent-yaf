@@ -26,8 +26,14 @@ package com.coherentsolutions.yaf.zephyr.scale.constant;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * The type Jira api url.
+ */
 @UtilityClass
 public class JiraApiUrl {
 
+    /**
+     * The Get issue by key.
+     */
     public final String GET_ISSUE_BY_KEY = "/issue/{issueKey}";
 }

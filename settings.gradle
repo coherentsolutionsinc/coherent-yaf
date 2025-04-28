@@ -1,6 +1,6 @@
 rootProject.name = 'coherent-yaf-java'
 include 'core'
-include 'modules'
+//include 'modules'
 include 'modules:yaf-allure'
 findProject(':modules:yaf-allure')?.name = 'yaf-allure'
 include 'modules:yaf-web'

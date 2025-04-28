@@ -43,7 +43,13 @@ import java.util.Map;
 @Accessors(chain = true)
 public abstract class PagingReq {
 
+    /**
+     * The Max results.
+     */
     Integer maxResults = 20;
+    /**
+     * The Start at.
+     */
     Integer startAt = 0;
 
     /**

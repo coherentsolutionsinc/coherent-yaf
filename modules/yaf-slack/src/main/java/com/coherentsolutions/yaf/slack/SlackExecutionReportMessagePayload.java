@@ -27,8 +27,24 @@ import com.coherentsolutions.yaf.report.domain.ExecutionReport;
 import com.slack.api.methods.request.chat.ChatPostMessageRequest;
 import com.slack.api.webhook.Payload;
 
+/**
+ * The interface Slack execution report message payload.
+ */
 public interface SlackExecutionReportMessagePayload {
 
+    /**
+     * Gets report payload.
+     *
+     * @param report the report
+     * @return the report payload
+     */
     Payload getReportPayload(ExecutionReport report);
+
+    /**
+     * Gets report chat post message request.
+     *
+     * @param report the report
+     * @return the report chat post message request
+     */
     ChatPostMessageRequest getReportChatPostMessageRequest(ExecutionReport report);
 }

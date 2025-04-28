@@ -37,6 +37,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+/**
+ * The type Products page.
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Component
@@ -52,22 +55,45 @@ public class ProductsPage extends WebPage<WebElement> {
     @YafSetParam(key = "twoId", value = "lab2")
     private ProductContainer newArrivalsContainer;
 
+    /**
+     * The Button.
+     */
     @FindBy(css = "#newArrivals #na2")
     Button button;
 
+    /**
+     * The Root locator button.
+     */
     Button rootLocatorButton;
 
+    /**
+     * The Find by button holder.
+     */
     @FindBy(css = "#fp2")
     ButtonHolder findByButtonHolder;
 
+    /**
+     * The Set selector button holder.
+     */
     @YafSetSelector(field = "root", value = "#na2")
     ButtonHolder setSelectorButtonHolder;
 
+    /**
+     * The Rootless sample.
+     */
     @YafSetSelector(field = "uniqueLocator", value = "#featuredProducts #fp2 .product-price")
     RootlessSample rootlessSample;
 
+    /**
+     * The Not inherited root component.
+     */
     NotInheritedRootComponent notInheritedRootComponent;
 
+    /**
+     * Gets featured product price.
+     *
+     * @return the featured product price
+     */
     public String getFeaturedProductPrice() {
         ProductCard productCard = createWebComponentBuilder(ProductCard.class)
                 .withYafSetSelector("uniqueElement", "//div[@class=\"product\" and @id=\"fp2\"]", SelectorType.XPATH)
@@ -75,6 +101,11 @@ public class ProductsPage extends WebPage<WebElement> {
         return productCard.getProductPrice();
     }
 
+    /**
+     * Gets new arrival product price.
+     *
+     * @return the new arrival product price
+     */
     public String getNewArrivalProductPrice() {
         ProductContainer productContainer = createWebComponentBuilder(ProductContainer.class)
                 .withYafSetParams(Map.of("containerId", "newArrivals"))

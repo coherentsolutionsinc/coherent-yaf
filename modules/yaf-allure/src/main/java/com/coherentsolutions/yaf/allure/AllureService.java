@@ -81,7 +81,9 @@ public class AllureService {
     /**
      * Instantiates a new Allure service.
      *
-     * @param allureProperties the allure properties
+     * @param allureProperties                 the allure properties
+     * @param testPatcher                      the test patcher
+     * @param apiCallAllureAttachmentProcessor the api call allure attachment processor
      */
     public AllureService(final AllureProperties allureProperties, final com.coherentsolutions.yaf.allure.TestPatcher testPatcher, ApiCallAllureAttachmentProcessor apiCallAllureAttachmentProcessor) {
         this.allureProperties = allureProperties;

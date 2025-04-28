@@ -33,6 +33,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Properties;
 
+/**
+ * The type Mail properties.
+ */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Configuration

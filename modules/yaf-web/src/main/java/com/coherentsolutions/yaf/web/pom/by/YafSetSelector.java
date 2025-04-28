@@ -50,9 +50,24 @@ import java.lang.annotation.*;
 @Documented
 public @interface YafSetSelector {
 
+    /**
+     * Field string.
+     *
+     * @return the string
+     */
     String field();
 
+    /**
+     * Value string.
+     *
+     * @return the string
+     */
     String value() default "";
 
+    /**
+     * Type selector type.
+     *
+     * @return the selector type
+     */
     SelectorType type() default SelectorType.CSS;
 }

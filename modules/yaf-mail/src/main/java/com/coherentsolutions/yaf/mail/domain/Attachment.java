@@ -30,9 +30,7 @@ import java.io.InputStream;
 
 /**
  * Attachment model to get content from emails with all required fields.
- *
  */
-
 @Data
 public class Attachment {
 	private String fileName;

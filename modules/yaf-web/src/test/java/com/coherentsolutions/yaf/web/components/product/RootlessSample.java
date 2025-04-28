@@ -32,15 +32,29 @@ import lombok.Setter;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * The type Rootless sample.
+ */
 @Getter
 @Setter
 public class RootlessSample extends WebComponent<WebElement> implements RootlessWebComponent<WebElement> {
 
+    /**
+     * The Unique locator.
+     */
     YafBy uniqueLocator;
 
+    /**
+     * The Nested button.
+     */
     @FindBy(css = "#featuredProducts #fp2 .product-link")
     public Button nestedButton;
 
+    /**
+     * Gets button.
+     *
+     * @return the button
+     */
     public Button getButton() {
         return createWebComponentBuilder(Button.class).rootBy(uniqueLocator).build();
     }

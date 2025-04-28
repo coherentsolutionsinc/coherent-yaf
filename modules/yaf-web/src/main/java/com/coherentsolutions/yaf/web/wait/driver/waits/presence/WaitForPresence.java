@@ -49,11 +49,31 @@ import java.lang.annotation.Target;
 @WaitFor()
 public @interface WaitForPresence {
 
+    /**
+     * Presence boolean.
+     *
+     * @return the boolean
+     */
     boolean presence() default true;
 
+    /**
+     * Any element match boolean.
+     *
+     * @return the boolean
+     */
     boolean anyElementMatch() default true;
 
+    /**
+     * Is for load boolean.
+     *
+     * @return the boolean
+     */
     boolean isForLoad() default false;
 
+    /**
+     * Wait const wait consts.
+     *
+     * @return the wait consts
+     */
     WaitConsts waitConst() default WaitConsts.EMPTY;
 }

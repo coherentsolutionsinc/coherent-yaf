@@ -29,11 +29,17 @@ import lombok.Data;
 /**
  * Class to store non-text/non-html email data for any type of Mail service
  *
- * @param <T>
+ * @param <T> the type parameter
  */
 @Data
 public class MultiPartData<T> {
 
+    /**
+     * The Type.
+     */
     String type;
+    /**
+     * The Data.
+     */
     T data;
 }

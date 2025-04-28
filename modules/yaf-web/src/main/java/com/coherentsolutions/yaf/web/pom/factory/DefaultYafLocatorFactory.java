@@ -99,13 +99,25 @@ public class DefaultYafLocatorFactory extends YafLocatorFactory {
         return root == null ? ((parent == null && parentRoot == null) ? webDriver : new ParentSearchContext(parent, parentYafBy, parentRoot)) : root;
     }
 
+    /**
+     * The type Parent search context.
+     */
     @AllArgsConstructor
     public static class ParentSearchContext implements SearchContext {
 
+        /**
+         * The Parent.
+         */
         WebComponent parent;
 
+        /**
+         * The Parent by.
+         */
         YafBy parentBy;
 
+        /**
+         * The Parent root.
+         */
         WebElement parentRoot;
 
         private WebElement getRoot() {

@@ -30,6 +30,9 @@ import lombok.Setter;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * The type Not inherited root component.
+ */
 public class NotInheritedRootComponent extends BaseWebComp {
 
     @Getter

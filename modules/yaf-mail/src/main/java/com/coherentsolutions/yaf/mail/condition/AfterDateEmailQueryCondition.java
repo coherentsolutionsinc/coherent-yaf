@@ -38,6 +38,9 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class AfterDateEmailQueryCondition implements EmailQueryCondition<Email> {
 
+    /**
+     * The Date.
+     */
     Date date;
 
     /**

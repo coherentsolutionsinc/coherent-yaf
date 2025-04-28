@@ -49,9 +49,24 @@ import java.lang.annotation.Target;
 @WaitFor()
 public @interface WaitForClickable {
 
+    /**
+     * Clickable boolean.
+     *
+     * @return the boolean
+     */
     boolean clickable() default true;
 
+    /**
+     * Is for load boolean.
+     *
+     * @return the boolean
+     */
     boolean isForLoad() default false;
 
+    /**
+     * Wait const wait consts.
+     *
+     * @return the wait consts
+     */
     WaitConsts waitConst() default WaitConsts.EMPTY;
 }

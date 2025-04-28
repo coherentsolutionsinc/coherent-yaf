@@ -29,10 +29,16 @@ import lombok.Data;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * The type Custom extra cell.
+ */
 @Data
 public class CustomExtraCell extends GridCellExtra<WebElement> {
 
     private WebElement root;
+    /**
+     * The Inner cell element.
+     */
     @FindBy(css = "span[class*='inTable_common']")
     protected WebElement innerCellElement;
 

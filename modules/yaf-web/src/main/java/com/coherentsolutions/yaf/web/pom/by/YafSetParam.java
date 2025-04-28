@@ -27,6 +27,9 @@ package com.coherentsolutions.yaf.web.pom.by;
 
 import java.lang.annotation.*;
 
+/**
+ * The interface Yaf set param.
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(YafSetParams.class)
@@ -34,7 +37,17 @@ import java.lang.annotation.*;
 @Documented
 public @interface YafSetParam {
 
+    /**
+     * Key string.
+     *
+     * @return the string
+     */
     String key();
 
+    /**
+     * Value string.
+     *
+     * @return the string
+     */
     String value();
 }

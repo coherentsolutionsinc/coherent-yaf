@@ -95,7 +95,7 @@ In json file it will look like this:
 ===== How to extend
 
 This mechanism can be extended by implementing your own data reader, for example, XmlDataReader or ApiDataReader.
-You can see the implementation of the reader in the example of `JsonDataReader` #(!!ссылка)#.
+You can see the implementation of the reader in the example of `JsonDataReader` #(!TBD link)#.
 And it is also necessary to create an additional annotation that "overrides" `@YafData` and specify the created reader there.
 
 [source, java]

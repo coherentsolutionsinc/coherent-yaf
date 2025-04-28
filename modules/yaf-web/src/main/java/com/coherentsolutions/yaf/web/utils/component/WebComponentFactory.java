@@ -40,16 +40,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class WebComponentFactory {
 
+    /**
+     * The Bean utils.
+     */
     @Autowired
     protected YafBeanUtils beanUtils;
+    /**
+     * The Bean processor.
+     */
     @Autowired
     YafBeanProcessor beanProcessor;
 
     /**
      * Creates a new {@code WebComponentBuilder} for the specified component class.
      *
-     * @param <C> the type of the web component
-     * @param <T> the type of the web element
+     * @param <C>            the type of the web component
+     * @param <T>            the type of the web element
      * @param componentClass the class of the web component to be built
      * @return a new instance of {@code WebComponentBuilder} for the specified component class
      */

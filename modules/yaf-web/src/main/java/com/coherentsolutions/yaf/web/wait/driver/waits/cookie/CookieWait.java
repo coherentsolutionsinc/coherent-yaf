@@ -53,13 +53,32 @@ import java.util.List;
 @Accessors(fluent = true)
 public class CookieWait extends BaseWaitWithoutCustomAnnotation {
 
+    /**
+     * The Presence.
+     */
     boolean presence = true;
+    /**
+     * The Cookie name.
+     */
     String cookieName;
 
+    /**
+     * Instantiates a new Cookie wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public CookieWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }
 
+    /**
+     * Instantiates a new Cookie wait.
+     *
+     * @param cookieName the cookie name
+     * @param waitConsts the wait consts
+     */
     public CookieWait(String cookieName, WaitConsts... waitConsts) {
         super((WebElement) null, waitConsts);
         this.cookieName = cookieName;

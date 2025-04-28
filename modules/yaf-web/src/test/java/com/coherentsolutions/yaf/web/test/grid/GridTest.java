@@ -35,12 +35,21 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The type Grid test.
+ */
 public class GridTest extends BaseJUnitWebTest {
 
-	@Autowired
+    /**
+     * The Grid sample page.
+     */
+    @Autowired
 	GridSamplePage gridSamplePage;
 
-	@Test
+    /**
+     * Test.
+     */
+    @Test
 	public void test() {
 		String filePath = getUrl("gridPage");
 		WebDriver driver = (WebDriver) getWebDriver().getDriver();

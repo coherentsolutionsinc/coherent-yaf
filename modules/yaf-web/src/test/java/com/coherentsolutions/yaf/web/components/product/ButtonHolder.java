@@ -32,6 +32,9 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * The type Button holder.
+ */
 @Data
 public class ButtonHolder extends BaseWebComp {
 
@@ -49,14 +52,29 @@ public class ButtonHolder extends BaseWebComp {
     @YafSetSelector(field = "root", value = ".//div[@id='fp2']/span[@class='product-price']", type = SelectorType.XPATH)
     private Button nonInheritedYafSetSelectorButton;;
 
+    /**
+     * Create button button.
+     *
+     * @return the button
+     */
     public Button createButton() {
         return createWebComponentBuilder(Button.class).build();
     }
 
+    /**
+     * Create button with root element button.
+     *
+     * @return the button
+     */
     public Button createButtonWithRootElement() {
         return createWebComponentBuilder(Button.class).rootElement(root).build();
     }
 
+    /**
+     * Create button with root by button.
+     *
+     * @return the button
+     */
     public Button createButtonWithRootBy() {
         return createWebComponentBuilder(Button.class).rootBy(By.cssSelector("#na2")).build();
     }

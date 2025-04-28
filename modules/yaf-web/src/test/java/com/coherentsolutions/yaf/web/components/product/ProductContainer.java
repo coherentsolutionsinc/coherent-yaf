@@ -31,6 +31,9 @@ import lombok.Data;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 
+/**
+ * The type Product container.
+ */
 @Data
 public class ProductContainer extends WebComponent<WebElement> {
 
@@ -45,14 +48,27 @@ public class ProductContainer extends WebComponent<WebElement> {
     @YafSetSelector(field = "uniqueElement", value = "//div[@class=\"product\" and @id=\"na1\"]", type = SelectorType.XPATH)
     private ProductCard productCardWithNewArrivalFirstCardPrice;
 
+    /**
+     * The Not inherited root component.
+     */
     NotInheritedRootComponent notInheritedRootComponent;
 
+    /**
+     * Gets feature card second.
+     *
+     * @return the feature card second
+     */
     public ProductCard getFeatureCardSecond() {
         return createWebComponentBuilder(ProductCard.class)
                 .withYafSetSelector("root", "//div[@class=\"product\" and @id=\"fp2\"]", SelectorType.XPATH)
                 .build();
     }
 
+    /**
+     * Gets new arrival card second.
+     *
+     * @return the new arrival card second
+     */
     public ProductCard getNewArrivalCardSecond() {
         return createWebComponentBuilder(ProductCard.class)
                 .withYafSetSelector("root", "//div[@class=\"product\" and @id=\"na2\"]", SelectorType.XPATH)

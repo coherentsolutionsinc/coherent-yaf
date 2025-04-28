@@ -112,6 +112,12 @@ public class YafTransformer implements IAlterSuiteListener {
         }
     }
 
+    /**
+     * Process suite.
+     *
+     * @param suite  the suite
+     * @param suites the suites
+     */
     public void processSuite(XmlSuite suite, List<XmlSuite> suites) {
         String suiteEnvSetting = suite.getParameter(ENV_SETTING_PARAM);
         if (suiteEnvSetting == null || suiteEnvSetting.isEmpty()) {

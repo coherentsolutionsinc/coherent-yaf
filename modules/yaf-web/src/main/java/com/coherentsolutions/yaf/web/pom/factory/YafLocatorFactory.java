@@ -56,18 +56,33 @@ public abstract class YafLocatorFactory implements ElementLocatorFactory {
     @Setter
     protected WebElement root;
 
+    /**
+     * The Parent root.
+     */
     @Setter
     protected WebElement parentRoot;
 
+    /**
+     * The Parent.
+     */
     @Setter
     protected WebComponent parent;
 
+    /**
+     * The Parent yaf by.
+     */
     @Setter
     protected YafBy parentYafBy;
 
+    /**
+     * The Annotation map.
+     */
     @Setter
     protected Map<String, YafSetSelector> annotationMap;
 
+    /**
+     * The Yaf set param.
+     */
     @Setter
     protected List<YafSetParam> yafSetParam;
 

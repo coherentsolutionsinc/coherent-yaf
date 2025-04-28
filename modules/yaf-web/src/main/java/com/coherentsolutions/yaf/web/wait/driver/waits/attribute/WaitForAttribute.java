@@ -49,13 +49,38 @@ import java.lang.annotation.Target;
 @WaitFor()
 public @interface WaitForAttribute {
 
+    /**
+     * Attribute string.
+     *
+     * @return the string
+     */
     String attribute();
 
+    /**
+     * Value string.
+     *
+     * @return the string
+     */
     String value();
 
+    /**
+     * Exact match boolean.
+     *
+     * @return the boolean
+     */
     boolean exactMatch() default true;
 
+    /**
+     * Presence boolean.
+     *
+     * @return the boolean
+     */
     boolean presence() default true;
 
+    /**
+     * Wait const wait consts.
+     *
+     * @return the wait consts
+     */
     WaitConsts waitConst() default WaitConsts.EMPTY;
 }

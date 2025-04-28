@@ -33,9 +33,9 @@ import java.lang.annotation.*;
  * to specify that the root element should not be inherited from a parent class.
  * </p>
  * <p>
- *  * Example:
- *  * </p>
- *  * <pre>
+ * * Example:
+ * * </p>
+ * * <pre>
  *  * {@code
  *  * public class SeriousComponent extends WebPage<WebElement> {
  *  *
@@ -46,7 +46,7 @@ import java.lang.annotation.*;
  *  *     @FindBy
  *  *     private AwesomeComponent awesomeComponent;
  *  * }
- *  * }
+ *  * }*
  *  * </pre>
  * <p>
  * Additionally, this annotation can be used on a {@link com.coherentsolutions.yaf.web.pom.WebComponent}'s root element.
@@ -54,9 +54,9 @@ import java.lang.annotation.*;
  * and will always use locator specified for its root element.
  * </p>
  * <p>
- *  * Example:
- *  * </p>
- *  * <pre>
+ * * Example:
+ * * </p>
+ * * <pre>
  *  * {@code
  *  * public class AwesomeComponent extends WebComponent<WebElement> {
  *  *
@@ -64,7 +64,7 @@ import java.lang.annotation.*;
  *  *     @FindBy
  *  *     private WebElement root;
  *  * }
- *  * }
+ *  * }*
  *  * </pre>
  * <p>
  * The annotation is retained at runtime and can be used by reflection-based

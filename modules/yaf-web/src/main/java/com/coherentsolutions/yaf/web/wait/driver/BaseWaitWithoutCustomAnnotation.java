@@ -32,26 +32,58 @@ import org.openqa.selenium.WebElement;
 import java.lang.annotation.Annotation;
 import java.util.List;
 
+/**
+ * The type Base wait without custom annotation.
+ */
 @Slf4j
 @Accessors(chain = true)
 public abstract class BaseWaitWithoutCustomAnnotation extends BaseWait {
 
+    /**
+     * Instantiates a new Base wait without custom annotation.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public BaseWaitWithoutCustomAnnotation(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }
 
+    /**
+     * Instantiates a new Base wait without custom annotation.
+     *
+     * @param element the element
+     */
     public BaseWaitWithoutCustomAnnotation(WebElement element) {
         super(element);
     }
 
+    /**
+     * Instantiates a new Base wait without custom annotation.
+     *
+     * @param by the by
+     */
     public BaseWaitWithoutCustomAnnotation(By by) {
         super(by);
     }
 
+    /**
+     * Instantiates a new Base wait without custom annotation.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public BaseWaitWithoutCustomAnnotation(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Base wait without custom annotation.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public BaseWaitWithoutCustomAnnotation(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }

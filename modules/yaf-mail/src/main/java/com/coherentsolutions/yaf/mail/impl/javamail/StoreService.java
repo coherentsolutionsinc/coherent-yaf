@@ -40,27 +40,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.Properties;
 
+/**
+ * The type Store service.
+ */
 @Service
 @Slf4j
 public class StoreService {
 
-	@Autowired
+    /**
+     * The Utils service.
+     */
+    @Autowired
 	EmailUtilsService utilsService;
 
-	@Autowired
+    /**
+     * The Properties.
+     */
+    @Autowired
 	MailProperties properties;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	/**
-	 * Opening connection to a required folder and cache the connection for future usages
-	 *
-	 * @param settings
-	 * @return
-	 */
-
-	@SneakyThrows
+    /**
+     * Opening connection to a required folder and cache the connection for future usages
+     *
+     * @param settings the settings
+     * @return email folder
+     */
+    @SneakyThrows
 	@Cacheable(key = "@emailUtilsService.getUserEmail(#settings, @mailProperties) + '_' + @emailUtilsService.getFolderName(#settings, @mailProperties)",
 			value = "emailQueryCache")
 	public Folder getEmailFolder(EmailQuerySettings settings) {
@@ -77,7 +85,10 @@ public class StoreService {
 		return folder;
 	}
 
-	@SneakyThrows
+    /**
+     * Evict email folder cache.
+     */
+    @SneakyThrows
 	@CacheEvict(value = "emailQueryCache", allEntries = true)
 	@Scheduled(fixedRateString = "#{@mailProperties.getStoreTTL()}")
 	public void evictEmailFolderCache() {
@@ -88,12 +99,12 @@ public class StoreService {
 		return applicationContext.getBean(StoreService.class);
 	}
 
-	/**
-	 * init session connection
-	 *
-	 * @return session entity
-	 */
-	public Session initSession() {
+    /**
+     * init session connection
+     *
+     * @return session entity
+     */
+    public Session initSession() {
 		Properties props = new Properties();
 		if (properties.getStoreHost() != null) {
 			props.setProperty("mail." + properties.getStoreProtocol() + ".ssl.enable", String.valueOf(properties.isSslEnabled()));
@@ -101,7 +112,12 @@ public class StoreService {
 		return Session.getInstance(props);
 	}
 
-	public Session initTransportSession() {
+    /**
+     * Init transport session session.
+     *
+     * @return the session
+     */
+    public Session initTransportSession() {
 		Properties props = new Properties();
 		if (properties.getTransportHost() != null) {
 			props.setProperty("mail.transport.protocol", properties.getTransportProtocol());

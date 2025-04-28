@@ -21,10 +21,10 @@ repositories {
     jcenter()
     ruby.gems()
 }
+javadoc {
 
+}
 asciidoctor {
-
-    dependsOn rootProject.alljavadoc
 
     baseDirFollowsSourceFile()
 

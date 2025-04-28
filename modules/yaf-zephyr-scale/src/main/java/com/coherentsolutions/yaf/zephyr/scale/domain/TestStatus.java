@@ -38,9 +38,21 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TestStatus {
 
+    /**
+     * Pass test status.
+     */
     PASS("Pass"),
+    /**
+     * Fail test status.
+     */
     FAIL("Fail"),
+    /**
+     * Blocked test status.
+     */
     BLOCKED("Blocked"),
+    /**
+     * The Not execute.
+     */
     NOT_EXECUTE("Not Executed");
 
     private final String value;

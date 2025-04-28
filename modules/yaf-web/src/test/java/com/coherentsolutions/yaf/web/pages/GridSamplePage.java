@@ -33,13 +33,22 @@ import org.openqa.selenium.support.FindBy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * The type Grid sample page.
+ */
 @Component
 @Getter
 public class GridSamplePage extends WebPage<WebElement> {
 
-	@FindBy(id = "t2")
+    /**
+     * The Grid.
+     */
+    @FindBy(id = "t2")
 	SampleGrid grid;
 
-	@Autowired
+    /**
+     * The Nested grid.
+     */
+    @Autowired
 	ComponentWithNestedGrid nestedGrid;
 }

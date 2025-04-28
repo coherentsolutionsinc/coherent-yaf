@@ -33,16 +33,19 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.function.Predicate;
 
+/**
+ * The type Email utils service.
+ */
 @Service
 public class EmailUtilsService {
-	/**
-	 * Check if userEmail overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate user email
-	 */
-	public String getUserEmail(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if userEmail overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate user email
+     */
+    public String getUserEmail(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			String userEmail = settings.getUserEmail();
 			if (userEmail != null && !userEmail.isEmpty()) {
@@ -52,15 +55,14 @@ public class EmailUtilsService {
 		return properties.getUserEmail();
 	}
 
-	/**
-	 * Check if folder Name overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate folder name
-	 */
-
-	public String getFolderName(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if folder Name overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate folder name
+     */
+    public String getFolderName(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			String folderName = settings.getFolder();
 			if (folderName != null && !folderName.isEmpty()) {
@@ -70,15 +72,14 @@ public class EmailUtilsService {
 		return properties.getDefaultFolder();
 	}
 
-	/**
-	 * Check if delay Time overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate delay time
-	 */
-
-	public long getDelayTime(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if delay Time overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate delay time
+     */
+    public long getDelayTime(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			long initialDelay = settings.getInitialDelay();
 			if (initialDelay != 0) {
@@ -88,15 +89,14 @@ public class EmailUtilsService {
 		return properties.getDelayTime();
 	}
 
-	/**
-	 * Check if Pooling Time overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate pooling time
-	 */
-
-	public long getPoolingTime(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if Pooling Time overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate pooling time
+     */
+    public long getPoolingTime(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			long poolingTime = settings.getPooling();
 			if (poolingTime != 0) {
@@ -106,15 +106,14 @@ public class EmailUtilsService {
 		return properties.getPoolingTime();
 	}
 
-	/**
-	 * Check if Timeout overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate timeout
-	 */
-
-	public long getTimeout(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if Timeout overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate timeout
+     */
+    public long getTimeout(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			long timeOut = settings.getTimeOut();
 			if (timeOut != 0) {
@@ -124,14 +123,14 @@ public class EmailUtilsService {
 		return properties.getTimeout();
 	}
 
-	/**
-	 * Check if page size overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate page size
-	 */
-	public int getPageSize(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if page size overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate page size
+     */
+    public int getPageSize(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			int pageSize = settings.getPageSize();
 			if (pageSize != 0) {
@@ -141,15 +140,14 @@ public class EmailUtilsService {
 		return properties.getDefaultPageSize();
 	}
 
-	/**
-	 * Check if Page Number overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate page number
-	 */
-
-	public int getPage(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if Page Number overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate page number
+     */
+    public int getPage(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			int page = settings.getPage();
 			if (page != 0) {
@@ -159,30 +157,30 @@ public class EmailUtilsService {
 		return properties.getDefaultPage();
 	}
 
-	/**
-	 * Calculate start message number based on provided settings and properties
-	 *
-	 * @param messageCount number of all messages
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return start message number
-	 */
-	public int getStartMessage(int messageCount, EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Calculate start message number based on provided settings and properties
+     *
+     * @param messageCount number of all messages
+     * @param settings     EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties   MailProperties to get default setting
+     * @return start message number
+     */
+    public int getStartMessage(int messageCount, EmailQuerySettings settings, MailProperties properties) {
 		int pageSize = getPageSize(settings, properties);
 		int page = getPage(settings, properties);
 		int startMessageNumber = messageCount - (pageSize * page) + 1;
 		return Math.max(startMessageNumber, 1);
 	}
 
-	/**
-	 * Calculate end message number based on provided settings and properties
-	 *
-	 @param messageCount number of all messages
-	  * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return end message number
-	 */
-	public int getEndMessage(int messageCount, EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Calculate end message number based on provided settings and properties
+     *
+     * @param messageCount number of all messages
+     * @param settings     EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties   MailProperties to get default setting
+     * @return end message number
+     */
+    public int getEndMessage(int messageCount, EmailQuerySettings settings, MailProperties properties) {
 		int page = getPage(settings, properties);
 		int pageSize = getPageSize(settings, properties);
 		if (page == 1) {
@@ -192,14 +190,14 @@ public class EmailUtilsService {
 		}
 	}
 
-	/**
-	 * Check if user password overrides default properties by provided  settings
-	 *
-	 * @param settings EmailQuerySettings which will be used if an appropriate property exist
-	 * @param properties  MailProperties to get default setting
-	 * @return An appropriate user password
-	 */
-	public String getUserPassword(EmailQuerySettings settings, MailProperties properties) {
+    /**
+     * Check if user password overrides default properties by provided  settings
+     *
+     * @param settings   EmailQuerySettings which will be used if an appropriate property exist
+     * @param properties MailProperties to get default setting
+     * @return An appropriate user password
+     */
+    public String getUserPassword(EmailQuerySettings settings, MailProperties properties) {
 		if (settings != null) {
 			String userPassword = settings.getPassword();
 			if (userPassword != null && !userPassword.isEmpty()) {
@@ -209,13 +207,13 @@ public class EmailUtilsService {
 		return properties.getPassword();
 	}
 
-	/**
-	 * Method which build Predicates for future emails filtering
-	 *
-	 * @param a condition for building predicates
-	 * @return Email
-	 */
-	public Predicate<Email> buildFilterCondition(EmailQueryCondition... a) {
+    /**
+     * Method which build Predicates for future emails filtering
+     *
+     * @param a condition for building predicates
+     * @return Email predicate
+     */
+    public Predicate<Email> buildFilterCondition(EmailQueryCondition... a) {
 		if (a.length > 0) {
 			Predicate<Email> predicates = email -> true;
 			for (EmailQueryCondition emailQueryCondition : a) {
@@ -226,14 +224,14 @@ public class EmailUtilsService {
 		return null;
 	}
 
-	/**
-	 * Method which allows us to combine different Query conditions
-	 *
-	 * @param newCondition extra condition which need to be added to existing one
-	 * @param a list of conditions where new one should be added
-	 * @return combined array of conditions
-	 */
-	public EmailQueryCondition[] addCondition(EmailQueryCondition newCondition, EmailQueryCondition... a) {
+    /**
+     * Method which allows us to combine different Query conditions
+     *
+     * @param newCondition extra condition which need to be added to existing one
+     * @param a            list of conditions where new one should be added
+     * @return combined array of conditions
+     */
+    public EmailQueryCondition[] addCondition(EmailQueryCondition newCondition, EmailQueryCondition... a) {
 		EmailQueryCondition[] allConditions = Arrays.copyOf(a, a.length + 1);
 		allConditions[a.length] = newCondition;
 		return allConditions;

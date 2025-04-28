@@ -27,11 +27,19 @@ package com.coherentsolutions.yaf.web.pom.by;
 
 import java.lang.annotation.*;
 
+/**
+ * The interface Yaf set.
+ */
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Documented
 public @interface YafSet {
 
+    /**
+     * Value yaf set selector [ ].
+     *
+     * @return the yaf set selector [ ]
+     */
     YafSetSelector[] value() default {};
 }

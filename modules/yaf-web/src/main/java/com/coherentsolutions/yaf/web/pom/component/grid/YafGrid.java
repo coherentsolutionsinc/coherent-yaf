@@ -165,6 +165,11 @@ public interface YafGrid<T extends WebElement, R extends GridCell<T>> extends Ya
         return (List<T>) getSearchContext().findElements(by);
     }
 
+    /**
+     * Gets search context.
+     *
+     * @return the search context
+     */
     default SearchContext getSearchContext() {
         if (getRoot() == null) {
             return getWebDriver();

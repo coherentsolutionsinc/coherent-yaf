@@ -34,7 +34,9 @@ public class CapabilitiesUtils {
 
     /**
      * Convert string format resolution into Dimension object
+     *
      * @param resolution string implementation of dimension in {width}x{height} format
+     * @return the dimension from resolution
      */
     public static Dimension getDimensionFromResolution(String resolution) {
         if (resolution != null && !resolution.isEmpty()) {

@@ -54,19 +54,34 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+/**
+ * The type Java email service.
+ */
 @Service
 @Primary
 public class JavaEmailService implements EmailService {
 
+    /**
+     * The Store service.
+     */
     @Autowired
     StoreService storeService;
 
+    /**
+     * The Properties.
+     */
     @Autowired
     MailProperties properties;
 
+    /**
+     * The Utils service.
+     */
     @Autowired
     EmailUtilsService utilsService;
 
+    /**
+     * The Email processor.
+     */
     @Autowired
     JavaEmailProcessor emailProcessor;
 
@@ -353,8 +368,8 @@ public class JavaEmailService implements EmailService {
     /**
      * get original message from Email
      *
-     * @param email
-     * @return
+     * @param email the email
+     * @return message from email
      */
     protected Message getMessageFromEmail(Email email) {
         return ((Message) email.getInitialEmail());

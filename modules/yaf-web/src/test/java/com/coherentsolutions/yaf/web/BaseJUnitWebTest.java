@@ -35,6 +35,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+/**
+ * The type Base j unit web test.
+ */
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = {YafConfig.class, TestWebConfig.class})
 @TestExecutionListeners(
@@ -43,9 +46,18 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 )
 public class BaseJUnitWebTest extends BaseYafTest {
 
+    /**
+     * The Yaf bean utils.
+     */
     @Autowired
     YafBeanUtils yafBeanUtils;
 
+    /**
+     * Gets url.
+     *
+     * @param name the name
+     * @return the url
+     */
     protected static String getUrl(String name) {
         try {
             return  FileUtils.getResourceFile(name, "html", "./components/html/", true, false).toURI().toString();

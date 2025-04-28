@@ -123,6 +123,12 @@ public abstract class AbstractWebDriverResolver extends DriverResolver {
         return new ChromeDriver(chromeOptions);
     }
 
+    /**
+     * Gets chrome options.
+     *
+     * @param device the device
+     * @return the chrome options
+     */
     protected ChromeOptions getChromeOptions (BrowserDevice device) {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions = chromeOptions.merge(buildCapabilitiesFromEnv(device));
@@ -149,6 +155,12 @@ public abstract class AbstractWebDriverResolver extends DriverResolver {
         return new FirefoxDriver(firefoxOptions);
     }
 
+    /**
+     * Gets firefox options.
+     *
+     * @param device the device
+     * @return the firefox options
+     */
     protected FirefoxOptions getFirefoxOptions (BrowserDevice device) {
         FirefoxOptions firefoxOptions = new FirefoxOptions();
         firefoxOptions = firefoxOptions.merge(buildCapabilitiesFromEnv(device));
@@ -173,6 +185,12 @@ public abstract class AbstractWebDriverResolver extends DriverResolver {
         return new SafariDriver(safariOptions);
     }
 
+    /**
+     * Get safari options safari options.
+     *
+     * @param device the device
+     * @return the safari options
+     */
     protected SafariOptions getSafariOptions (BrowserDevice device){
         SafariOptions safariOptions = new SafariOptions();
         safariOptions = safariOptions.merge(buildCapabilitiesFromEnv(device));
@@ -190,6 +208,12 @@ public abstract class AbstractWebDriverResolver extends DriverResolver {
         return new EdgeDriver(edgeOptions);
     }
 
+    /**
+     * Get edge options edge options.
+     *
+     * @param device the device
+     * @return the edge options
+     */
     protected EdgeOptions getEdgeOptions (BrowserDevice device){
         EdgeOptions edgeOptions = new EdgeOptions();
         edgeOptions = edgeOptions.merge(buildCapabilitiesFromEnv(device));

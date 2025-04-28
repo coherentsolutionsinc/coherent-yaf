@@ -37,23 +37,38 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.springframework.beans.factory.annotation.Autowired;
 
+/**
+ * The type Products test.
+ */
 class ProductsTest extends BaseJUnitWebTest {
 
 	private static String filePath;
-	@Autowired
+    /**
+     * The Products page.
+     */
+    @Autowired
 	ProductsPage productsPage;
 
-	@BeforeAll
+    /**
+     * Sets up.
+     */
+    @BeforeAll
 	public static void setUp() {
 		filePath = getUrl("componentsPage");
 	}
 
-	@BeforeEach
+    /**
+     * Open url.
+     */
+    @BeforeEach
 	public void openUrl() {
 		((WebDriver) getWebDriver().getDriver()).get(filePath);
 	}
 
-	@Test
+    /**
+     * Test yaf set param for first container.
+     */
+    @Test
 	public void testYafSetParamForFirstContainer() {
 		WebElement featuredProductRoot = productsPage.getFeatureProductsContainer().getRoot();
 		WebElement featuredProductSubtitle = productsPage.getFeatureProductsContainer().getSubtitle();
@@ -63,7 +78,10 @@ class ProductsTest extends BaseJUnitWebTest {
 		});
 	}
 
-	@Test
+    /**
+     * Test yaf set param for second container.
+     */
+    @Test
 	public void testYafSetParamForSecondContainer() {
 		WebElement newArrivalsRoot = productsPage.getNewArrivalsContainer().getRoot();
 		WebElement newArrivalsSubtitle = productsPage.getNewArrivalsContainer().getSubtitle();
@@ -73,7 +91,10 @@ class ProductsTest extends BaseJUnitWebTest {
 		});
 	}
 
-	@Test
+    /**
+     * Test nested component without annotations.
+     */
+    @Test
 	public void testNestedComponentWithoutAnnotations() {
 		ProductCard featuredProduct = productsPage.getFeatureProductsContainer().getProductCard();
 		ProductCard newArrivalsFirst = productsPage.getNewArrivalsContainer().getProductCard();
@@ -85,43 +106,64 @@ class ProductsTest extends BaseJUnitWebTest {
 		});
 	}
 
-	@Test
+    /**
+     * Test find by nested component.
+     */
+    @Test
 	public void testFindByNestedComponent() {
 		WebElement button = productsPage.getFindByButtonHolder().getButton().getRoot();
 		Assertions.assertEquals("View Featured Product 2", button.getText());
 	}
 
-	@Test
+    /**
+     * Test non inherited root find by nested component.
+     */
+    @Test
 	public void testNonInheritedRootFindByNestedComponent() {
 		WebElement nonInheritedFindByButton = productsPage.getFindByButtonHolder().getNonInheritedFindByButton().getRoot();
 		Assertions.assertEquals("View Featured Product 1", nonInheritedFindByButton.getText());
 	}
 
-	@Test
+    /**
+     * Test yaf set selector nested component.
+     */
+    @Test
 	public void testYafSetSelectorNestedComponent() {
 		WebElement button = productsPage.getSetSelectorButtonHolder().getButton().getRoot();
 		Assertions.assertEquals("View New Products 2", button.getText());
 	}
 
-	@Test
+    /**
+     * Test non inherited root yaf set selector nested component.
+     */
+    @Test
 	public void testNonInheritedRootYafSetSelectorNestedComponent() {
 		WebElement nonInheritedYafSetSelectorButton = productsPage.getFindByButtonHolder().getNonInheritedYafSetSelectorButton().getRoot();
 		Assertions.assertEquals("$30.00", nonInheritedYafSetSelectorButton.getText());
 	}
 
-	@Test
+    /**
+     * Test nested component with not inherited root.
+     */
+    @Test
 	public void testNestedComponentWithNotInheritedRoot() {
 		WebElement nestedComponentWithNotInheritedRoot = productsPage.getNotInheritedRootComponent().getRoot();
 		Assertions.assertEquals("$30.00", nestedComponentWithNotInheritedRoot.getText());
 	}
 
-	@Test
+    /**
+     * Test not inherited root component on web page.
+     */
+    @Test
 	public void testNotInheritedRootComponentOnWebPage() {
 		WebElement componentWithNotInheritedRootOnWebPage = productsPage.getNewArrivalsContainer().getNotInheritedRootComponent().getRoot();
 		Assertions.assertEquals("$30.00", componentWithNotInheritedRootOnWebPage.getText());
 	}
 
-	@Test
+    /**
+     * Test create component with yaf set selector.
+     */
+    @Test
 	public void testCreateComponentWithYafSetSelector() {
 		ProductCard featuredProductSecond = productsPage.getFeatureProductsContainer().getFeatureCardSecond();
 		String newArrivalSecondPrice = productsPage.getNewArrivalsContainer().getNewArrivalCardSecond().getPrice().getText();
@@ -133,19 +175,28 @@ class ProductsTest extends BaseJUnitWebTest {
 		});
 	}
 
-	@Test
+    /**
+     * Test create component with yaf set param.
+     */
+    @Test
 	public void testCreateComponentWithYafSetParam() {
 		String newArrivalProductPrice = productsPage.getNewArrivalProductPrice();
 		Assertions.assertEquals("$40.00", newArrivalProductPrice);
 	}
 
-	@Test
+    /**
+     * Test setting yaf by with yaf set selector.
+     */
+    @Test
 	public void testSettingYafByWithYafSetSelector() {
 		String newArrivalFirstPrice = productsPage.getNewArrivalsContainer().getProductCardWithNewArrivalFirstCardPrice().getPrice().getText();
 		Assertions.assertEquals("$40.00", newArrivalFirstPrice);
 	}
 
-	@Test
+    /**
+     * Test component find by on web page.
+     */
+    @Test
 	public void testComponentFindByOnWebPage() {
 		WebElement secondNewProductRoot = productsPage.getButton().getRoot();
 		WebElement secondNewProductLink = productsPage.getButton().getLink();
@@ -155,19 +206,28 @@ class ProductsTest extends BaseJUnitWebTest {
 		});
 	}
 
-	@Test
+    /**
+     * Test component without annotations on web page.
+     */
+    @Test
 	public void testComponentWithoutAnnotationsOnWebPage() {
 		WebElement featuredProductRoot = productsPage.getRootLocatorButton().getRoot();
 		Assertions.assertEquals("View New Products 1", featuredProductRoot.getText());
 	}
 
-	@Test
+    /**
+     * Test rootless component.
+     */
+    @Test
 	public void testRootlessComponent() {
 		WebElement rootlessComponent = productsPage.getRootlessSample().getButton().getRoot();
 		Assertions.assertEquals("$30.00", rootlessComponent.getText());
 	}
 
-	@Test
+    /**
+     * Test nested component in rootless component.
+     */
+    @Test
 	public void testNestedComponentInRootlessComponent() {
 		WebElement nestedRootlessComponent = productsPage.getRootlessSample().getNestedButton().getRoot();
 		Assertions.assertEquals("View Featured Product 2", nestedRootlessComponent.getText());

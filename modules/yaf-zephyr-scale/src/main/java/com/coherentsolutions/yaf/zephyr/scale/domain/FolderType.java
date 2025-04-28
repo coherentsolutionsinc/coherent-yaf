@@ -39,8 +39,17 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum FolderType {
 
+    /**
+     * Testcase folder type.
+     */
     TESTCASE("TEST_CASE"),
+    /**
+     * Test plan folder type.
+     */
     TEST_PLAN("TEST_PLAN"),
+    /**
+     * Test cycle folder type.
+     */
     TEST_CYCLE("TEST_CYCLE");
 
     private final String value;

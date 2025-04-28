@@ -49,18 +49,46 @@ import java.util.List;
 @Accessors(fluent = true)
 public class LoadWait extends BaseWaitWithoutCustomAnnotation {
 
+    /**
+     * The For text.
+     */
     boolean forText;
+    /**
+     * The For position.
+     */
     boolean forPosition;
+    /**
+     * The For attribute.
+     */
     String forAttribute;
 
+    /**
+     * Instantiates a new Load wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public LoadWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }
 
+    /**
+     * Instantiates a new Load wait.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public LoadWait(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Load wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public LoadWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }

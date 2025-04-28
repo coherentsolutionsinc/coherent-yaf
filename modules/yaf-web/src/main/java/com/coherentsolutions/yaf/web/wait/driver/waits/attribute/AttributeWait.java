@@ -55,19 +55,50 @@ import java.util.List;
 @Accessors(fluent = true)
 public class AttributeWait extends BaseWait {
 
+    /**
+     * The Attribute.
+     */
     String attribute;
+    /**
+     * The Value.
+     */
     String value;
+    /**
+     * The Exact match.
+     */
     boolean exactMatch = true;
+    /**
+     * The Presence.
+     */
     boolean presence = true;
 
+    /**
+     * Instantiates a new Attribute wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public AttributeWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }
 
+    /**
+     * Instantiates a new Attribute wait.
+     *
+     * @param locator    the locator
+     * @param waitConsts the wait consts
+     */
     public AttributeWait(By locator, WaitConsts... waitConsts) {
         super(locator, waitConsts);
     }
 
+    /**
+     * Instantiates a new Attribute wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public AttributeWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }

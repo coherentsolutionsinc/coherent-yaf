@@ -54,16 +54,38 @@ import java.util.List;
 @Accessors(fluent = true)
 public class VisibilityWait extends BaseWait {
 
+    /**
+     * The Visible.
+     */
     boolean visible = true;
 
+    /**
+     * Instantiates a new Visibility wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public VisibilityWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }
 
+    /**
+     * Instantiates a new Visibility wait.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public VisibilityWait(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Visibility wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public VisibilityWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }

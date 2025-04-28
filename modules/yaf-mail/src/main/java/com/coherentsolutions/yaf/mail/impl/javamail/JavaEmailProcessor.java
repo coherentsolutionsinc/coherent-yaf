@@ -39,7 +39,7 @@ import java.util.*;
 /**
  * Java Mail Processor handles which fields must be read by default, additionally to default fields, for filtered emails
  *
- * @param <T>
+ * @param <T> the type parameter
  */
 @Service
 public class JavaEmailProcessor<T> implements EmailProcessor<T> {

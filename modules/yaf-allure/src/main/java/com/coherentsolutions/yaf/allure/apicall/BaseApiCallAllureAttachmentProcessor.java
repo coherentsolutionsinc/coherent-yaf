@@ -34,6 +34,9 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 
+/**
+ * The type Base api call allure attachment processor.
+ */
 @Service
 @Slf4j
 @Primary

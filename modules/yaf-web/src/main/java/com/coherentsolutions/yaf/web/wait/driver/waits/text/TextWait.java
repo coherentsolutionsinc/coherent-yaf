@@ -50,17 +50,42 @@ import java.util.List;
 @Accessors(fluent = true)
 public class TextWait extends BaseWait {
 
+    /**
+     * The Should be equal.
+     */
     boolean shouldBeEqual = true;
+    /**
+     * The Text.
+     */
     String text;
 
+    /**
+     * Instantiates a new Text wait.
+     *
+     * @param element    the element
+     * @param waitConsts the wait consts
+     */
     public TextWait(WebElement element, WaitConsts... waitConsts) {
         super(element, waitConsts);
     }
 
+    /**
+     * Instantiates a new Text wait.
+     *
+     * @param by         the by
+     * @param waitConsts the wait consts
+     */
     public TextWait(By by, WaitConsts... waitConsts) {
         super(by, waitConsts);
     }
 
+    /**
+     * Instantiates a new Text wait.
+     *
+     * @param waitFor        the wait for
+     * @param waitAnnotation the wait annotation
+     * @param elements       the elements
+     */
     public TextWait(WaitFor waitFor, Annotation waitAnnotation, List<WebElement> elements) {
         super(waitFor, waitAnnotation, elements);
     }

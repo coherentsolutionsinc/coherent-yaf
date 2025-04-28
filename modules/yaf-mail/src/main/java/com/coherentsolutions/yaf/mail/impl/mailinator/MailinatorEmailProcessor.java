@@ -31,6 +31,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Mailinator email processor.
+ *
+ * @param <T> the type parameter
+ */
 @Service
 public class MailinatorEmailProcessor<T> implements EmailProcessor<T> {
 	/**

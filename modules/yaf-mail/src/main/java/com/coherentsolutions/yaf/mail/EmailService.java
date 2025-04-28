@@ -34,15 +34,36 @@ import org.jsoup.nodes.Document;
 
 import java.util.List;
 
+/**
+ * The interface Email service.
+ */
 public interface EmailService {
 
 
+    /**
+     * Send email.
+     *
+     * @param email the email
+     */
     void sendEmail(Email email);
 
+    /**
+     * Read single email email.
+     *
+     * @param a the a
+     * @return the email
+     */
     default Email readSingleEmail(EmailQueryCondition... a) {
         return readSingleEmail(null, a);
     }
 
+    /**
+     * Read single email email.
+     *
+     * @param settings the settings
+     * @param a        the a
+     * @return the email
+     */
     default Email readSingleEmail(EmailQuerySettings settings, EmailQueryCondition... a) {
         List<Email> emails = readEmails(settings, a);
         if (emails != null && !emails.isEmpty()) {
@@ -51,29 +72,83 @@ public interface EmailService {
         return null;
     }
 
+    /**
+     * Read emails list.
+     *
+     * @param a the a
+     * @return the list
+     */
     default List<Email> readEmails(EmailQueryCondition... a) {
         return readEmails(null, a);
     }
 
+    /**
+     * Read emails list.
+     *
+     * @param settings the settings
+     * @param a        the a
+     * @return the list
+     */
     List<Email> readEmails(EmailQuerySettings settings, EmailQueryCondition... a);
 
-	List<Email> waitForEmails(EmailQuerySettings settings, EmailQueryCondition... a);
+    /**
+     * Wait for emails list.
+     *
+     * @param settings the settings
+     * @param a        the a
+     * @return the list
+     */
+    List<Email> waitForEmails(EmailQuerySettings settings, EmailQueryCondition... a);
 
-	default List<Email> waitForEmails(Runnable r, EmailQueryCondition... a) {
+    /**
+     * Wait for emails list.
+     *
+     * @param r the r
+     * @param a the a
+     * @return the list
+     */
+    default List<Email> waitForEmails(Runnable r, EmailQueryCondition... a) {
 		return waitForEmails(r, null, a);
     }
 
-	List<Email> waitForEmails(Runnable r, EmailQuerySettings settings, EmailQueryCondition... a);
+    /**
+     * Wait for emails list.
+     *
+     * @param r        the r
+     * @param settings the settings
+     * @param a        the a
+     * @return the list
+     */
+    List<Email> waitForEmails(Runnable r, EmailQuerySettings settings, EmailQueryCondition... a);
 
 
+    /**
+     * Gets message data.
+     *
+     * @param email the email
+     * @return the message data
+     */
     String getMessageData(Email email);
 
+    /**
+     * Gets message data html.
+     *
+     * @param email the email
+     * @return the message data html
+     */
     Document getMessageDataHtml(Email email);
 
+    /**
+     * Gets message data multipart.
+     *
+     * @param email the email
+     * @return the message data multipart
+     */
     List<MultiPartData> getMessageDataMultipart(Email email);
 
     /**
      * Method gets all multi parts of emails checks that the part is an attachment
+     *
      * @param email Original Email get getting attachments
      * @return List of attachments in the email
      */

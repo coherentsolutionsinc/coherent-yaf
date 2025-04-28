@@ -40,13 +40,22 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Mailinator email service.
+ */
 @Service
 @Slf4j
 public class MailinatorEmailService implements EmailService {
 
+    /**
+     * The Utils service.
+     */
     @Autowired
     EmailUtilsService utilsService;
 
+    /**
+     * The Email processor.
+     */
     @Autowired
     MailinatorEmailProcessor emailProcessor;
 
@@ -130,10 +139,9 @@ public class MailinatorEmailService implements EmailService {
     /**
      * Custom filtering approach
      *
-     * @param a
-     * @return
+     * @param a the a
+     * @return string
      */
-
     protected String buildFilterCondition(EmailQueryCondition... a) {
         String queryString = "";
         for (EmailQueryCondition condition : a) {

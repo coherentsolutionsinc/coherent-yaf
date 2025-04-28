@@ -47,6 +47,9 @@ public class YafAnnotationTransformer implements IAnnotationTransformer {
      */
     boolean enableRetry;
 
+    /**
+     * The Current profile.
+     */
     String currentProfile;
 
     /**

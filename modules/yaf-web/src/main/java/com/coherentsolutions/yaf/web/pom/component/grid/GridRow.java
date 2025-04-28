@@ -43,6 +43,9 @@ import java.util.List;
 @Component
 public class GridRow<T extends WebElement, R extends GridCell<T>> extends WebComponent<T> {
 
+    /**
+     * The Root.
+     */
     T root;
 
     /**

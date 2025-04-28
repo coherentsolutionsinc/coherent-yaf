@@ -48,7 +48,17 @@ import java.lang.annotation.Target;
 @WaitFor()
 public @interface WaitForText {
 
+    /**
+     * Text string.
+     *
+     * @return the string
+     */
     String text();
 
+    /**
+     * Should be equal boolean.
+     *
+     * @return the boolean
+     */
     boolean shouldBeEqual() default true;
 }

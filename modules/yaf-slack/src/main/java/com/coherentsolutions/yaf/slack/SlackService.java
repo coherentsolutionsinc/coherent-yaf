@@ -42,6 +42,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
+/**
+ * The type Slack service.
+ */
 @Service
 @Slf4j
 @ConditionalOnProperty(name = Consts.FRAMEWORK_NAME + ".slack.enabled", havingValue = "true")
@@ -82,11 +85,9 @@ public class SlackService {
      * Sends a chat message to a Slack channel using the provided chat post message request
      * and channel ID.
      *
-     * @param chatPostMessageRequest The request object containing the message details
-     *                               to be posted to Slack.
+     * @param chatPostMessageRequest The request object containing the message details                               to be posted to Slack.
      * @param channelId              The ID of the Slack channel where the message will be posted.
-     * @return A {@link ChatPostMessageResponse} object containing the response from the Slack API,
-     * or {@code null} if an error occurs while attempting to send the message.
+     * @return A {@link ChatPostMessageResponse} object containing the response from the Slack API, or {@code null} if an error occurs while attempting to send the message.
      */
     public ChatPostMessageResponse chatPostMessage(ChatPostMessageRequest chatPostMessageRequest, String channelId) {
         try {
@@ -101,10 +102,8 @@ public class SlackService {
     /**
      * Sends a chat message to a Slack channel using the provided chat post message request.
      *
-     * @param chatPostMessageRequest The request object containing the message details
-     *                               to be posted to Slack.
-     * @return A {@link ChatPostMessageResponse} object containing the response from the Slack API,
-     * or {@code null} if an error occurs while attempting to send the message.
+     * @param chatPostMessageRequest The request object containing the message details                               to be posted to Slack.
+     * @return A {@link ChatPostMessageResponse} object containing the response from the Slack API, or {@code null} if an error occurs while attempting to send the message.
      */
     public ChatPostMessageResponse chatPostMessage(ChatPostMessageRequest chatPostMessageRequest) {
         return chatPostMessage(chatPostMessageRequest, properties.getChannelId());
@@ -114,8 +113,7 @@ public class SlackService {
      * Sends a webhook message to Slack using the provided payload.
      *
      * @param payload The payload containing the message details to be sent via the Slack webhook.
-     * @return A {@link WebhookResponse} object containing the response from the Slack webhook,
-     * or {@code null} if an error occurs while attempting to send the message.
+     * @return A {@link WebhookResponse} object containing the response from the Slack webhook, or {@code null} if an error occurs while attempting to send the message.
      */
     public WebhookResponse sendWebHookMessage(Payload payload) {
         try {

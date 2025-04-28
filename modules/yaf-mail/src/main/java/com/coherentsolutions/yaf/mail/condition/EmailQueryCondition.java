@@ -28,6 +28,8 @@ import java.util.function.Predicate;
 
 /**
  * Contract for Email query conditions for any type of email
+ *
+ * @param <T> the type parameter
  */
 public interface EmailQueryCondition<T> {
 

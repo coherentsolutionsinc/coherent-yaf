@@ -2,7 +2,7 @@
 
 The architecture of YAF and the solutions based on it imply a flexible modular structure.
 It requires an equally flexible mechanism for exchanging data between the various components of the application.
-Such a mechanism is the Event #(!!ссылка на ивентархитектуру).# This mechanism is implemented with the help of Spring Event #(!!ссылка)#
+Such a mechanism is the Event #(!!ссылка на ивентархитектуру).# This mechanism is implemented with the help of Spring Event #(!TBD link)#
 
 The framework has the following types of events (additional modules can extend this list, see the module documentation):
 

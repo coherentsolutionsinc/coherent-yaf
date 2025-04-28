@@ -26,18 +26,45 @@ package com.coherentsolutions.yaf.mail.domain;
 
 import lombok.Data;
 
+/**
+ * The type Email query settings.
+ */
 @Data
 public class EmailQuerySettings {
 
+    /**
+     * The User email.
+     */
     String userEmail;
+    /**
+     * The Password.
+     */
     String password;
 
+    /**
+     * The Folder.
+     */
     String folder;
 
+    /**
+     * The Initial delay.
+     */
     long initialDelay;
+    /**
+     * The Time out.
+     */
     long timeOut;
+    /**
+     * The Pooling.
+     */
     long pooling;
+    /**
+     * The Page.
+     */
     int page;
+    /**
+     * The Page size.
+     */
     int pageSize;
 
 }

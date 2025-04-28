@@ -433,9 +433,9 @@ public class CustomExpectedConditions {
      * remains the same for at least two consecutive checks.
      * </p>
      *
-     * @param <T>          the type of the value to be stabilized
+     * @param <T>           the type of the value to be stabilized
      * @param valueSupplier the function that supplies the value to be checked
-     * @param description  a description of the value being checked
+     * @param description   a description of the value being checked
      * @return the ExpectedCondition
      */
     public <T> ExpectedCondition<Boolean> waitForStabilization(Function<WebDriver, T> valueSupplier, String description) {
