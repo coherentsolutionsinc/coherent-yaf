@@ -16,19 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      #      - name: Set GRADLE_USER_HOME
-      #        run: echo "GRADLE_USER_HOME=$GITHUB_WORKSPACE/.gradle" >> $GITHUB_ENV
-      #
-      #      - name: Cache Gradle dependencies
-      #        uses: actions/cache@v3
-      #        with:
-      #          path: |
-      #            ~/.gradle/caches
-      #            ~/.gradle/wrapper
-      #          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-      #          restore-keys: |
-      #            gradle-${{ runner.os }}-
-
       - name: Build and Publish
         run: gradle publish -parallel
         env:
@@ -54,8 +41,8 @@ jobs:
           cp -r yaf-docs/docs/html/* out/latest/
           cp -r yaf-docs/docs/javadoc/* out/${VERSION}/javadoc/
           cp -r yaf-docs/docs/javadoc/* out/latest/javadoc/
-          cp yaf-docs/docs/pdf/yaf_index.pdf out/${VERSION}/
-          cp yaf-docs/docs/pdf/yaf_index.pdf out/latest/
+          cp yaf-docs/docs/pdf/yaf.pdf out/${VERSION}/
+          cp yaf-docs/docs/pdf/yaf.pdf out/latest/
 
       - name: Publish to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
