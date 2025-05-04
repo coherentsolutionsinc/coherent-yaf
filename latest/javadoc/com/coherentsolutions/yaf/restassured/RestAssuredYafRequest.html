@@ -111,7 +111,9 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 </div>
 <div class="col-first odd-row-color"><code>(package private) <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ThreadLocal.html" title="class or interface in java.lang" class="external-link">ThreadLocal</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.restassured.filter.Filter&gt;&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#customFilters" class="member-name-link">customFilters</a></code></div>
-<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-last odd-row-color">
+<div class="block">The Custom filters.</div>
+</div>
 <div class="col-first even-row-color"><code>protected <a href="../core/api/auth/YafApiUser.html" title="interface in com.coherentsolutions.yaf.core.api.auth">YafApiUser</a></code></div>
 <div class="col-second even-row-color"><code><a href="#defaultUser" class="member-name-link">defaultUser</a></code></div>
 <div class="col-last even-row-color">
@@ -127,34 +129,39 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 <div class="col-last even-row-color">
 <div class="block">The Logging filter.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected <a href="../core/api/properties/ApiProperties.html" title="class in com.coherentsolutions.yaf.core.api.properties">ApiProperties</a></code></div>
-<div class="col-second odd-row-color"><code><a href="#props" class="member-name-link">props</a></code></div>
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.restassured.specification.MultiPartSpecification&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#multiPartSpecs" class="member-name-link">multiPartSpecs</a></code></div>
 <div class="col-last odd-row-color">
+<div class="block">The Multi part specs.</div>
+</div>
+<div class="col-first even-row-color"><code>protected <a href="../core/api/properties/ApiProperties.html" title="class in com.coherentsolutions.yaf.core.api.properties">ApiProperties</a></code></div>
+<div class="col-second even-row-color"><code><a href="#props" class="member-name-link">props</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The Props.</div>
 </div>
-<div class="col-first even-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#queryParams" class="member-name-link">queryParams</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</code></div>
+<div class="col-second odd-row-color"><code><a href="#queryParams" class="member-name-link">queryParams</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The Query params.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected io.restassured.config.RestAssuredConfig</code></div>
-<div class="col-second odd-row-color"><code><a href="#requestConfig" class="member-name-link">requestConfig</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>protected io.restassured.config.RestAssuredConfig</code></div>
+<div class="col-second even-row-color"><code><a href="#requestConfig" class="member-name-link">requestConfig</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The Request config.</div>
 </div>
-<div class="col-first even-row-color"><code>protected io.restassured.specification.RequestSpecification</code></div>
-<div class="col-second even-row-color"><code><a href="#requestSpecification" class="member-name-link">requestSpecification</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected io.restassured.specification.RequestSpecification</code></div>
+<div class="col-second odd-row-color"><code><a href="#requestSpecification" class="member-name-link">requestSpecification</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The Request specification.</div>
 </div>
-<div class="col-first odd-row-color"><code>protected io.restassured.specification.ResponseSpecification</code></div>
-<div class="col-second odd-row-color"><code><a href="#responseSpecification" class="member-name-link">responseSpecification</a></code></div>
-<div class="col-last odd-row-color">
+<div class="col-first even-row-color"><code>protected io.restassured.specification.ResponseSpecification</code></div>
+<div class="col-second even-row-color"><code><a href="#responseSpecification" class="member-name-link">responseSpecification</a></code></div>
+<div class="col-last even-row-color">
 <div class="block">The Response specification.</div>
 </div>
-<div class="col-first even-row-color"><code>protected boolean</code></div>
-<div class="col-second even-row-color"><code><a href="#takeUserFromConfig" class="member-name-link">takeUserFromConfig</a></code></div>
-<div class="col-last even-row-color">
+<div class="col-first odd-row-color"><code>protected boolean</code></div>
+<div class="col-second odd-row-color"><code><a href="#takeUserFromConfig" class="member-name-link">takeUserFromConfig</a></code></div>
+<div class="col-last odd-row-color">
 <div class="block">The Take user from config.</div>
 </div>
 </div>
@@ -227,13 +234,21 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Gets request specification.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected io.restassured.response.Response</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeRequest(io.restassured.specification.RequestSpecification,java.lang.String,java.lang.String,java.lang.Object...)" class="member-name-link">makeRequest</a><wbr>(io.restassured.specification.RequestSpecification&nbsp;rs,
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>private void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#handleMultiPart(io.restassured.specification.RequestSpecification)" class="member-name-link">handleMultiPart</a><wbr>(io.restassured.specification.RequestSpecification&nbsp;rs)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected io.restassured.response.Response</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#makeRequest(io.restassured.specification.RequestSpecification,java.lang.String,java.lang.String,java.lang.Object...)" class="member-name-link">makeRequest</a><wbr>(io.restassured.specification.RequestSpecification&nbsp;rs,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;method,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;url,
  <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a>...&nbsp;body)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Make request response.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../core/api/YafRequest.html" title="interface in com.coherentsolutions.yaf.core.api">YafRequest</a>&lt;io.restassured.specification.RequestSpecification,<wbr>io.restassured.response.Response&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#multiPart(io.restassured.specification.MultiPartSpecification...)" class="member-name-link">multiPart</a><wbr>(io.restassured.specification.MultiPartSpecification...&nbsp;multiPart)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Multi part yaf request.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#processRequestSpecification()" class="member-name-link">processRequestSpecification</a>()</code></div>
@@ -278,7 +293,9 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="RestAssuredYafRequest.html" title="class in com.coherentsolutions.yaf.restassured">RestAssuredYafRequest</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#withCustomFilter(io.restassured.filter.Filter...)" class="member-name-link">withCustomFilter</a><wbr>(io.restassured.filter.Filter...&nbsp;filter)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">With custom filter rest assured yaf request.</div>
+</div>
 </div>
 </div>
 </div>
@@ -332,6 +349,13 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 <h3>queryParams</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Map.html" title="class or interface in java.util" class="external-link">Map</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>,<wbr><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&gt;</span>&nbsp;<span class="element-name">queryParams</span></div>
 <div class="block">The Query params.</div>
+</section>
+</li>
+<li>
+<section class="detail" id="multiPartSpecs">
+<h3>multiPartSpecs</h3>
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.restassured.specification.MultiPartSpecification&gt;</span>&nbsp;<span class="element-name">multiPartSpecs</span></div>
+<div class="block">The Multi part specs.</div>
 </section>
 </li>
 <li>
@@ -389,6 +413,7 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 <section class="detail" id="customFilters">
 <h3>customFilters</h3>
 <div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/ThreadLocal.html" title="class or interface in java.lang" class="external-link">ThreadLocal</a>&lt;<a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;io.restassured.filter.Filter&gt;&gt;</span>&nbsp;<span class="element-name">customFilters</span></div>
+<div class="block">The Custom filters.</div>
 </section>
 </li>
 </ul>
@@ -626,6 +651,19 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 </section>
 </li>
 <li>
+<section class="detail" id="multiPart(io.restassured.specification.MultiPartSpecification...)">
+<h3>multiPart</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../core/api/YafRequest.html" title="interface in com.coherentsolutions.yaf.core.api">YafRequest</a>&lt;io.restassured.specification.RequestSpecification,<wbr>io.restassured.response.Response&gt;</span>&nbsp;<span class="element-name">multiPart</span><wbr><span class="parameters">(io.restassured.specification.MultiPartSpecification...&nbsp;multiPart)</span></div>
+<div class="block">Multi part yaf request.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>multiPart</code> - the multi part</dd>
+<dt>Returns:</dt>
+<dd>the yaf request</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="makeRequest(io.restassured.specification.RequestSpecification,java.lang.String,java.lang.String,java.lang.Object...)">
 <h3>makeRequest</h3>
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">io.restassured.response.Response</span>&nbsp;<span class="element-name">makeRequest</span><wbr><span class="parameters">(io.restassured.specification.RequestSpecification&nbsp;rs,
@@ -645,9 +683,22 @@ implements <a href="../core/api/YafRequest.html" title="interface in com.coheren
 </section>
 </li>
 <li>
+<section class="detail" id="handleMultiPart(io.restassured.specification.RequestSpecification)">
+<h3>handleMultiPart</h3>
+<div class="member-signature"><span class="modifiers">private</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">handleMultiPart</span><wbr><span class="parameters">(io.restassured.specification.RequestSpecification&nbsp;rs)</span></div>
+</section>
+</li>
+<li>
 <section class="detail" id="withCustomFilter(io.restassured.filter.Filter...)">
 <h3>withCustomFilter</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="RestAssuredYafRequest.html" title="class in com.coherentsolutions.yaf.restassured">RestAssuredYafRequest</a></span>&nbsp;<span class="element-name">withCustomFilter</span><wbr><span class="parameters">(io.restassured.filter.Filter...&nbsp;filter)</span></div>
+<div class="block">With custom filter rest assured yaf request.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>filter</code> - the filter</dd>
+<dt>Returns:</dt>
+<dd>the rest assured yaf request</dd>
+</dl>
 </section>
 </li>
 <li>
