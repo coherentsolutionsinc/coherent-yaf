@@ -9,7 +9,6 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-
     container:
       image: gradle:8.6.0-jdk17
 
@@ -32,3 +31,6 @@ jobs:
 
       - name: Build and Publish
         run: gradle publish -parallel
+        env:
+          ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
