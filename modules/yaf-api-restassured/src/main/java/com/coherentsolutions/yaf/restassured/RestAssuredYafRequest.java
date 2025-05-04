@@ -21,34 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package com.coherentsolutions.yaf.restassured;
-
-/*-
- * #%L
- * Yaf API RestAssured Module
- * %%
- * Copyright (C) 2020 - 2021 CoherentSolutions
- * %%
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- * #L%
- */
 
 import com.coherentsolutions.yaf.core.api.YafApiRequestException;
 import com.coherentsolutions.yaf.core.api.YafRequest;
@@ -60,8 +33,10 @@ import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
 import com.coherentsolutions.yaf.restassured.log.RestAssuredLoggingFilter;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.filter.Filter;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.MultiPartSpecification;
 import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import lombok.Builder;
@@ -80,22 +55,18 @@ import static io.restassured.RestAssured.given;
  */
 @Slf4j
 public class RestAssuredYafRequest implements YafRequest<RequestSpecification, Response>, InitializingBean {
-
     /**
      * The Auth provider.
      */
     protected RestAssuredAuthProvider authProvider;
-
     /**
      * The Default user.
      */
     protected YafApiUser defaultUser;
-
     /**
      * The Take user from config.
      */
     protected boolean takeUserFromConfig;
-
     /**
      * The Headers.
      */
@@ -104,11 +75,14 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
      * The Query params.
      */
     protected Map<String, String> queryParams;
-
+    /**
+     * The Multi part specs.
+     */
+    protected List<MultiPartSpecification> multiPartSpecs;
     /**
      * The Props.
      */
-// Be aware, that these properties are set after constructor invocation!
+// Be aware, that this properties are set after constructor invocation!
     @Autowired
     @Getter
     protected ApiProperties props;
@@ -138,7 +112,9 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     @Autowired
     YafBeanUtils beanUtils;
     private Boolean baseUrlEndsWithSlash;
-
+    /**
+     * The Custom filters.
+     */
     ThreadLocal<List<Filter>> customFilters;
 
     /**
@@ -192,7 +168,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
             if (props.getHeaders() != null) {
                 requestSpecification.headers(props.getHeaders());
             }
-            if (props.getQueryParams()!=null) {
+            if (props.getQueryParams() != null) {
                 requestSpecification.queryParams(props.getQueryParams());
             }
         }
@@ -246,7 +222,6 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     // todo may be add general methods and query params and others
-
     @Override
     public Response anonymousReq(String method, String url, Object... body) {
         return makeRequest(anonymousReq(), method, url, body);
@@ -290,6 +265,20 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     /**
+     * Multi part yaf request.
+     *
+     * @param multiPart the multi part
+     * @return the yaf request
+     */
+    public YafRequest<RequestSpecification, Response> multiPart(MultiPartSpecification... multiPart) {
+        if (multiPartSpecs == null) {
+            multiPartSpecs = new ArrayList<>();
+        }
+        multiPartSpecs.addAll(Arrays.asList(multiPart));
+        return this;
+    }
+
+    /**
      * Make request response.
      *
      * @param rs     the rs
@@ -310,8 +299,11 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         if (headers != null) {
             rs.headers(headers);
         }
-        if (queryParams!=null) {
+        if (queryParams != null) {
             rs.queryParams(queryParams);
+        }
+        if (multiPartSpecs != null) {
+            handleMultiPart(rs);
         }
         try {
             ValidatableResponse then = rs.request(method, url).then();
@@ -322,10 +314,24 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         } finally {
             queryParams = null;
             headers = null;
+            multiPartSpecs = null;
             cleanCustomFilters();
         }
     }
 
+    private void handleMultiPart(RequestSpecification rs) {
+        for (MultiPartSpecification multiPartSpec : multiPartSpecs) {
+            rs.multiPart(multiPartSpec);
+        }
+        rs.contentType(ContentType.MULTIPART);
+    }
+
+    /**
+     * With custom filter rest assured yaf request.
+     *
+     * @param filter the filter
+     * @return the rest assured yaf request
+     */
     public RestAssuredYafRequest withCustomFilter(Filter... filter) {
         if (customFilters == null) {
             customFilters = ThreadLocal.withInitial(ArrayList::new);
@@ -337,7 +343,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         return this;
     }
 
-    private void cleanCustomFilters(){
+    private void cleanCustomFilters() {
         if (customFilters != null && customFilters.get() != null) {
             for (Filter customFilter : customFilters.get()) {
                 this.requestSpecification.noFiltersOfType(customFilter.getClass());

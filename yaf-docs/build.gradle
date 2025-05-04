@@ -45,6 +45,15 @@ asciidoctor {
                 'javadocbasepath': "com/coherentsolutions/yaf"
     }
 
+
+    doLast {
+        def generated = file("${outputDir}/yaf_index.html")
+        def renamed = file("${outputDir}/index.html")
+        if (generated.exists()) {
+            generated.renameTo(renamed)
+        }
+    }
+
 }
 
 
@@ -53,42 +62,15 @@ asciidoctorPdf {
     baseDirFollowsSourceFile()
 
     outputDir = file("./docs/pdf")
-//
-//   asciidoctorj {
-//     requires 'rouge'
-//     attributes 'build-gradle': file('build.gradle'),
-//         'sourcedir': project.sourceSets.main.java.srcDirs[0],
-//         'endpoint-url': 'http://example.org',
-//         'source-highlighter': 'rouge',
-//         'imagesdir': './images',
-//         'toc': 'left',
-//         'icons': 'font',
-//         'idprefix': '',
-//         'idseparator': '-'
-//   }
+
+    doLast {
+        def generated = file("${outputDir}/yaf_index.pdf")
+        def renamed = file("${outputDir}/yaf.pdf")
+        if (generated.exists()) {
+            generated.renameTo(renamed)
+        }
+    }
 }
-
-// // alias
-// task asciidoctor(dependsOn: asciidoctorPdf)
-
-
-// asciidoctor {
-//     sourceDir  file('docs')
-//     sources {
-//         include '**/*.adoc'
-//     }
-//    // dependsOn tasks.asciidoctorInclude
-//    dependsOn 'clean'
-// }
-
-
-// asciidoctorPdf {
-//     sourceDir  file('docs')
-//     sources {
-//         include '**/*.adoc'
-//     }
-//     dependsOn asciidoctor
-// }
 
 dependencies {
     asciidoctorGems 'rubygems:rouge:3.15.0'
