@@ -65,3 +65,8 @@ tasks.register('generateAllDocs') {
     description = 'Publishes all documentation to GitHub Pages'
 }
 
+task printVersion {
+    doLast {
+        println project.version
+    }
+}

@@ -16,21 +16,48 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set GRADLE_USER_HOME
-        run: echo "GRADLE_USER_HOME=$GITHUB_WORKSPACE/.gradle" >> $GITHUB_ENV
-
-      - name: Cache Gradle dependencies
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            gradle-${{ runner.os }}-
+      #      - name: Set GRADLE_USER_HOME
+      #        run: echo "GRADLE_USER_HOME=$GITHUB_WORKSPACE/.gradle" >> $GITHUB_ENV
+      #
+      #      - name: Cache Gradle dependencies
+      #        uses: actions/cache@v3
+      #        with:
+      #          path: |
+      #            ~/.gradle/caches
+      #            ~/.gradle/wrapper
+      #          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+      #          restore-keys: |
+      #            gradle-${{ runner.os }}-
 
       - name: Build and Publish
         run: gradle publish -parallel
         env:
           ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Build documentation
+        run: gradle generateAllDocs
+
+      - name: Extract version
+        id: get_version
+        run: |
+          VERSION=$(./gradlew -q printVersion)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Prepare output structure
+        run: |
+          mkdir -p out/${VERSION}
+          mkdir -p out/latest
+          cp -r yaf-docs/docs/html/* out/${VERSION}/
+          cp -r yaf-docs/docs/html/* out/latest/
+          cp -r yaf-docs/docs/javadoc/* out/${VERSION}/javadoc/
+          cp -r yaf-docs/docs/javadoc/* out/latest/javadoc/
+          cp yaf-docs/docs/pdf/yaf_index.pdf out/${VERSION}/
+          cp yaf-docs/docs/pdf/yaf_index.pdf out/latest/
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          keep_files: true
