@@ -47,7 +47,9 @@ jobs:
       - name: Prepare output structure
         run: |
           mkdir -p out/${VERSION}
+          mkdir -p out/${VERSION}/javadoc
           mkdir -p out/latest
+          mkdir -p out/latest/javadoc
           cp -r yaf-docs/docs/html/* out/${VERSION}/
           cp -r yaf-docs/docs/html/* out/latest/
           cp -r yaf-docs/docs/javadoc/* out/${VERSION}/javadoc/
