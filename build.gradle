@@ -38,10 +38,6 @@ subprojects {
     }
 }
 
-//ext {
-//    excludedProjects = [':yaf-docs', ':modules']
-//}
-
 tasks.register('allJavaDoc', Javadoc) {
     def includedProjects = subprojects.findAll { !ep.contains(it.path) }
 

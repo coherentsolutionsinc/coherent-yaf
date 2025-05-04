@@ -5,23 +5,6 @@ java {
     withSourcesJar()
 }
 
-//javadoc {
-//    if (JavaVersion.current().isJava9Compatible()) {
-//        options.addBooleanOption('html5', true)
-//    }
-////    def exportedProjects = [
-////            ":",
-////            ":yaf-web",
-////            ":yaf-allure",
-////            ":yaf-mail"
-////    ]
-////    source exportedProjects.collect { project(it).soumain.allJava }
-////    classpath = files(exportedProjects.collect { project(it).sourceSets.main.compileClasspath })
-//    destinationDir = project(':yaf-docs').file("docs/html")
-//}
-
-
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
