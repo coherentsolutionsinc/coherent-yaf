@@ -1,0 +1,51 @@
+= YAF Users Guid
+
+:sectnums:
+:Author:    Artem Moroz
+:Email:     <artemmoroz@coherentsolutions.com>
+:Date:      18/02/2021
+:Revision:  0.1
+
+== Source codes
+
+YAF Core: {sourcedir}core/src/main/
+
+YAF Modules: {sourceCode}modules/
+
+include::subdir/overview.adoc[]
+include::subdir/firstWebTest.adoc[]
+include::subdir/firstWebTestExtended.adoc
+
+== YAF Core features
+
+include::subdir/core_index.adoc[]
+
+== Extras
+
+// modules include
+
+=== TestNg
+
+include::subdir/testng.adoc[]
+include::subdir/dataprovider.adoc[]
+
+=== RestAssured
+
+include::subdir/api_restassured_en.adoc[]
+
+=== Allure
+
+include::subdir/allure.adoc[]
+include::subdir/allureTestNg.adoc[]
+
+=== Selenide
+
+include::subdir/selenide.adoc[]
+
+include::subdir/emails.adoc[]
+
+//include::contributors.adoc[]
+//include::releases.adoc[]
+include::subdir/faq.adoc[]
+
+

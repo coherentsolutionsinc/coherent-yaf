@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(":core")
+    implementation "org.apache.velocity:velocity:${velocityVersion}"
+    implementation "org.apache.velocity:velocity-tools:${velocityToolsVersion}"
+}

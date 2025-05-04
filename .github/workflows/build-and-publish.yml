@@ -1,0 +1,51 @@
+name: Build and Publish YAF
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    container:
+      image: gradle:8.6.0-jdk17
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build and Publish
+        run: gradle publish -parallel
+        env:
+          ARTIFACTORY_USER: ${{ secrets.ARTIFACTORY_USER }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Build documentation
+        run: gradle generateAllDocs
+
+      - name: Extract version
+        id: get_version
+        run: |
+          VERSION=$(./gradlew -q printVersion)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Prepare output structure
+        run: |
+          mkdir -p out/${VERSION}
+          mkdir -p out/${VERSION}/javadoc
+          mkdir -p out/latest
+          mkdir -p out/latest/javadoc
+          cp -r yaf-docs/docs/html/* out/${VERSION}/
+          cp -r yaf-docs/docs/html/* out/latest/
+          cp -r yaf-docs/docs/javadoc/* out/${VERSION}/javadoc/
+          cp -r yaf-docs/docs/javadoc/* out/latest/javadoc/
+          cp yaf-docs/docs/pdf/yaf.pdf out/${VERSION}/
+          cp yaf-docs/docs/pdf/yaf.pdf out/latest/
+
+      - name: Publish to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          keep_files: true

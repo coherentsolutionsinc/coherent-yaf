@@ -1,0 +1,41 @@
+apply plugin: 'maven-publish'
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'com.coherentsolutions.yaf'
+            artifactId = project.name
+            version = rootProject.version
+
+            from components.java
+
+            pom.withXml {
+                def dependenciesNode = asNode().dependencies[0]
+                if (dependenciesNode != null && dependenciesNode.children() != null) {
+                    dependenciesNode.children().each { child ->
+                        def scopeNode = child.scope
+                        if (scopeNode != null) {
+                            child.remove(scopeNode)
+                        }
+                        child.appendNode('scope', 'compile')
+                    }
+                }
+
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("https://coherentsolutions.jfrog.io/artifactory/yaf-java")
+            credentials {
+                username = (project.findProperty("artifactory_user") ?: System.getenv("ARTIFACTORY_USER"))
+                password = (project.findProperty("artifactory_password") ?: System.getenv("ARTIFACTORY_PASSWORD"))
+            }
+        }
+    }
+}

@@ -1,0 +1,121 @@
+==== Zephyr Scale integration
+
+Integration with Zephyr Scale allows the user to create folders, cycles, and test executions in Zephyr Scale.
+
+===== How to
+
+====== How to use
+
+To use Zephyr Scale module, follow the https://support.smartbear.com/zephyr-scale-cloud/api-docs/[instructions].
+
+.Maven
+Add to pom file
+
+[source,xml]
+----
+    <dependency>
+        <groupId>com.coherentsolutions.automation.yaf</groupId>
+        <artifactId>yaf-zephyr-scale</artifactId>
+        <version>${yaf.version}</version>
+    </dependency>
+----
+
+.Gradle
+[source,text]
+----
+    implementation "com.coherentsolutions.automation.yaf:yaf-zephyr-scale:${yaf.version}"
+----
+
+Following ways to publish results to Zephyr Scale are supported.
+
+===== [underline]#1. By Cycle key#
+
+====== [underline]#1.1 Update Test execution for Test case(s) already added to Test cycle#
+
+Given TestCycle is created in Zephyr Scale and already filled with required test cases, then user can update Test execution(s) by providing the cycle key in `application.properties`:
+
+****
+yaf.zephyr.scale.enabled=true
+
+yaf.zephyr.scale.apiKey=${ZEPHYR_SCALE_API_KEY}
+
+yaf.zephyr.scale.projectKey=${ZEPHYR_PROJECT_KEY}
+
+yaf.zephyr.scale.cycleKey=${ZEPHYR_CYCLE_KEY}
+****
+
+Test execution(s) will be updated in the provided cycle using TestCase id(s) specified in @YafTest(tmsIds = {"123"}) annotation.
+Note that Zephyr Scale API will create test execution in specified cycle only if executed test is present in that cycle.
+
+====== [underline]#1.2 Create Test execution(s) in Test cycle#
+
+Given TestCycle is created in Zephyr Scale, then user can publish results to it by providing the cycle key in `application.properties`:
+
+****
+yaf.zephyr.scale.enabled=true
+
+yaf.zephyr.scale.apiKey=${ZEPHYR_SCALE_API_KEY}
+
+yaf.zephyr.scale.projectKey=${ZEPHYR_PROJECT_KEY}
+
+yaf.zephyr.scale.cycleKey=${ZEPHYR_CYCLE_KEY}
+
+yaf.zephyr.scale.executionStrategy=CREATE
+****
+
+Result will be published to the provided cycle using TestCase id(s) specified in @YafTest(tmsIds = {"123"}) annotation.
+Note that Zephyr Scale API will create test execution in specified cycle regardless of its presence in the cycle.
+
+===== [underline]#2. By Folder(s) and Cycle name#
+
+This option allows user to create a folder(s) and cycle in Zephyr Scale and publish results to it by specifying folder and cycle name in `application.properties`:
+
+****
+yaf.zephyr.scale.enabled=true
+
+yaf.zephyr.scale.apiKey=${ZEPHYR_SCALE_API_KEY}
+
+yaf.zephyr.scale.projectKey=${ZEPHYR_PROJECT_KEY}
+
+yaf.zephyr.scale.executionStrategy=CREATE
+
+yaf.zephyr.scale.folders=Folder1/Folder2/Folder3
+
+yaf.zephyr.scale.cycleName=Test Cycle name
+****
+
+In the above example, `Folder1/Folder2/Folder3` folder hierarchy will be created if not exists, `Test Cycle name` cycle will be created under the last folder in the hierarchy and test results will be published to it.
+
+===== JIRA issue integration
+
+YAF supports integration with JIRA issues. To enable this feature, add the following properties to `application.properties`:
+
+****
+yaf.zephyr.scale.jira.enabled=true
+
+yaf.zephyr.scale.jiraBaseUrl=https://your-domain.atlassian.net/rest/api/3
+
+yaf.zephyr.scale.jiraUser={JIRA_USER}
+
+yaf.zephyr.scale.jiraApiKey={JIRA_API_KEY}
+****
+
+Currently basic authentication is supported, steps to set it up available by the https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/[link].
+
+For e.g. when JIRA issue(s) is provided in @YafTest(bugs = {"ABC-1"}) annotation, YAF will try to get its ID using JIRA API and, if found, it will try to link the test execution to the JIRA issue using Zephyr Scale API.
+
+===== Test status
+
+Test with PASSED stated and bugs in @YafTest annotation will be published to Zephyr Scale along with waring message in logs.
+
+Test with SKIP state will be published to Zephyr Scale as Blocked status.
+
+Test with state other than PASS, FAIL or SKIP will be published to Zephyr Scale as Not Executed status.
+
+====== How to extend
+
+YAF offers `BasicZephyrScaleStrategy` class that has the basic logic to create Folder(s)/Cycle/TestExecution. To customize that logic  `ZephyrScaleStrategy` interface can be implemented and its methods overridden. It's mandatory to use @Primary annotation on your custom `ZephyrScaleStrategy` implementation for YAF to use it.
+
+====== How it works
+
+The `ZephyrScaleService` class listens to events regarding the start and the end of tests. It decides weather to create a folder(s) and cycle before tests start. It's responsible for creating test executions and publishing results to Zephyr Scale after test end.

@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(":core")
+    implementation "com.sun.mail:jakarta.mail:${jakartaMailVersion}"
+    implementation "org.apache.pdfbox:pdfbox:${pdfbox}"
+    implementation "org.jsoup:jsoup:${jsoupVersion}"
+}

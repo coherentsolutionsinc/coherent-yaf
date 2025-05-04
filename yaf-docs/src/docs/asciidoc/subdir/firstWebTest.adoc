@@ -1,0 +1,145 @@
+== Writing first web application test
+
+This guide will introduce you to the process of writing your first web application test.
+
+. Before implementing test case it is required to configure the build-tool. Both pom.xml(https://maven.apache.org/[Maven]) and build.gradle(https://docs.gradle.org/current/userguide/userguide.html/[Gradle]) files content parts are present there.
+For quick start https://testng.org/[TestNg] runner is used.
++
+.. Add external repository to your `pom.xml`:
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+	<repositories>
+		<repository>
+            <repository>
+                <id>central</id>
+                <url>https://repo.maven.apache.org/maven2</url>
+            </repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>coherent-yaf</id>
+			<name>yaf-libs-release</name>
+			<url>https://coherentsolutions.jfrog.io/artifactory/yaf-java</url>
+		</repository>
+	</repositories>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+    repositories {
+        mavenCentral()
+        maven {
+            url = uri('https://coherentsolutions.jfrog.io/artifactory/yaf-java')
+        }
+    }
+----
+====
++
+.. Add dependencies. For current guide purposes following yaf modules are used: *core*(common framework functionality), *yaf_testng* and *yaf-web*.
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+    <properties>
+        <!-- other properties -->
+        <yaf.version>1.3.4</yaf.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>core</artifactId>
+            <version>${yaf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-testng</artifactId>
+            <version>${yaf.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-web</artifactId>
+            <version>${yaf.version}</version>
+        </dependency>
+    </dependencies>
+
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+ext {
+    yaf_version = "1.1.1"
+}
+
+dependencies {
+    implementation("com.coherentsolutions.yaf:core:${yaf.version}")
+    implementation("com.coherentsolutions.yaf:yaf-testng:${yaf.version}")
+    implementation("com.coherentsolutions.yaf:yaf-web:${yaf_version}")
+}
+----
+====
++
+TIP: ${yaf.version} means framework version is stored in variable and reused. It is recommended to handy and transparent initial configuration and migration to new version
+
+. Create your first test in proper tests folder.
++
+[source,java]
+----
+public class FirstTest extends YafTestNgTest { // <1>
+
+    @Test
+    @YafTest//<2>
+    public void sampleTest(){
+        WebDriver driver = (WebDriver) getWebDriver().getDriver();
+        driver.get("https://www.coherentsolutions.com/");
+        // standard element interaction goes here
+        // driver.findElement(...
+    }
+}
+----
++
+IMPORTANT:  It is required for test class to extend `YafTestNgTest`<1> and methods to be marked by YafTest<2> annotation to use yaf features.
++
+[[app_config]]
+. YAF is link:https://spring.io/projects/spring-framework[Spring] based framework. And although there is no need to add any spring dependencies to you project, you still suggested to follow spring style of development. For current example it is obligated to define a source of bean definitions class:
++
+IMPORTANT: Application configuration file must be placed in the project root folder
++
+[source, java]
+----
+@SpringBootConfiguration
+@EnableAutoConfiguration
+@ComponentScan(basePackages = {"com.your.base.package"}) //<1>
+public class FirstConfig extends YafConfig { //<2>
+    public FirstConfig(ApplicationArguments args) {
+        super(args);
+    }
+}
+----
++
+NOTE: ComponentScan annotation define a package to scan for components from, no values provided means current package will be chosen. These three nnotaions could be replaced by link:https://docs.spring.io/spring-boot/reference/using/using-the-springbootapplication-annotation.html[SpringBootApplication] annnotation
+
+. Execute this test using one of  https://testng.org/#_running_testng[described ways]
++
+
+NOTE: No additional configuration, default browser will be the latest `Chrome`.
+For more information about configuration abilities read link:config.adoc[Yaf Confg Manager]
+
+Described steps should be enough to implement the simplest web application test case using YAF. The following recommended step is to extend existing test. See link:firstWebTestExtended.adoc[here]
+

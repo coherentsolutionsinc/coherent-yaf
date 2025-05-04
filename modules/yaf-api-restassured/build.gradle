@@ -1,0 +1,5 @@
+
+dependencies {
+    implementation project(":core")
+    implementation "io.rest-assured:rest-assured:${restAssuredVersion}"
+}

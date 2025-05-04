@@ -1,0 +1,77 @@
+buildscript {
+    configurations.classpath {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            if (details.requested.group == 'com.burgstaller' && details.requested.name == 'okhttp-digest' && details.requested.version == '1.10') {
+                details.useTarget "io.github.rburgst:${details.requested.name}:1.21"
+                details.because 'Dependency has moved'
+            }
+        }
+    }
+}
+
+plugins {
+    id("org.asciidoctor.jvm.pdf") version "4.0.3"
+    id("org.asciidoctor.jvm.gems") version "4.0.3"
+    id("org.asciidoctor.jvm.convert") version "4.0.3"
+}
+
+apply plugin: 'idea'
+
+repositories {
+    jcenter()
+    ruby.gems()
+}
+javadoc {
+
+}
+asciidoctor {
+
+    baseDirFollowsSourceFile()
+
+    outputDir = file("./docs/html")
+
+    asciidoctorj {
+        requires 'rouge'
+        attributes 'build-gradle': file('build.gradle'),
+                'sourcedir': project.sourceSets.main.java.srcDirs[0],
+                'endpoint-url': 'http://example.org',
+                'source-highlighter': 'rouge',
+                'imagesdir': './images',
+                'toc': 'left',
+                'icons': 'font',
+                'idprefix': '',
+                'idseparator': '-',
+                'javadocdir': "../javadoc",
+                'javadocbasepath': "com/coherentsolutions/yaf"
+    }
+
+
+    doLast {
+        def generated = file("${outputDir}/yaf_index.html")
+        def renamed = file("${outputDir}/index.html")
+        if (generated.exists()) {
+            generated.renameTo(renamed)
+        }
+    }
+
+}
+
+
+asciidoctorPdf {
+    dependsOn asciidoctorGemsPrepare
+    baseDirFollowsSourceFile()
+
+    outputDir = file("./docs/pdf")
+
+    doLast {
+        def generated = file("${outputDir}/yaf_index.pdf")
+        def renamed = file("${outputDir}/yaf.pdf")
+        if (generated.exists()) {
+            generated.renameTo(renamed)
+        }
+    }
+}
+
+dependencies {
+    asciidoctorGems 'rubygems:rouge:3.15.0'
+}

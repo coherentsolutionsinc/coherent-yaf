@@ -1,0 +1,132 @@
+==== Allure integration
+
+Integration with http://allure.qatools.ru/[Allure] allows the user to get a detailed test report quickly.
+The basic implementation of Allure requires some work from the developer, such as:
+
+- adding logs to the report;
+- modifying the test name in case of working with repetitive tests;
+- adapting to work with own annotations, ect.
+
+In YAF all these difficulties are solved in the `AllureService` class.
+
+===== How to
+
+====== How to use
+
+To use Allure module, follow the https://docs.qameta.io/allure/#_java[instructions]
+
+Add allure yaf modules dependencies
+
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+<dependency>
+    <groupId>com.coherentsolutions.yaf</groupId>
+    <artifactId>yaf-allure</artifactId>
+    <version>${yaf.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.coherentsolutions.yaf</groupId>
+    <artifactId>yaf-allure-testng</artifactId>
+    <version>${yaf.version}</version>
+</dependency>
+----
+====
+
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-allure:${yaf.version}")
+    implementation("com.coherentsolutions.yaf:yaf-allure-testng:${yaf.version}")
+}
+----
+====
+
+To add custom details to your allure report like steps, attachments and so on via annotations
+
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+        <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20</version>
+                <configuration>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.aspectj</groupId>
+                        <artifactId>aspectjweaver</artifactId>
+                        <version>${aspectj.version}</version>
+                    </dependency>
+                </dependencies>
+        </plugin>
+----
+====
+
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+----
+====
+
+In the basic configuration everything is ready.
+You can use both standard Allure annotations such as @Step, @Description, @TmsId, etc. and the global YAF annotation `@YafTest` - all information from them will be pasted to the report.
+
+====== How to extend
+
+The completeness of the report can be affected in 3 ways:
+
+1. By setting special `yaf.allure....` features in the framework configuration file.
++
+[source,properties]
+----
+yaf.allure.enabled=true
+yaf.allure.fullLogAllTests=true
+yaf.allure.envMap.platform=linux
+----
+Here, fullLogAllTests - if true logs will be attached to report in both success or failed test statuses
+envMap - define allure environment variables, here platform is a key and linux is a value (see https://allurereport.org/docs/gettingstarted-readability/#environment-information[allure environment])
++
+2. By changing or adding your allure report data about test during processing events such as TestStartEvent, TestFinishEvent. Use Allure class static methods to customize your report here. There are example what could be done
++
+[source,java]
+----
+@EventListener
+public void testStart(TestStartEvent testStartEvent) {
+        // use Allure class methods to customize your report here, for instanse
+        // add a step
+        Allure.step("Test starting..." + testStartEvent.getTestInfo().getFullTestName());
+        // or an attachment
+        Allure.addAttachment("test config", testStartEvent.getTestInfo().getEnvSetup());
+        // mark test case with feature label if test case maked by annotation
+        if(testStartEvent.getTestInfo().getAnnotations().contains(Test.class)) {
+            Allure.feature("custom");
+            // or add custom label
+            Allure.label("marker", "custom");
+        }
+}
+----
++
+3. By extending the `AllureService` class and marking own implementation as `@Primary`.
+
+====== How it works
+
+The `AllureService` class listens to events regarding the start, and the end of tests, and adds all the necessary information to the Allure context.
+
+In Allure's lifecycle, not all information can be changed once it is added to the context, but this can be done with reflection.
+To do this, an additional `TestPatcher` is added to Allure's listeners, which completes the necessary cases.
+
+

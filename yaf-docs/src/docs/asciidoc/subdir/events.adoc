@@ -1,0 +1,45 @@
+=== Events
+
+The architecture of YAF and the solutions based on it imply a flexible modular structure.
+It requires an equally flexible mechanism for exchanging data between the various components of the application.
+Such a mechanism is the Event #(!!ссылка на ивентархитектуру).# This mechanism is implemented with the help of Spring Event #(!TBD link)#
+
+The framework has the following types of events (additional modules can extend this list, see the module documentation):
+
+- Start/Stop of tests execution
+- Start/Stop of the suite test
+- Start/Stop of the test class
+- Start/Stop of the test execution
+- Start/Stop of the driver
+- Event for preparing the device under test
+- Readiness event of the test execution report
+
+All events that are used in the framework contain meta-information about the event (type, date, etc.) and various business data depending on concrete event type.
+
+==== How to
+
+===== How to use
+
+If you need to listen to events, you can do the following:
+
+[source,java]
+----
+    @EventListener
+    public void testStart(TestStartEvent testStartEvent) {
+        ...
+    }
+----
+
+===== How to extend
+
+To create your own events, you need to inherit your event from the `Event` class and use `EventService` to send events.
+
+===== How it works
+
+Since the system has a large number of different events, and they work differently, this section will describe only the basic principles and non-obvious points that are used, and all the detailed information you can get in the source code of a particular event.
+
+- in most cases, all the events that relate to the tests are generated in the integration module of the runner #(! ссылка на тестНГ)#
+- 2 types of test completion events are used (`RawTestFinishEvent` and `TestFinishEvent`).
+Initially a raw-event is activated, then it passes through a series of handlers that fill it up with all the necessary meta-information about the test, such as driver logs, screenshots, API logs and so on.
+So, if you need comprehensive information on test completion, you need to subscribe to `TestFinishEvent`.
+- The main point in the YAF which "manages" events is the class `GlobalYafEventsListener`.

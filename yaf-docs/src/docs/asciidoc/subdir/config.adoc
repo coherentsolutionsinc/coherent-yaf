@@ -1,0 +1,369 @@
+=== Config Manager
+
+Executing tests with complex configurations can be quite a challenge.
+For example, you need to run tests against/on multiple browsers, mobile devices, different languages, etc.
+Such a task requires a lot of effort and sometimes can be confusing.
+YAF config manager will help to cope with such confusing cases.
+
+The main objects of the config manager:
+
+- Device - device on which the tests are executed, it can be a web browser, a mobile device, a desktop;
+- Configuration - a typed object that represents an additional configuration of the execution, such as locale or user for instance;
+- Environment - a set of devices and configurations for single test execution, for example, you need to test something in a browser and on a mobile device, with a specific locale and user;
+- Execution - the set of environments where you need to execute the tests and parallel settings of the execution;
+- Farm - a farm of devices, cloud provider, ... - provider of devices for tests execution.
+
+IMPORTANT: The configuration manager supports many sources of configurations, in the basic package it reads configuration from JSON files.
+These readers will also be used in the examples.
+
+==== How to
+
+===== How to use
+
+To use the configuration manager, you should:
+
+. Import yaf-exec-config-json dependency to your pom.xml/build.gradle
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+        <dependency>
+            <groupId>com.coherentsolutions.yaf</groupId>
+            <artifactId>yaf-exec-config-json</artifactId>
+            <version>${yaf.version}</version>
+        </dependency>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-exec-config-json:${yaf.version}")
+}
+----
+====
++
+. In the folder with test resources create a directory structure
++
+[source,bash]
+----
+- execute
+  |- config
+  |- data
+  |- device
+  |- env
+  |- farm
+  |- xxx_config_file.json
+----
+
+. For base configuration at least 2 files should be created
++
+NOTE: configuration manager supports both JSON files and https://json5.org/[JSON5]
++
+.Device File*
++
+File with a random name in the directory `device`
++
+[source,json5]
+----
+{
+  "chrome": {
+    "type": "web",
+    "browser": "chrome",
+    "args": [
+      "--start-maximized",
+      "--disable-browser-side-navigation",
+    ],
+    "capabilities": {
+      "pageLoadStrategy": "normal"
+    }
+  },
+  "ff": {
+    "type": "web",
+    "browser": "ff",
+    "args": [
+      "--start-maximized",
+      "--disable-browser-side-navigation"
+    ],
+    "capabilities": {
+      "pageLoadStrategy": "normal"
+    }
+  }
+}
+----
++
+For specific device syntax see link:{javadocdir}/com/coherentsolutions/yaf/core/exec/model/device/BrowserDevice.html[BrowserDevice], link:{javadocdir}/com/coherentsolutions/yaf/core/exec/model/device/MobileDevice.html[MobileDevice], ...
++
+[[config_file]]
+.General configuration File
++
+Is a file in execute derictory. In this file, you should to fill in some sections (* - required):
++
+- name* - configuration name;
+- envs* - in this block you should specify the list of environments and determine which devices will belong to the particular environment;
+- envsNames - if you want to put the configuration of the environments into separate files for further reuse, specify the names of the environments in this block (the files should be placed in the *env* folder);
+- <<additional_config, configs>> - if you want to additionally parameterize your run (not only by devices) and specify, for example, a list of user roles, you should enter them in this section as a key/value;
+- configNames - the same logic as with the list of environments: you specify the names of configurations (files must be placed in the *config* folder);
+- <<farms_config, farmNames>> - if your configuration implies tests execution on farms, you should specify them in this list.
+- <<parallel_execution, setup>>- if you want to decrease tests run execution time use setup block to configure parallel execution.
++
+[source,json5]
+----
+{
+  "name": "smoke",
+  "envs": {
+    "set1": {
+      "devices": [
+        "chrome",
+        "ff"
+      ]
+    },
+    "set2": {
+      "devices": [
+        "chrome",
+      ]
+    }
+  }
+}
+----
++
+.If you desire to reuse your env define a file with a random name in the directory `env`
+[source,json5]
+----
+{
+  "env1": {
+    "devices": [
+      "chrome",
+      "ff"
+    ]
+  },
+  "env2": {
+    "devices": [
+      "chrome"
+    ]
+  }
+}
+----
+Then your general configuration file will look like this
++
+[source,json5]
+----
+{
+  "name": "smoke",
+  "envsNames": [
+    "env1",
+    "env2"
+  ]
+}
+----
++
+. Finally define your configuration file name as environment variable with envSettings key running your tests. Otherwise, default_env (chrome, latest version) is used. For example, envSettings=f_config_file
+
+[[additional_config]]
+===== Additional config
+.Providing extra configuration
+[source,json5]
+----
+{
+  "name": "smoke",
+  "configs": [
+    {
+      "user": "admin",
+      "locale": "ru"
+    },
+    {
+      "user": "admin",
+      "locale": "eng"
+    }
+  ],
+  "envsNames": [
+    "env1",
+    "env2"
+  ]
+}
+----
+
+NOTE: User and locale current values could be accessible in link:context.adoc[TestExecutionContext's] params. For current example it will store DefaultYafUser with 'admin' username and password under 'user' key and java Locale object with provided language under 'locale' key. To see details of implementation and to create other config like user and locale <<how_to_extend, see>>
+
+If you desire to reuse config the same process as in case of environments works:
+
+File in `configs` folder:
+
+[source,json5]
+----
+{
+  "ruUser": {
+    "user": "user1",
+    "locale": "ru"
+  },
+  "enUser": {
+    "user": "user1",
+    "locale": "en"
+  }
+}
+----
+And general config file:
+[source,json5]
+----
+{
+  "name": "smoke",
+  "configNames": [
+    "ruUser",
+    "enUser"
+  ],
+  "envsNames": [
+    "env1",
+    "env2"
+  ]
+}
+----
+
+[[farms_config]]
+.Farms configuration file
+[source,json5]
+----
+{
+  bs: {
+    url: "http://",
+    user: "xxx",
+    key: "yyyy",
+    supportedTypes: [
+      "web"
+    ]
+  },
+  local: {
+    supportedTypes: [
+      "web",
+      "mobile"
+    ]
+  }
+}
+----
+IMPORTANT: Farms are matched to devices by type, i.e. if a farm is configured as a web farm, all web devices will run on this farm. At the same time if there are 2 farms for a mobile device, but one of them is purely mobile, and the other is both mobile and web, then purely mobile farm will be used by priority.
+
+[[parallel_execution]]
+.Parallelization config
+
+Parallelization config consists of TestNG suite attributes like link:https://testng.org/#_parallel_tests_classes_and_methods[parallel modes] and threadCount. .suiteThreadCount is used if several environments are defined and multiple suites is about to be run. Define it to run that suits in parallel.
+[source,json5]
+----
+{
+  "name": "smoke",
+  "envsNames": [
+    "env1", "env2"
+  ],
+  "setup": {
+    "suiteThreadsCount": 1,
+    "threadsCount": 1,
+    "parallelMode": "CLASSES"
+  }
+}
+----
+
+===== How it works
+
+The upper-level process goes as follows:
+
+. When tests are invoked, the defined configuration <<config_file>> is read and an execution configuration `ExecutionConfiguration` is generated.
++
+Then, in `ExecutionConfiguration` an array of runs of all environments against all configurations is generated.
+For example, we have 2 users (administrator, manager) and 2 browsers (Chrome and FF), as a result of this formation, tests will be executed 4 times:
++
+- Chrome Admin
+- Chrome Manager
+- FF Admin
+- FF Manager
++
+And this principle can be replicated for any type of configuration.
+
+. The original test suite is modified to fit the configuration (more in link:https://testng.org/#_testng_xml[TestNG])
+. When running a particular test, based on the configuration in step 2, we get an `Environment` object, which contains a list of devices to run, as well as a set of configurations.
+Then, we go through the list of configurations, find a corresponding resolver (see next section) and apply this configuration to the test execution context.
+
+[[how_to_extend]]
+===== How to extend
+
+To add additional configuration (similar to users and locales), create an implementation of the `ConfigurationResolver` class and in the `applyConfiguration` method implement the necessary usage of the configuration.
+
+For example, as implemented in `LocaleConfigurationResolver`
+
+[source,java]
+----
+@Service
+public class LocaleConfigurationResolver extends ConfigurationResolver {
+
+    @Override
+    public String getType() {
+        return "locale";
+    }
+
+    @Override
+    public void applyConfiguration(String value, TestExecutionContext testExecutionContext) {
+        try {
+            testExecutionContext.addPram(Consts.CTX_LOCALE, new Locale(value));
+        } catch (Exception e) {
+            log.error("Unable to set locale " + value, e);
+        }
+    }
+}
+----
+
+If your resolver requires reading additional data as user is, you need to implement class `ConfigurationDataReader`.
+
+This implementation is used to transform loaded data into strictly typed data.
+Due to the fact that the reading of this configuration occurs before the initialization of the Spring context, another mechanism is used to provide dynamic resolvers behavior, and you need to register the created resolver using the mechanism https://docs.oracle.com/javase/tutorial/sound/SPI-intro.html[SPI]
+
+Here is an example of how this mechanism works by example.
+(This is how `UserConfigurationResolver` works).
+
+<<additional_config, In the configuration files>> we use only aliases, for example:
+
+[source,json5]
+----
+ "user": "admin",
+----
+
+However, additional data is needed to build a complete full-featured user object.
+This data is stored in the `execute\data\%resolverType%` directory (in case of using json file storage for configuration), it is read by the basic configuration reader and then a transformation method is applied to it from the corresponding data reader, and it transforms Map<String, Object> into an object with typed values.
+
+Thus, the `UserDataReader` may look like this:
+
+//TODO: there is no JsonConfigurationDataReader
+[source,java]
+----
+public class UserDataReader extends JsonConfigurationDataReader<DefaultYafUser> {
+    @Override
+    public String getType() {
+        return "user";
+    }
+
+    @Override
+    public Map<String, DefaultYafUser> transformData(Map<String, Object> dataMap) {
+        return mapper.convertValue(dataMap, new TypeReference<Map<String, DefaultYafUser>>() {
+        });
+    }
+}
+----
+
+As conversion to DefaultYafUser is used json data must have the same structure as the class:
+
+[source,json5]
+----
+{
+  "admin": {
+    "username": "admin1",
+    "password": "qwRNTdh"
+  }
+}
+----
+
+==== Config reading
+
+The framework allows you to store configurations in various forms, and for this it is necessary to implement the `BaseExecutionReader`.Basically, the framework implements reading from JSON. #(!TBD link)#
+
+

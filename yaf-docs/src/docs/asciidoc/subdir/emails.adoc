@@ -1,0 +1,206 @@
+=== Emails
+
+To facilitate working with structured data, the framework provides a special mechanism that allows you to inject POJO objects into the test depending on the execution context.
+
+The basic implementation is based on storing data files in JSON format, but it can be reconfigured.
+
+==== How to
+
+==== How to use
+
+. The first required action is to add a mail module dependency
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+<dependency>
+    <groupId>com.coherentsolutions.yaf</groupId>
+    <artifactId>yaf-mail</artifactId>
+    <version>${yaf.version}</version>
+</dependency>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-mail:${yaf.version}")
+}
+----
+====
+
+. For both sending or receiving emails it will require to have a mail account to retrieve emails from in case of testing or to send messages from in case of test events notification sending. The account credentials must be provided in properties (yaf.mail.user-email and
+yaf.mail.password)
+
+IMPORTANT: Some additional account settings could be required that depends on Mail Client is used, for instance, to generate an app password or enable SMTP/POP3/IMAP
+
+[source,properties]
+----
+yaf.mail.enabled=true
+yaf.mail.user-email=xxxx@gmail.com
+yaf.mail.password=xxxx
+----
+
+Farther steps are depends on YAF mail using purposes
+
+===== How to receive
+
+. To  connect to a mail folder, and it is required to have the host to connect to in yaf.mail.store-host property. The host value depends on store protocol(IMAP by default) and email client:
++
+|===
+| |*SMTP* |*IMAP* |*POP3*
+|*Gmail*
+|smtp.gmail.com
+|imap.gmail.com
+|pop.gmail.com
+
+|*Outlook/Office 365*
+|smtp.office365.com
+|outlook.office365.com
+|outlook.office365.com
+
+|*Yahoo Mail*
+|smtp.mail.yahoo.com
+|imap.mail.yahoo.com
+|pop.mail.yahoo.com
+
+|*iCloud Mail*
+|smtp.mail.me.com
+|imap.mail.me.com
+|pop.mail.me.com
+|===
++
+[source,properties]
+----
+yaf.mail.enabled=true
+yaf.mail.user-email=xxxx@gmail.com
+yaf.mail.password=xxxx
+yaf.mail.store-protocol=pop3
+yaf.mail.store-host=pop.gmail.com
+yaf.mail.folder=inbox
+----
+
+NOTE: yaf.mail.folder could be omitted as 'inbox' is a default value or customized, for instance, changed to 'trash', 'sent', 'archive' and so on (the names could differ depends on mail client ) or any other folder's name created previously
+
+. The next step is email(s) retrieving. There are several options that EmailService provides:
+* readSingleEmail gets the most recent email or the most recent email that corresponds condition if it is provided
+* readEmails gets the first 10 emails by default if other settings was not provided. Emails could be filtered by condition as well
+* waitForEmails wait for a new emails according provided settings(required). Conditions are optional. There is method implementation that accepts additional Runnable method argument and starts waiting as soon as provided operation is performed. It allows to catch an email that expected to be received as result of any operation
++
+Let's elaborate what's mentioned above settings and conditions mean:
++
+link:{javadocdir}/com/coherentsolutions/yaf/mail/domain/EmailQuerySettings.html[*EmailQuerySettings*] allows to override settings from application profile for particular request(s) like account's creds or target folder, pagination<1> and timing settings<2>
++
+*EmailQueryCondition*(see more in link:emails.adoc#_how_does_it_work[How does in work] section) is an interface and several commonly used implementations with the ait to collect only emails that match one or more conditions. There are subject and recipient conditions usages in the example below. There are AfterDateEmailQueryCondition and EmailNumberMoreQueryCondition conditions as well and obviously the custom one could be added
++
+[source,java]
+----
+public static void main(String[] args) {
+
+    EmailService service = new JavaEmailService();
+    Email email = service.readSingleEmail();
+    List<Email> emails = service.readEmails();
+
+    EmailQuerySettings paginatingSettings = new EmailQuerySettings();
+    paginatingSettings.setPage(2);
+    paginatingSettings.setPageSize(20); // <1>
+    List<Email> welcomeEmails = service.readEmails(paginatingSettings, new SubjectEmailQueryCondition("Welcome"));
+
+    EmailQuerySettings waitForSettings = new EmailQuerySettings();
+    waitForSettings.setInitialDelay(1000);
+    waitForSettings.setTimeOut(3000);
+    waitForSettings.setPooling(200);// <2>
+    service.waitForEmails(waitForSettings, new RecipientQueryCondition("recipient@gmail.com"));
+}
+----
+
+. Finally, it comes to email's parsing. EmailService offer to parse email's body as a string or link:https://jsoup.org/apidocs/org/jsoup/nodes/Document.html[html document], extract attachments. EmailService parse multipart messages inside, but it is possible to get list of parts separately<1>
++
+[source,java]
+----
+public static void main(String[] args) {
+    EmailService service = new JavaEmailService();
+    Email email = service.readSingleEmail();
+    String body = service.getMessageData(email);
+    Document html = service.getMessageDataHtml(email);
+    List<MultiPartData> multipart = service.getMessageDataMultipart(email); // <1>
+    List<Attachment> attachments = service.getAttachments(email);
+}
+----
++
+. Customizing(optional). Described above EmailQuerySettings could be defined globally to define custom timing and pagination settings for requests where EmailQuerySettings are not provided.
+[source,properties]
+----
+yaf.mail.pooling-time = 2000L
+yaf.mail.delay-time = 0L;
+yaf.mail.timeout = 60000L;
+
+yaf.mail.timeout.default-page = 1;
+yaf.mail.timeout.default-page-size = 10;
+----
+NOTE: The example contains values that are default for presentation
+
+
+===== How to send
+
+. As previously start from connection config. See table in link:emails.adoc#_how_to_receive[How to receive] section SMTP column to find host value
+[source,properties]
+----
+yaf.mail.enabled=true
+yaf.mail.user-email=xxxx@gmail.com
+yaf.mail.password=xxxx
+yaf.mail.transport-protocol="smtp";
+yaf.mail.transport-host="smtp.gmail.com";
+yaf.mail.transport-port = 587;
+----
+
+NOTE: transport-protocol and transport-port could be omitted as SMTP protocol is used by default as the most commonly used for email sending purposes
+
+//TODO
+
+==== How does it work
+
+YAF mail module use link:https://javadoc.io/doc/com.sun.mail/jakarta.mail/latest/jakarta.mail/module-summary.html[Jakarta Mail] under the hood. Using it as a base the module:
+
+* init session and connect to the mail store caching the connections using link:https://medium.com/vedity/spring-boot-caching-mechanism-8ef901147e60[Spring Cache] by user email and folder. For ex, connection to the 'inbox' folder under 'test@gmail.com' will be created ones and reused before is reset. In turn cache is cleared every 30 minutes that is configurable in application properties:
++
+[source,properties]
+----
+yaf.mail.store-t-t-l=600000
+----
+IMPORTANT: value should be provided in milliseconds
++
+* converts jakarta mail Message to more readable link:{javadocdir}/com/coherentsolutions/yaf/mail/domain/Email.html[Email] object and back. Particularly, mail body from specific multipart of different types(TEXT, HTML, PNG) to user familial string/html document
+* provides clear and expandable way to filter emails to retrieve from the folder - link:{javadocdir}/com/coherentsolutions/yaf/mail/condition/EmailQueryCondition.html[EmailQueryCondition]. To create a custom one it is required to implement the described interface<1> providing a condition as Predicate<3>, dynamic param(s) for the condition are defined as private class variables<2> and provided while instance creation
+[source,java]
+----
+public class SenderEmailQueryCondition implements EmailQueryCondition<Email> { // <1>
+
+    private String sender; // <2>
+
+    public SubjectEmailQueryCondition(String sender) {
+        this.sender = sender;
+    }
+
+    @Override
+    public Predicate<Email> buildPredicate() { // <3>
+        return o -> o.getFrom().contains(sender);
+    }
+
+
+    @Override
+    public String getApiCondition() {
+        throw new NotImplementedException("Not implemented yet!");
+    }
+}
+----
+
+
+
+
+

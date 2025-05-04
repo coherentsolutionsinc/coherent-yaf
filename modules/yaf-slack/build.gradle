@@ -1,0 +1,5 @@
+dependencies {
+    implementation project (":core")
+    implementation project (":modules:yaf-report")
+    implementation "com.slack.api:slack-api-client:${slackApiVersion}"
+}

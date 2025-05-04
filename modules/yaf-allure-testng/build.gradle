@@ -1,0 +1,7 @@
+dependencies {
+    implementation project(":core")
+    implementation project(":modules:yaf-allure")
+    implementation "io.qameta.allure:allure-java-commons:${allureVersion}"
+    implementation "io.qameta.allure:allure-testng:${allureVersion}"
+    implementation "org.testng:testng:${testNgVersion}"
+}

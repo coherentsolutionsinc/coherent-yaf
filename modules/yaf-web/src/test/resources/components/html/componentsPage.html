@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px auto 10px;
+            text-align: center;
+        }
+        .subtitle {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .product:last-child {
+            border-bottom: none;
+        }
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+        .product-price {
+            font-size: 16px;
+            color: #333;
+        }
+        .product-link {
+            text-decoration: none;
+            color: #007BFF;
+            font-size: 14px;
+        }
+        .product-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="title">Featured Products</div>
+<div class="container" id="featuredProducts">
+    <div class="subtitle" id="sub1">
+        <label class="subtitle" id="lab1">Available Featured Products list</label>
+    </div>
+    <div class="product" id="fp1">
+        <span class="product-name">Product A</span>
+        <span class="product-price">$25.00</span>
+        <a href="product-a.html" class="product-link">View Featured Product 1</a>
+    </div>
+    <div class="product" id="fp2">
+        <span class="product-name">Product B</span>
+        <span class="product-price">$30.00</span>
+        <a href="product-b.html" class="product-link">View Featured Product 2</a>
+    </div>
+</div>
+
+<div class="title">New Arrivals</div>
+<div class="container" id="newArrivals">
+    <div class="subtitle" id="sub2">
+        <label class="subtitle" id="lab2">Available New Products list</label>
+    </div>
+    <div class="product" id="na1">
+        <span class="product-name">Product X</span>
+        <span class="product-price">$40.00</span>
+        <a href="product-x.html" class="product-link">View New Products 1</a>
+    </div>
+    <div class="product" id="na2">
+        <span class="product-name">Product Y</span>
+        <span class="product-price">$50.00</span>
+        <a href="product-y.html" class="product-link">View New Products 2</a>
+    </div>
+</div>
+</body>
+</html>

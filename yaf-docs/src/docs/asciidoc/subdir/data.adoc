@@ -1,0 +1,152 @@
+=== Data Management
+
+To facilitate working with structured data, the framework provides a special mechanism that allows you to inject POJO objects into the test depending on the execution context.
+
+The basic implementation is based on storing data files in JSON format, but it can be reconfigured.
+
+==== How to
+
+===== How to use
+
+. First of all data is a separate YAF module that isn't accessible by default and additional dependence are required to be added
++
+.Maven
+[%collapsible]
+====
+[source,xml]
+----
+<dependency>
+    <groupId>com.coherentsolutions.yaf</groupId>
+    <artifactId>yaf-data</artifactId>
+    <version>${yaf.version}</version>
+</dependency>
+----
+====
++
+.Gradle
+[%collapsible]
+====
+[source,groovy]
+----
+dependencies {
+    implementation("com.coherentsolutions.yaf:yaf-data:${yaf.version}")
+}
+----
+====
+
+. Configuration (Optional)
++
+If you want to use a different data format than JSON, or use a different folder, specify this in the `yaf.data....` properties in YAF configuration file.
+. Create a json file in `data` folder resource or other if `dataFolder` property was defined on step 1
+. In the test class, declare a POJO object for the required data.
+. Annotate it with `@YafData` specifying the required file name.
+After creating an instance of the test class, this object will be filled with data from the specified file(step 2).
+
+IMPORTANT: Please note that the initialization (filling) of the data object happens once when creating an instance of the test class, if you need to have a new data generated for each test - define `alwaysNew` YafData property to true.
+
+NOTE: All data that comes into this mechanism is processed by the template engine (link:link:./com/coherentsolutions/yaf/data/templates/MustacheTemplateService.html[MustacheTemplateService]) and the localizer (link:link:./com/coherentsolutions/yaf/core/l10n/L10nService.html[L10nService]).
+
+====== Faker
+To generate unique data Java Faker could be used. To write dynamic data files the first thing to know is the calculated parts are inside double curly braces. There are some Faker usage cases in the following example, more could be found here link:https://javadoc.io/doc/com.github.javafaker/javafaker/latest/com/github/javafaker/Faker.html[Java Faker]
+
+[source, json]
+----
+{
+  "website": "https://{{faker.internet.url}}",
+  "domain": "{{faker.internet.domainName}}",
+  "firstName": "{{faker.name.firstName}}",
+  "lastName": "{{faker.name.lastName}}",
+  "jobTitle": "{{faker.job.position}}",
+  "isActive": "{{faker.bool}}",
+  "companyName": "{{faker.company.name}}",
+  "startDate": "{{faker.date.past(100, java.util.concurrent.TimeUnit.DAYS)}}"
+}
+----
+
+Let's pay attention at `startDate` property. After this file processed `startDate` POJO class's property will happen to stay as it was. To fix the problem faker's methods that expected to get at least one argument should be used in a little bit another way:
+
+[source, java]
+----
+@Component
+public class CustomFaker implements CustomTemplateFunctions {
+
+    public String past() {
+        return String.valueOf(new Faker().date().past(100, TimeUnit.DAYS));
+    }
+
+    @Override
+    public String getKeyName() { //<1>
+        return "date";
+    }
+}
+----
+
+NOTE: <1> The method returns the prefix name to use it to apply to new CustomTemplateFunctions methods. Here could be oe or more methods implementing custom functionality that extends Faker's one and wrapping Faker's method that expects arguments to be passed
+
+In json file it will look like this:
+[source, json]
+----
+{
+...
+  "startDate": "{{date.past()}}"
+}
+----
+
+===== How to extend
+
+This mechanism can be extended by implementing your own data reader, for example, XmlDataReader or ApiDataReader.
+You can see the implementation of the reader in the example of `JsonDataReader` #(!TBD link)#.
+And it is also necessary to create an additional annotation that "overrides" `@YafData` and specify the created reader there.
+
+[source, java]
+----
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+@Inherited
+@Documented
+@YafData(reader = ApiDataReader.class)
+public @interface ApiYafData {
+    String url();
+}
+----
+
+NOTE: "overrides" here means mark "child" ApiYafData annotation by "parent" YafData defining custom Reader class as reader attribute or other attributes if necessary. Also, here is a custom data annotation attribute url installed of YafData's fileName as source of data here is a api resource, not file
+
+[source, java]
+----
+@Component // <1>
+public class ApiDataReader extends BaseFileReader { // <2>
+
+    @Autowired
+    RestAssuredYafRequest request;
+
+    @Override
+    public Object readData(YafData yafData, Class<?> objType, TestExecutionContext executionContext) {
+        String url = objType.getAnnotation(ApiYafData.class).url(); // <3>
+        return request.anonymousReq("GET", url).jsonPath().getObject(objType);
+    }
+}
+----
+
+NOTE: Any reader is required to extend BaseFileReader class <2> and be a spring component <1>.  readData signature includes YafData annotation and ApiYafData custom attributes are not accessible. To solve this problem reflection under objType(the object type the data annotation was applied to) is used in <3> line.
+
+TIP: BaseFileReader class contains templates processing methods
+
+===== How it works
+
+The implementation of this approach is based on the mechanism of post-processing of the fields:
+On test is starting YAF checks all the field to be processable by any of registered processors or post-processors. If suitable processor is found the field and/or its value will be handled and changed
+
+The `DataFieldPostProcessor` is used to process data fields.
+In case the field is annotated with a reader, it is used to read the data and initialize the field the following way:
+
+. Processor get a reader from the data annotation and execute it if necessary
+. Reader get data(json data for JsonDataReader) by the file name from file and convert the data on his way
+. The file name is searched in the following places (in descending order of priority):
++
+.. In the annotation `@YafData.fileName'
+.. In the annotation `@YafTest.dataFile` .
+.. In the annotation `@YafTest.testName` .
+.. Using the test method name
++
+. The data is also processed by template service (link:https://mustache.github.io[mustache]) applying Faker and CustomTemplateFunctions
