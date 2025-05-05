@@ -265,7 +265,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     /**
-     * Multi part yaf request.
+     * Multi-part yaf request.
      *
      * @param multiPart the multi part
      * @return the yaf request
