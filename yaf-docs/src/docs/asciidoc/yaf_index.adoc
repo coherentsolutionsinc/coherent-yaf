@@ -4,7 +4,7 @@
 :Author:    Artem Moroz
 :Email:     <artemmoroz@coherentsolutions.com>
 :Date:      18/02/2021
-:Revision:  0.1
+:Revision:  0.2
 
 == Source codes
 
