@@ -359,7 +359,6 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
             }
             customFilters.get().clear();
             customFilters.remove();
-            customFilters = null;
         }
     }
 }
