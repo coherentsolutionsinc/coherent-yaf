@@ -122,6 +122,15 @@ public interface YafRequest<T, R> {
      */
     YafRequest addHeader(String key, String value);
 
+
+    /**
+     * Add headers to yaf request.
+     *
+     * @param value Map of K,V
+     * @return the yaf request
+     */
+    YafRequest addHeaders(Map<String, String> value);
+
     /**
      * Query param yaf request.
      *

@@ -247,6 +247,15 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     @Override
+    public YafRequest<RequestSpecification, Response> addHeaders(Map<String, String> value) {
+        if (headers == null) {
+            headers = new HashMap<>();
+        }
+        value.keySet().forEach(s -> headers.put(s, value.get(s)));
+        return this;
+    }
+
+    @Override
     public YafRequest<RequestSpecification, Response> queryParam(String key, String value) {
         if (queryParams == null) {
             queryParams = new LinkedHashMap<>();
@@ -265,7 +274,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     /**
-     * Multi part yaf request.
+     * Multi-part yaf request.
      *
      * @param multiPart the multi part
      * @return the yaf request
