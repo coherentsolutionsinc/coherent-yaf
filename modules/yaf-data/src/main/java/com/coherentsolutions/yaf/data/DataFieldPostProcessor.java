@@ -68,7 +68,7 @@ public class DataFieldPostProcessor implements YafFieldProcessor {
         YafData data = beanUtils.getAnnotation(fieldType, YafData.class);
         Object value = ReflectionUtils.getField(field, obj);
         if (value == null || data.alwaysNew()) { //field not inited or we need the new instance
-            dataService.createNewDataBean(fieldType, data);
+           return dataService.createNewDataBean(fieldType, data);
         }
         return value;
     }
