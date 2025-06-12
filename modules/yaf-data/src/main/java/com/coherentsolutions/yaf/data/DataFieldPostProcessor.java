@@ -29,7 +29,6 @@ import com.coherentsolutions.yaf.core.bean.field.YafFieldProcessor;
 import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
 import com.coherentsolutions.yaf.core.exception.BeanInitYafException;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
-import com.coherentsolutions.yaf.data.reader.DataReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -54,6 +53,9 @@ public class DataFieldPostProcessor implements YafFieldProcessor {
     @Autowired
     YafBeanUtils beanUtils;
 
+    @Autowired
+    YafDataService dataService;
+
     @Override
     public boolean canProcess(Field field, Class fieldType, Object obj, Class objType, List<Annotation> annotations,
                               TestExecutionContext testExecutionContext) {
@@ -66,12 +68,7 @@ public class DataFieldPostProcessor implements YafFieldProcessor {
         YafData data = beanUtils.getAnnotation(fieldType, YafData.class);
         Object value = ReflectionUtils.getField(field, obj);
         if (value == null || data.alwaysNew()) { //field not inited or we need the new instance
-            try {
-                DataReader dataReader = beanUtils.getBean(data.reader());
-                return dataReader.readData(data, fieldType, testExecutionContext);
-            } catch (Exception e) {
-                throw new BeanInitYafException(e.getMessage(), e);
-            }
+            dataService.createNewDataBean(fieldType, data);
         }
         return value;
     }
