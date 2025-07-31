@@ -66,40 +66,4 @@ public class TestFinishEvent extends Event {
      */
     List<TestLogData> logData = new ArrayList<>();
 
-    // public void addData(FinishEventDataType dataType, String key, Object value) {
-    // addData(dataType.name(), key, value);
-    // }
-    //
-    // public void addData(String dataType, String key, Object value) {
-    // Map<String, Object> objectMap = data.get(dataType);
-    // if (objectMap == null) {
-    // objectMap = new HashMap<>();
-    // }
-    // objectMap.put(key, value);
-    // data.put(dataType, objectMap);
-    // }
-    //
-    // public void addData(FinishEventDataType dataType, Map dataMap) {
-    // addData(dataType.name(), dataMap);
-    // }
-    //
-    // public void addData(String dataType, Map dataMap) {
-    // Map<String, Object> objectMap = data.get(dataType);
-    // if (objectMap == null) {
-    // objectMap = new HashMap<>();
-    // }
-    // objectMap.putAll(dataMap);
-    // data.put(dataType, objectMap);
-    // }
-    //
-    // public Map<String, Object> getData(FinishEventDataType dataType) {
-    // return data.get(dataType.name());
-    // }
-
-    // Map<String, String> driverLogs;
-    // Map<String, byte[]> screenshots;
-    // Map<String, Object> params;
-    // List<ApiCallLog> apiLogs;
-    // String pageSource;
-
 }

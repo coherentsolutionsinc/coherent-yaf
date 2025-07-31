@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @Primary
+//TODO add condition?
 public class BaseApiCallAllureAttachmentProcessor implements ApiCallAllureAttachmentProcessor {
 
     public void setAttachmentsFromApiCallLog(ApiCallLog apiCallLog) {
