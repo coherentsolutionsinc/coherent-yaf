@@ -74,7 +74,7 @@ public class AllureService {
      */
     private AllureLifecycle lifecycle;
 
-    private com.coherentsolutions.yaf.allure.TestPatcher testPatcher;
+    private TestPatcher testPatcher;
 
     private ApiCallAllureAttachmentProcessor apiCallAllureAttachmentProcessor;
 
@@ -85,7 +85,7 @@ public class AllureService {
      * @param testPatcher                      the test patcher
      * @param apiCallAllureAttachmentProcessor the api call allure attachment processor
      */
-    public AllureService(final AllureProperties allureProperties, final com.coherentsolutions.yaf.allure.TestPatcher testPatcher, ApiCallAllureAttachmentProcessor apiCallAllureAttachmentProcessor) {
+    public AllureService(final AllureProperties allureProperties, final TestPatcher testPatcher, ApiCallAllureAttachmentProcessor apiCallAllureAttachmentProcessor) {
         this.allureProperties = allureProperties;
         this.testPatcher = testPatcher;
         this.testPatcher.setTestStore(testStore);
@@ -197,5 +197,6 @@ public class AllureService {
                 });
             });
         }
+        AllureCategoriesUtil.copyCategoriesJsonToAllureResults(allureProperties.getCategoriesJsonFilePath());
     }
 }

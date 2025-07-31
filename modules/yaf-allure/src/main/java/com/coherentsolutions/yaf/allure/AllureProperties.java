@@ -77,4 +77,9 @@ public class AllureProperties extends ModuleProperties {
      * The Env map.
      */
     private Map<String, String> envMap;
+
+    /**
+     * The Path to a JSON File with custom categories map.
+     */
+    private String categoriesJsonFilePath;
 }

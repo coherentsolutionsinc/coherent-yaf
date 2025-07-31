@@ -31,6 +31,7 @@ import io.qameta.allure.model.Label;
 import io.qameta.allure.model.Link;
 import io.qameta.allure.model.TestResult;
 import io.qameta.allure.util.ResultsUtils;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ public class TestPatcher implements TestLifecycleListener {
     /**
      * The Test store.
      */
+    @Getter
     Map<String, YafTest> testStore;
 
     /**
