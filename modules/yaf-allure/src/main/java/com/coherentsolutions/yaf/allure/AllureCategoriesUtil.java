@@ -18,6 +18,9 @@ public class AllureCategoriesUtil {
      */
     @SneakyThrows
     public static void copyCategoriesJsonToAllureResults(String sourcePath) {
+        if (sourcePath == null || sourcePath.isEmpty()) {
+            return;
+        }
         final Properties properties = PropertiesUtils.loadAllureProperties();
         final String path = properties.getProperty("allure.results.directory", "allure-results");
         Path targetDir = Paths.get(path);
