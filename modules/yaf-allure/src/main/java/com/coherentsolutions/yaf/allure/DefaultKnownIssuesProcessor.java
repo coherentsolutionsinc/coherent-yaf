@@ -26,18 +26,4 @@ public class DefaultKnownIssuesProcessor implements KnownIssuesProcessor {
             testResult.setStatusDetails(details);
         }
     }
-
-
-//    void processTestResultsBeforeTestWrite (YafTest yafTest, TestResult testResult) {
-//        if (yafTest.bugs().length > 0 && testResult.getStatus().equals(Status.FAILED)) {
-//        String jiraIds = String.join("; ", yafTest.bugs());
-//        StatusDetails details = testResult.getStatusDetails();
-//        if (details == null) {
-//            details = new StatusDetails();
-//        }
-//        String originalMessage = details.getMessage() != null ? details.getMessage() : "";
-//        String knownIssueMsg = String.format("[Known Issue: %s] %s", jiraIds, originalMessage);
-//        details.setMessage(knownIssueMsg);
-//        testResult.setStatusDetails(details);
-//    }
-    }
+}
