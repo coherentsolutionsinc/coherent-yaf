@@ -82,4 +82,9 @@ public class AllureProperties extends ModuleProperties {
      * The Path to a JSON File with custom categories map.
      */
     private String categoriesJsonFilePath;
+
+    /**
+     * The property which allows to combine known issues to one category
+     */
+    private boolean useKnownIssueCategory;
 }

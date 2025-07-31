@@ -32,6 +32,7 @@ import io.qameta.allure.model.Link;
 import io.qameta.allure.model.TestResult;
 import io.qameta.allure.util.ResultsUtils;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -51,6 +52,9 @@ public class TestPatcher implements TestLifecycleListener {
      */
     @Getter
     Map<String, YafTest> testStore;
+
+    @Autowired(required = false)
+    List<KnownIssuesProcessor>  knownIssuesProcessors;
 
     /**
      * Sets test store.
@@ -75,6 +79,9 @@ public class TestPatcher implements TestLifecycleListener {
             // TODO may add other options
             result.setLabels(getLabels(yafTest, result));
             result.setLinks(getLinks(yafTest, result));
+            if (knownIssuesProcessors != null) {
+                knownIssuesProcessors.forEach(processor -> {processor.processTestResultsBeforeTestWrite(yafTest, result);});
+            }
         }
     }
 

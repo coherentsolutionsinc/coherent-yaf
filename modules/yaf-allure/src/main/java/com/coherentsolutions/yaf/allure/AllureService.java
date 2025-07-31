@@ -26,6 +26,7 @@ package com.coherentsolutions.yaf.allure;
 
 import com.coherentsolutions.yaf.allure.apicall.ApiCallAllureAttachmentProcessor;
 import com.coherentsolutions.yaf.core.consts.Consts;
+import com.coherentsolutions.yaf.core.events.global.ExecutionFinishEvent;
 import com.coherentsolutions.yaf.core.events.test.ApiCallStartEvent;
 import com.coherentsolutions.yaf.core.events.test.TestFinishEvent;
 import com.coherentsolutions.yaf.core.events.test.TestStartEvent;
@@ -40,6 +41,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -197,6 +199,16 @@ public class AllureService {
                 });
             });
         }
-        AllureCategoriesUtil.copyCategoriesJsonToAllureResults(allureProperties.getCategoriesJsonFilePath());
+    }
+
+    @EventListener
+    @Order(0)
+    public void executionFinishEvent(ExecutionFinishEvent executionFinishEvent) {
+        String customPath = allureProperties.getCategoriesJsonFilePath();
+        if (customPath != null) {
+            AllureCategoriesUtil.copyCustomCategoriesToAllureResults(customPath);
+        } else if (allureProperties.isUseKnownIssueCategory()) {
+            AllureCategoriesUtil.copyKnownIssuesCategoryToAllureResults();
+        }
     }
 }
