@@ -10,6 +10,7 @@ import io.qameta.allure.model.TestResult;
 import io.qameta.allure.util.ResultsUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @Slf4j
+@Order(0)
 public class YafTestAnnotationBeforeWritePreProcessor implements TestResultsBeforeWritePreProcessor {
 
     /**
