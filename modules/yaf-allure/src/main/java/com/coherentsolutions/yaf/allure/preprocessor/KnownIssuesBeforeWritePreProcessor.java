@@ -13,12 +13,14 @@ import io.qameta.allure.model.StatusDetails;
 import io.qameta.allure.model.TestResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
  * The type Known issues before write pre processor.
  */
 @Component
+@Order
 @ConditionalOnProperty(prefix = Consts.FRAMEWORK_NAME + ".allure", name = "use-known-issue-category", havingValue = "true")
 public class KnownIssuesBeforeWritePreProcessor implements TestResultsBeforeWritePreProcessor {
 

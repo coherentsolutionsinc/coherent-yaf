@@ -6,16 +6,12 @@ import com.coherentsolutions.yaf.core.utils.ExtResourceUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import io.qameta.allure.AllureResultsWriter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 /**
  * The type Category json file results writer.
@@ -52,7 +48,7 @@ public class CategoryJsonFileResultsWriter implements YafAllureResultsWriter {
 
     @SneakyThrows
     @Override
-    public void writeToResults(AllureResultsWriter writer) {
+    public void writeToResults(WrapperForAllureWriter writer) {
         String customPath = allureProperties.getCategoriesJsonFilePath();
         ArrayNode result = objectMapper.createArrayNode();
         if (customPath != null) {
@@ -70,10 +66,8 @@ public class CategoryJsonFileResultsWriter implements YafAllureResultsWriter {
             result.add(knownIssuesNode);
         }
         if (!result.isEmpty()) {
-            removeResultFile(writer, FILE_NAME);
             byte[] bytes = objectMapper.writeValueAsBytes(result);
-            InputStream inputStream = new ByteArrayInputStream(bytes);
-            writer.write(FILE_NAME, inputStream);
+            writer.write(FILE_NAME, bytes);
         }
     }
 

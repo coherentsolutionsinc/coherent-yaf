@@ -24,8 +24,10 @@
 
 package com.coherentsolutions.yaf.allure;
 
+import com.coherentsolutions.yaf.allure.writer.WrapperForAllureWriter;
 import com.coherentsolutions.yaf.allure.writer.YafAllureResultsWriter;
 import com.coherentsolutions.yaf.core.consts.Consts;
+import com.coherentsolutions.yaf.core.events.global.ExecutionStartEvent;
 import io.qameta.allure.Allure;
 import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.AllureResultsWriter;
@@ -33,8 +35,9 @@ import io.qameta.allure.listener.LifecycleNotifier;
 import io.qameta.allure.listener.TestLifecycleListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -46,7 +49,6 @@ import java.util.List;
  */
 @Service
 @Slf4j
-@Lazy(false)
 @ConditionalOnProperty(name = Consts.FRAMEWORK_NAME + ".allure.enabled", havingValue = "true")
 public class AllureService {
 
@@ -58,18 +60,26 @@ public class AllureService {
      * The Allure properties.
      */
     @Getter
-    private final AllureProperties allureProperties;
+    @Autowired
+    private AllureProperties allureProperties;
 
-    private final TestPatcher testPatcher;
+    @Autowired
+    private TestPatcher testPatcher;
 
-    private final List<YafAllureResultsWriter> writers;
+    @Autowired
+    private List<YafAllureResultsWriter> writers;
 
-    public AllureService(AllureProperties allureProperties, TestPatcher testPatcher, List<YafAllureResultsWriter> yafWriters) {
-        this.allureProperties = allureProperties;
-        this.testPatcher = testPatcher;
-        this.writers = yafWriters;
+    public AllureService() {
+//        AllureProperties allureProperties, TestPatcher
+//    } testPatcher, List<YafAllureResultsWriter> writers) {
+//        this.allureProperties = allureProperties;
+//        this.testPatcher = testPatcher;
+//        this.writers = writers;
         lifecycle = Allure.getLifecycle();
-        // patch allure lifecycle
+    }
+
+    @EventListener
+    public void initAllureService(ExecutionStartEvent startEvent) {
         try {
             Field notifierField = ReflectionUtils.findField(AllureLifecycle.class, "notifier");
             notifierField.setAccessible(true);
@@ -83,7 +93,8 @@ public class AllureService {
             Field allureWriterField = ReflectionUtils.findField(AllureLifecycle.class, "writer");
             allureWriterField.setAccessible(true);
             AllureResultsWriter writer = (AllureResultsWriter) allureWriterField.get(lifecycle);
-            yafWriters.forEach(w -> w.writeToResults(writer));
+            WrapperForAllureWriter wrapper = new WrapperForAllureWriter(writer);
+            writers.forEach(w -> w.writeToResults(wrapper));
         } catch (Exception e) {
             e.printStackTrace();
         }

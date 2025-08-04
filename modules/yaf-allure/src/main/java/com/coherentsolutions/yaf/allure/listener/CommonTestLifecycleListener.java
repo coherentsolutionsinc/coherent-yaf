@@ -1,15 +1,15 @@
 package com.coherentsolutions.yaf.allure.listener;
 
 import com.coherentsolutions.yaf.allure.AllureProperties;
+import com.coherentsolutions.yaf.allure.AllureService;
 import com.coherentsolutions.yaf.allure.AllureTestsStore;
 import com.coherentsolutions.yaf.allure.YafTestContainer;
-import com.coherentsolutions.yaf.core.consts.Consts;
 import com.coherentsolutions.yaf.core.events.test.TestFinishEvent;
 import com.coherentsolutions.yaf.core.events.test.TestStartEvent;
 import io.qameta.allure.Allure;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +20,8 @@ import java.io.ByteArrayInputStream;
  */
 @Service
 @Slf4j
-@ConditionalOnProperty(name = Consts.FRAMEWORK_NAME + ".allure.enabled", havingValue = "true")
+@ConditionalOnBean(AllureService.class)
+//@ConditionalOnProperty(name = Consts.FRAMEWORK_NAME + ".allure.enabled", havingValue = "true")
 public class CommonTestLifecycleListener {
 
     /**

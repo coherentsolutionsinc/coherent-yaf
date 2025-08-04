@@ -1,7 +1,6 @@
 package com.coherentsolutions.yaf.allure.writer;
 
 import com.coherentsolutions.yaf.allure.AllureProperties;
-import io.qameta.allure.AllureResultsWriter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Properties;
 
@@ -55,11 +56,12 @@ public class EnvPropertiesFileResultsWriter implements YafAllureResultsWriter {
 
     @SneakyThrows
     @Override
-    public void writeToResults(AllureResultsWriter writer) {
+    public void writeToResults(WrapperForAllureWriter writer) {
         if (allureProperties.getEnvMap() != null) {
-            removeResultFile(writer, FILE_NAME);
             Properties properties = mapToProperties(allureProperties.getEnvMap());
-            writer.write(FILE_NAME, propertiesToInputStream(properties));
+            StringWriter sw = new StringWriter();
+            properties.store(sw, "");
+            writer.write(FILE_NAME, sw.toString().getBytes(StandardCharsets.UTF_8));
         }
     }
 }
