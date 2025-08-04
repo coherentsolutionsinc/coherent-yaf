@@ -24,40 +24,34 @@
 
 package com.coherentsolutions.yaf.allure;
 
-import com.coherentsolutions.yaf.core.enums.Severity;
-import com.coherentsolutions.yaf.core.test.YafTest;
+import com.coherentsolutions.yaf.allure.preprocessor.TestResultsBeforeWritePreProcessor;
 import io.qameta.allure.listener.TestLifecycleListener;
-import io.qameta.allure.model.Label;
-import io.qameta.allure.model.Link;
 import io.qameta.allure.model.TestResult;
-import io.qameta.allure.util.ResultsUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 /**
  * The type Test patcher.
  */
 @Component
+@Slf4j
 public class TestPatcher implements TestLifecycleListener {
 
-    /**
-     * The Test store.
-     */
-    Map<String, YafTest> testStore;
 
     /**
-     * Sets test store.
-     *
-     * @param testStore the test store
+     * The Test results before write pre-processors.
      */
-    public void setTestStore(Map<String, YafTest> testStore) {
-        this.testStore = testStore;
-    }
+    @Autowired(required = false)
+    protected List<TestResultsBeforeWritePreProcessor> testResultsBeforeWritePreProcessors;
+    /**
+     * The Allure tests store.
+     */
+    @Autowired
+    AllureTestsStore allureTestsStore;
 
     /**
      * Patches allure test result.
@@ -66,78 +60,22 @@ public class TestPatcher implements TestLifecycleListener {
      */
     @Override
     public void beforeTestWrite(final TestResult result) {
-        YafTest yafTest = testStore.remove(result.getFullName());
-        if (yafTest != null) {
-            result.setName(getTestName(yafTest, result));
-            result.setDescription(getDescription(yafTest, result));
-            // TODO may add other options
-            result.setLabels(getLabels(yafTest, result));
-            result.setLinks(getLinks(yafTest, result));
+        YafTestContainer yafTestContainer = allureTestsStore.getTestContainer();
+        if (yafTestContainer != null) {
+            if (testResultsBeforeWritePreProcessors != null) {
+                testResultsBeforeWritePreProcessors.forEach(processor -> {
+                    try {
+                        processor.processTestResultsBeforeWrite(result);
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                    }
+                });
+            }
         }
     }
 
-    /**
-     * Get test name string.
-     *
-     * @param yafTest the yaf test
-     * @param result  the result
-     * @return the string
-     */
-    protected String getTestName(YafTest yafTest, TestResult result) {
-        return yafTest.name();
-    }
-
-    /**
-     * Get description string.
-     *
-     * @param yafTest the yaf test
-     * @param result  the result
-     * @return the string
-     */
-    protected String getDescription(YafTest yafTest, TestResult result) {
-        return yafTest.description();
-    }
-
-    /**
-     * Get labels list.
-     *
-     * @param yafTest the yaf test
-     * @param result  the result
-     * @return the list
-     */
-    protected List<Label> getLabels(YafTest yafTest, TestResult result) {
-        List<Label> labels = result.getLabels();
-        if (labels == null) {
-            labels = new ArrayList<>();
-        }
-        if (!yafTest.severity().equals(Severity.UNKNOWN)) {
-            Label severity = ResultsUtils.createSeverityLabel(yafTest.severity().name());
-            labels.add(severity);
-        }
-        labels.add(ResultsUtils.createThreadLabel());
-        return labels;
-    }
-
-    /**
-     * Get links list.
-     *
-     * @param yafTest the yaf test
-     * @param result  the result
-     * @return the list
-     */
-    protected List<Link> getLinks(YafTest yafTest, TestResult result) {
-        List<Link> links = result.getLinks();
-        if (links == null) {
-            links = new ArrayList<>();
-        }
-        if (yafTest.tmsIds().length > 0) {
-            links.addAll(Arrays.stream(yafTest.tmsIds()).map(l -> ResultsUtils.createTmsLink(l))
-                    .collect(Collectors.toList()));
-        }
-        if (yafTest.bugs().length > 0) {
-            links.addAll(Arrays.stream(yafTest.bugs()).map(b -> ResultsUtils.createIssueLink(b))
-                    .collect(Collectors.toList()));
-        }
-        return links;
+    @Override
+    public void afterTestWrite(TestResult result) {
+        allureTestsStore.clearTestContainer();
     }
 }

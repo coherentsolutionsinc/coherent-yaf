@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @Primary
+//TODO add condition?
 public class BaseApiCallAllureAttachmentProcessor implements ApiCallAllureAttachmentProcessor {
 
     public void setAttachmentsFromApiCallLog(ApiCallLog apiCallLog) {
@@ -52,7 +53,7 @@ public class BaseApiCallAllureAttachmentProcessor implements ApiCallAllureAttach
                 Allure.addAttachment("Request body: ", "application/json", object, ".json");
             }
         } catch (JsonProcessingException exception) {
-            log.error("Error in serializing  Api call body to String", exception.getMessage());
+            log.error("Error in serializing  Api call body to String {}", exception.getMessage());
         }
 
     }
