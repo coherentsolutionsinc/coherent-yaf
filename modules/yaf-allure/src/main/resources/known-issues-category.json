@@ -1,7 +1,0 @@
-[
-  {
-    "name": "Known Issues",
-    "matchedStatuses": ["failed"],
-    "messageRegex": ".*\\[Known Issue: .*\\].*"
-  }
-]

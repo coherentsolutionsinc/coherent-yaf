@@ -2,6 +2,7 @@ package com.coherentsolutions.yaf.allure.writer;
 
 import com.coherentsolutions.yaf.allure.AllureProperties;
 import com.coherentsolutions.yaf.allure.preprocessor.KnownIssuesBeforeWritePreProcessor;
+import com.coherentsolutions.yaf.core.utils.ExtResourceUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -22,6 +23,8 @@ import java.io.InputStream;
 @Service
 @Slf4j
 public class CategoryJsonFileResultsWriter implements YafAllureResultsWriter {
+
+    private final String FILE_NAME = "categories.json";
 
     /**
      * The Known issues before write processor.
@@ -51,13 +54,15 @@ public class CategoryJsonFileResultsWriter implements YafAllureResultsWriter {
     @Override
     public void writeToResults(AllureResultsWriter writer) {
         String customPath = allureProperties.getCategoriesJsonFilePath();
-        Resource customAllureCategories = resourceLoader.getResource(customPath);
         ArrayNode result = objectMapper.createArrayNode();
-        JsonNode customCategory = null;
-        if (customAllureCategories != null) {
-            customCategory = objectMapper.readTree(customAllureCategories.getContentAsByteArray());
-            if (customCategory.isArray()) {
-                customCategory.forEach(result::add);
+        if (customPath != null) {
+            Resource customAllureCategories = ExtResourceUtils.resolveResource(customPath, resourceLoader, false);
+            if (customAllureCategories!=null && customAllureCategories.exists()) {
+                JsonNode customCategory;
+                customCategory = objectMapper.readTree(customAllureCategories.getContentAsByteArray());
+                if (customCategory.isArray()) {
+                    customCategory.forEach(result::add);
+                }
             }
         }
         if (knownIssuesBeforeWriteProcessor != null) {
@@ -65,9 +70,11 @@ public class CategoryJsonFileResultsWriter implements YafAllureResultsWriter {
             result.add(knownIssuesNode);
         }
         if (!result.isEmpty()) {
+            removeResultFile(writer, FILE_NAME);
             byte[] bytes = objectMapper.writeValueAsBytes(result);
             InputStream inputStream = new ByteArrayInputStream(bytes);
-            writer.write("categories.json", inputStream);
+            writer.write(FILE_NAME, inputStream);
         }
     }
+
 }

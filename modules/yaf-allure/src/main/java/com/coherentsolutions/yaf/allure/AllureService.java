@@ -33,8 +33,8 @@ import io.qameta.allure.listener.LifecycleNotifier;
 import io.qameta.allure.listener.TestLifecycleListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -57,38 +57,34 @@ public class AllureService {
      * The Allure properties.
      */
     @Getter
-    @Autowired
-    private AllureProperties allureProperties;
-    @Autowired
-    private TestPatcher testPatcher;
+    private final AllureProperties allureProperties;
 
-    @Autowired(required = false)
-    private List<YafAllureResultsWriter> writers;
+    private final TestPatcher testPatcher;
 
-    /**
-     * Instantiates a new Allure service.
-     */
-    public AllureService() {
+    private final List<YafAllureResultsWriter> writers;
+
+    public AllureService(AllureProperties allureProperties, TestPatcher testPatcher, List<YafAllureResultsWriter> yafWriters) {
+        this.allureProperties = allureProperties;
+        this.testPatcher = testPatcher;
+        this.writers = yafWriters;
         lifecycle = Allure.getLifecycle();
         // patch allure lifecycle
         try {
-            Field f = ReflectionUtils.findField(AllureLifecycle.class, "notifier");
-            f.setAccessible(true);
-            LifecycleNotifier notifier = (LifecycleNotifier) f.get(lifecycle);
+            Field notifierField = ReflectionUtils.findField(AllureLifecycle.class, "notifier");
+            notifierField.setAccessible(true);
+            LifecycleNotifier notifier = (LifecycleNotifier) notifierField.get(lifecycle);
 
-            Field ff = ReflectionUtils.findField(LifecycleNotifier.class, "testListeners");
-            ff.setAccessible(true);
-            List<TestLifecycleListener> cn = (List<TestLifecycleListener>) ff.get(notifier);
+            Field testListenersField = ReflectionUtils.findField(LifecycleNotifier.class, "testListeners");
+            testListenersField.setAccessible(true);
+            List<TestLifecycleListener> cn = (List<TestLifecycleListener>) testListenersField.get(notifier);
             cn.add(this.testPatcher);
 
-            Field wr = ReflectionUtils.findField(AllureLifecycle.class, "writer");
-            wr.setAccessible(true);
-            AllureResultsWriter writer = (AllureResultsWriter) wr.get(lifecycle);
-            writers.forEach(w -> w.writeToResults(writer));
-
+            Field allureWriterField = ReflectionUtils.findField(AllureLifecycle.class, "writer");
+            allureWriterField.setAccessible(true);
+            AllureResultsWriter writer = (AllureResultsWriter) allureWriterField.get(lifecycle);
+            yafWriters.forEach(w -> w.writeToResults(writer));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

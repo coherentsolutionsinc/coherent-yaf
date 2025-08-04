@@ -20,6 +20,8 @@ import java.util.Properties;
 @Slf4j
 public class EnvPropertiesFileResultsWriter implements YafAllureResultsWriter {
 
+    private final String FILE_NAME = "environment.properties";
+
     /**
      * The Allure properties.
      */
@@ -55,8 +57,9 @@ public class EnvPropertiesFileResultsWriter implements YafAllureResultsWriter {
     @Override
     public void writeToResults(AllureResultsWriter writer) {
         if (allureProperties.getEnvMap() != null) {
+            removeResultFile(writer, FILE_NAME);
             Properties properties = mapToProperties(allureProperties.getEnvMap());
-            writer.write("environment.properties", propertiesToInputStream(properties));
+            writer.write(FILE_NAME, propertiesToInputStream(properties));
         }
     }
 }
