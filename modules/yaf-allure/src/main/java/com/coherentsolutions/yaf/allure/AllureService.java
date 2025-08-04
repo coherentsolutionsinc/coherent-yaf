@@ -34,7 +34,6 @@ import io.qameta.allure.listener.TestLifecycleListener;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
