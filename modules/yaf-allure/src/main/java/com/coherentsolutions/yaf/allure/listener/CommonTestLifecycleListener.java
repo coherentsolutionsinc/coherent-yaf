@@ -21,7 +21,6 @@ import java.io.ByteArrayInputStream;
 @Service
 @Slf4j
 @ConditionalOnBean(AllureService.class)
-//@ConditionalOnProperty(name = Consts.FRAMEWORK_NAME + ".allure.enabled", havingValue = "true")
 public class CommonTestLifecycleListener {
 
     /**
@@ -63,7 +62,7 @@ public class CommonTestLifecycleListener {
                         Allure.addAttachment(ld.getLogDataName(), ld.getContentType(),
                                 new ByteArrayInputStream(ld.getData()), ld.getFileExt());
                     } catch (Exception e) {
-                        log.error("Unable to append log data attach cause " + e.getMessage(), e);
+                        log.error("Unable to append log data attach cause {}", e.getMessage(), e);
                     }
                 });
             }

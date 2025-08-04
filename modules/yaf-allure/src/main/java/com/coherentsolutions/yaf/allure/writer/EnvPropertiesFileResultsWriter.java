@@ -37,21 +37,8 @@ public class EnvPropertiesFileResultsWriter implements YafAllureResultsWriter {
      */
     protected static Properties mapToProperties(final Map<String, String> map) {
         Properties properties = new Properties();
-        map.forEach((key, value) -> properties.setProperty(key, value));
+        map.forEach(properties::setProperty);
         return properties;
-    }
-
-    /**
-     * Properties to input stream
-     *
-     * @param properties the properties
-     * @return the input stream
-     * @throws Exception the exception
-     */
-    protected static InputStream propertiesToInputStream(final Properties properties) throws Exception {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        properties.store(outputStream, null);
-        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 
     @SneakyThrows

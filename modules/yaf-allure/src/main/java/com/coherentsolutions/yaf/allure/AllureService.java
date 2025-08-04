@@ -33,7 +33,6 @@ import io.qameta.allure.AllureLifecycle;
 import io.qameta.allure.AllureResultsWriter;
 import io.qameta.allure.listener.LifecycleNotifier;
 import io.qameta.allure.listener.TestLifecycleListener;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,6 +42,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The type Allure service.
@@ -56,12 +56,6 @@ public class AllureService {
      * The Lifecycle.
      */
     private final AllureLifecycle lifecycle;
-    /**
-     * The Allure properties.
-     */
-    @Getter
-    @Autowired
-    private AllureProperties allureProperties;
 
     @Autowired
     private TestPatcher testPatcher;
@@ -69,34 +63,36 @@ public class AllureService {
     @Autowired
     private List<YafAllureResultsWriter> writers;
 
+    /**
+     *  Default constructor
+     */
     public AllureService() {
-//        AllureProperties allureProperties, TestPatcher
-//    } testPatcher, List<YafAllureResultsWriter> writers) {
-//        this.allureProperties = allureProperties;
-//        this.testPatcher = testPatcher;
-//        this.writers = writers;
         lifecycle = Allure.getLifecycle();
     }
 
+    /**
+     * method to init all required fields (instead of PostConstructor to avoid issue that bean is not created)
+     * @param startEvent just to start it one time on execution
+     */
     @EventListener
     public void initAllureService(ExecutionStartEvent startEvent) {
         try {
             Field notifierField = ReflectionUtils.findField(AllureLifecycle.class, "notifier");
-            notifierField.setAccessible(true);
+            Objects.requireNonNull(notifierField).setAccessible(true);
             LifecycleNotifier notifier = (LifecycleNotifier) notifierField.get(lifecycle);
 
             Field testListenersField = ReflectionUtils.findField(LifecycleNotifier.class, "testListeners");
-            testListenersField.setAccessible(true);
+            Objects.requireNonNull(testListenersField).setAccessible(true);
             List<TestLifecycleListener> cn = (List<TestLifecycleListener>) testListenersField.get(notifier);
             cn.add(this.testPatcher);
 
             Field allureWriterField = ReflectionUtils.findField(AllureLifecycle.class, "writer");
-            allureWriterField.setAccessible(true);
+            Objects.requireNonNull(allureWriterField).setAccessible(true);
             AllureResultsWriter writer = (AllureResultsWriter) allureWriterField.get(lifecycle);
             WrapperForAllureWriter wrapper = new WrapperForAllureWriter(writer);
             writers.forEach(w -> w.writeToResults(wrapper));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Failed to initialize Allure Service child fields {}", e.getMessage(), e);
         }
     }
 }

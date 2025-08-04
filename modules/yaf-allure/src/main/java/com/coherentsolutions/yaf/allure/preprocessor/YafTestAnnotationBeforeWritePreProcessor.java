@@ -16,10 +16,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
- * The type Yaf test annotation before write pre processor.
+ * The type Yaf test annotation before write pre-processor.
  */
 @Service
 @Slf4j
@@ -99,12 +98,10 @@ public class YafTestAnnotationBeforeWritePreProcessor implements TestResultsBefo
             links = new ArrayList<>();
         }
         if (yafTest.tmsIds().length > 0) {
-            links.addAll(Arrays.stream(yafTest.tmsIds()).map(l -> ResultsUtils.createTmsLink(l))
-                    .collect(Collectors.toList()));
+            links.addAll(Arrays.stream(yafTest.tmsIds()).map(ResultsUtils::createTmsLink).toList());
         }
         if (yafTest.bugs().length > 0) {
-            links.addAll(Arrays.stream(yafTest.bugs()).map(b -> ResultsUtils.createIssueLink(b))
-                    .collect(Collectors.toList()));
+            links.addAll(Arrays.stream(yafTest.bugs()).map(ResultsUtils::createIssueLink).toList());
         }
         return links;
     }
