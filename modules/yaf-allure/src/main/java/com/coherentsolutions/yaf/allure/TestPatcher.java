@@ -73,9 +73,4 @@ public class TestPatcher implements TestLifecycleListener {
             }
         }
     }
-
-    @Override
-    public void afterTestWrite(TestResult result) {
-        allureTestsStore.clearTestContainer();
-    }
 }
