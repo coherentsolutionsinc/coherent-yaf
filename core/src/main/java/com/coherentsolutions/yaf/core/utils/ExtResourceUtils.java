@@ -28,6 +28,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.ResourceUtils;
 
+/**
+ * Util class to handle resources
+ */
 public class ExtResourceUtils {
 
     /**

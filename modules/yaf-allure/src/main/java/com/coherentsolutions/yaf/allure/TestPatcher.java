@@ -43,7 +43,7 @@ public class TestPatcher implements TestLifecycleListener {
 
 
     /**
-     * The Test results before write pre processors.
+     * The Test results before write pre-processors.
      */
     @Autowired(required = false)
     protected List<TestResultsBeforeWritePreProcessor> testResultsBeforeWritePreProcessors;
@@ -72,10 +72,5 @@ public class TestPatcher implements TestLifecycleListener {
                 });
             }
         }
-    }
-
-    @Override
-    public void afterTestWrite(TestResult result) {
-        allureTestsStore.clearTestContainer();
     }
 }

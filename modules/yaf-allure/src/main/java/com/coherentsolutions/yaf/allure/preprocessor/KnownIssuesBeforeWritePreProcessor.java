@@ -41,7 +41,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
- * The type Known issues before write pre processor.
+ * The type Known issues before write pre-processor.
  */
 @Component
 @Order

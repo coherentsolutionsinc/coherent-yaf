@@ -53,7 +53,7 @@ public class BaseApiCallAllureAttachmentProcessor implements ApiCallAllureAttach
                 Allure.addAttachment("Request body: ", "application/json", object, ".json");
             }
         } catch (JsonProcessingException exception) {
-            log.error("Error in serializing  Api call body to String", exception.getMessage());
+            log.error("Error in serializing  Api call body to String {}", exception.getMessage());
         }
 
     }
