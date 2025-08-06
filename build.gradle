@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.coherentsolutions.yaf'
-version = '1.3.10'
+version = '1.4.0'
 
 apply from: rootProject.file('versions.gradle')
 def ep = [':yaf-docs', ':modules']

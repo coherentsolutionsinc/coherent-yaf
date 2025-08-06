@@ -74,11 +74,11 @@ public class CustomRequestProps {
             rs.queryParams(queryParams);
         }
         if (multiPartSpecs != null) {
-            multiPartSpecs.forEach(m -> rs.multiPart(m));
+            multiPartSpecs.forEach(rs::multiPart);
             rs.contentType(ContentType.MULTIPART);
         }
         if (filters != null) {
-            filters.forEach(f -> rs.filter(f));
+            filters.forEach(rs::filter);
         }
 
     }
@@ -110,7 +110,7 @@ public class CustomRequestProps {
     }
 
     /**
-     * Add multi part spec.
+     * Add multipart spec.
      *
      * @param m the m
      */

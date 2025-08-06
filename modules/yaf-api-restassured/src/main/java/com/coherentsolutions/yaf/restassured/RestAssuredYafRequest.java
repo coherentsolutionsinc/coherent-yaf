@@ -75,7 +75,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     /**
      * The Props.
      */
-// Be aware, that this properties are set after constructor invocation!
+// Be aware, that these properties are set after constructor invocation!
     @Autowired
     @Getter
     protected ApiProperties props;
@@ -106,7 +106,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     YafBeanUtils beanUtils;
     private Boolean baseUrlEndsWithSlash;
 
-    private ThreadLocal<CustomRequestProps> customProps = new ThreadLocal<>();
+    private final ThreadLocal<CustomRequestProps> customProps = new ThreadLocal<>();
 
     /**
      * Instantiates a new Rest assured yaf request.
@@ -133,7 +133,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         processRequestSpecification();
     }
 
@@ -264,7 +264,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     /**
      * Multi-part yaf request.
      *
-     * @param multiPart the multi part
+     * @param multiPart the multipart
      * @return the yaf request
      */
     public YafRequest<RequestSpecification, Response> multiPart(MultiPartSpecification... multiPart) {
@@ -306,6 +306,12 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         }
     }
 
+    /**
+     * With custom filter rest assured yaf request.
+     *
+     * @param filter the filter
+     * @return the rest assured yaf request
+     */
     public RestAssuredYafRequest withCustomFilter(Filter... filter) {
         if (filter != null && filter.length > 0) {
             CustomRequestProps customRequestProps = getCustomRequestProps();
