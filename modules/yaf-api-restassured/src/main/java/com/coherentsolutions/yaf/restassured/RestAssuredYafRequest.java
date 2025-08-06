@@ -33,6 +33,7 @@ import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
 import com.coherentsolutions.yaf.restassured.log.RestAssuredLoggingFilter;
 import io.restassured.config.RestAssuredConfig;
+import io.restassured.filter.Filter;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.MultiPartSpecification;
@@ -303,6 +304,14 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         } finally {
             clearCustomProps();
         }
+    }
+
+    public RestAssuredYafRequest withCustomFilter(Filter... filter) {
+        if (filter != null && filter.length > 0) {
+            CustomRequestProps customRequestProps = getCustomRequestProps();
+            Arrays.asList(filter).forEach(customRequestProps::addFilter);
+        }
+        return this;
     }
 
     /**
