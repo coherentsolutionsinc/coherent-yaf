@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2021 - 2024 Coherent Solutions Inc.
+ * Copyright (c) 2021 - 2025 Coherent Solutions Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
 package com.coherentsolutions.yaf.restassured;
 
 import com.coherentsolutions.yaf.core.api.YafApiRequestException;
@@ -32,8 +33,6 @@ import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
 import com.coherentsolutions.yaf.restassured.log.RestAssuredLoggingFilter;
 import io.restassured.config.RestAssuredConfig;
-import io.restassured.filter.Filter;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.MultiPartSpecification;
@@ -46,7 +45,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 
@@ -70,15 +70,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     /**
      * The Headers.
      */
-    protected Map<String, String> headers;
-    /**
-     * The Query params.
-     */
-    protected Map<String, String> queryParams;
-    /**
-     * The Multi part specs.
-     */
-    protected List<MultiPartSpecification> multiPartSpecs;
+    protected final Map<String, String> headers;
     /**
      * The Props.
      */
@@ -112,10 +104,8 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     @Autowired
     YafBeanUtils beanUtils;
     private Boolean baseUrlEndsWithSlash;
-    /**
-     * The Custom filters.
-     */
-    ThreadLocal<List<Filter>> customFilters;
+
+    private ThreadLocal<CustomRequestProps> customProps = new ThreadLocal<>();
 
     /**
      * Instantiates a new Rest assured yaf request.
@@ -174,6 +164,9 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         }
         if (authProvider != null) {
             authProvider.setRequest(this);
+        }
+        if (headers != null) {
+            requestSpecification.headers(headers);
         }
         requestSpecification.filter(loggingFilter);
     }
@@ -239,37 +232,31 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
 
     @Override
     public YafRequest<RequestSpecification, Response> addHeader(String key, String value) {
-        if (headers == null) {
-            headers = new HashMap<>();
-        }
-        headers.put(key, value);
+        getCustomRequestProps().addHeader(key, value);
         return this;
     }
 
     @Override
     public YafRequest<RequestSpecification, Response> addHeaders(Map<String, String> value) {
-        if (headers == null) {
-            headers = new HashMap<>();
+        if (value != null) {
+            CustomRequestProps customRequestProps = getCustomRequestProps();
+            value.forEach(customRequestProps::addHeader);
         }
-        value.keySet().forEach(s -> headers.put(s, value.get(s)));
         return this;
     }
 
     @Override
     public YafRequest<RequestSpecification, Response> queryParam(String key, String value) {
-        if (queryParams == null) {
-            queryParams = new LinkedHashMap<>();
-        }
-        queryParams.put(key, value);
+        getCustomRequestProps().addQueryParam(key, value);
         return this;
     }
 
     @Override
     public YafRequest<RequestSpecification, Response> queryParams(Map<String, String> params) {
-        if (queryParams == null) {
-            queryParams = new LinkedHashMap<>();
+        if (params != null) {
+            CustomRequestProps customRequestProps = getCustomRequestProps();
+            params.forEach(customRequestProps::addQueryParam);
         }
-        queryParams.putAll(params);
         return this;
     }
 
@@ -280,10 +267,10 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
      * @return the yaf request
      */
     public YafRequest<RequestSpecification, Response> multiPart(MultiPartSpecification... multiPart) {
-        if (multiPartSpecs == null) {
-            multiPartSpecs = new ArrayList<>();
+        if (multiPart != null && multiPart.length > 0) {
+            CustomRequestProps customRequestProps = getCustomRequestProps();
+            Arrays.asList(multiPart).forEach(customRequestProps::addMultiPartSpec);
         }
-        multiPartSpecs.addAll(Arrays.asList(multiPart));
         return this;
     }
 
@@ -305,15 +292,8 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
                 url = "/" + url;
             }
         }
-        if (headers != null) {
-            rs.headers(headers);
-        }
-        if (queryParams != null) {
-            rs.queryParams(queryParams);
-        }
-        if (multiPartSpecs != null) {
-            handleMultiPart(rs);
-        }
+        CustomRequestProps customRequestProps = getCustomRequestProps();
+        customRequestProps.updateRequestSpecification(rs);
         try {
             ValidatableResponse then = rs.request(method, url).then();
             if (responseSpecification != null) {
@@ -321,44 +301,28 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
             }
             return then.extract().response();
         } finally {
-            queryParams = null;
-            headers = null;
-            multiPartSpecs = null;
-            cleanCustomFilters();
+            clearCustomProps();
         }
-    }
-
-    private void handleMultiPart(RequestSpecification rs) {
-        for (MultiPartSpecification multiPartSpec : multiPartSpecs) {
-            rs.multiPart(multiPartSpec);
-        }
-        rs.contentType(ContentType.MULTIPART);
     }
 
     /**
-     * With custom filter rest assured yaf request.
+     * Gets custom request props.
      *
-     * @param filter the filter
-     * @return the rest assured yaf request
+     * @return the custom request props
      */
-    public RestAssuredYafRequest withCustomFilter(Filter... filter) {
-        if (customFilters == null) {
-            customFilters = ThreadLocal.withInitial(ArrayList::new);
+    protected CustomRequestProps getCustomRequestProps() {
+        CustomRequestProps customRequestProps = customProps.get();
+        if (customRequestProps == null) {
+            customRequestProps = new CustomRequestProps();
+            customProps.set(customRequestProps);
         }
-        for (Filter f : filter) {
-            customFilters.get().add(f);
-            this.requestSpecification.filter(f);
-        }
-        return this;
+        return customRequestProps;
     }
 
-    private void cleanCustomFilters() {
-        if (customFilters != null && customFilters.get() != null) {
-            for (Filter customFilter : customFilters.get()) {
-                this.requestSpecification.noFiltersOfType(customFilter.getClass());
-            }
-            customFilters.get().clear();
-            customFilters.remove();
-        }
+    /**
+     * Clear custom props.
+     */
+    protected void clearCustomProps() {
+        customProps.remove();
     }
 }
