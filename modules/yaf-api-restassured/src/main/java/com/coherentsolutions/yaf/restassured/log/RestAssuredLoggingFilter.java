@@ -24,12 +24,14 @@
 
 package com.coherentsolutions.yaf.restassured.log;
 
+import com.coherentsolutions.yaf.core.api.YafApiMetric;
 import com.coherentsolutions.yaf.core.api.processor.log.ApiCallLog;
 import com.coherentsolutions.yaf.core.api.processor.log.ApiLogger;
 import com.coherentsolutions.yaf.core.events.EventsService;
 import com.coherentsolutions.yaf.core.events.test.ApiCallStartEvent;
 import com.coherentsolutions.yaf.core.log.properties.ApiLogProperties;
 import com.coherentsolutions.yaf.core.log.properties.TestFinishProperties;
+import com.coherentsolutions.yaf.core.metrics.YafMetricsService;
 import io.restassured.filter.Filter;
 import io.restassured.filter.FilterContext;
 import io.restassured.http.Headers;
@@ -75,6 +77,9 @@ public class RestAssuredLoggingFilter implements Filter, ApiLogger {
     @Autowired
     protected EventsService eventsService;
 
+    @Autowired(required = false)
+    protected YafMetricsService metricsService;
+
     /**
      * The Logs.
      */
@@ -107,6 +112,7 @@ public class RestAssuredLoggingFilter implements Filter, ApiLogger {
                 return apiCallLog;
             }
         }
+        metricsService.addMetric(new YafApiMetric(requestSpec.getMethod(), requestSpec.getURI(), response.statusCode(), response.time()));
         return null;
     }
 

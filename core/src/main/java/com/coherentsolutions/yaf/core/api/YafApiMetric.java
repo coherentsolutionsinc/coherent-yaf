@@ -22,19 +22,24 @@
  * SOFTWARE.
  */
 
-package com.coherentsolutions.yaf.allure.preprocessor;
+package com.coherentsolutions.yaf.core.api;
 
-import io.qameta.allure.model.TestResult;
+import com.coherentsolutions.yaf.core.metrics.YafMetric;
+import lombok.Getter;
 
-/**
- * The interface Test results before write pre-processor.
- */
-public interface TestResultsBeforeWritePreProcessor {
+@Getter
+public class YafApiMetric extends YafMetric<Long> {
 
-    /**
-     * Process test results before write.
-     *
-     * @param testResult the test result
-     */
-    void processTestResultsBeforeWrite(TestResult testResult);
+    public static final String TYPE = "yaf_api_metric";
+
+    String method;
+    String uri;
+    Integer statusCode;
+
+    public YafApiMetric(String method, String uri, Integer statusCode, Long timeInMs) {
+        super(TYPE, timeInMs);
+        this.method = method;
+        this.uri = uri;
+        this.statusCode = statusCode;
+    }
 }

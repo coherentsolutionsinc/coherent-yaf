@@ -22,40 +22,30 @@
  * SOFTWARE.
  */
 
-package com.coherentsolutions.yaf.data;
+package com.coherentsolutions.yaf.core.metrics;
 
-import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
-import com.coherentsolutions.yaf.core.exception.BeanInitYafException;
-import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
-import com.coherentsolutions.yaf.data.reader.DataReader;
+import com.coherentsolutions.yaf.core.consts.Consts;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
-public class YafDataService {
+public class YafMetricsService {
 
-    @Autowired
-    YafBeanUtils beanUtils;
+    @Getter
+    List<YafMetric> metrics = new ArrayList<>();//TODO think about more proper collection
 
-    @Autowired
-    TestExecutionContext testExecutionContext;
+    @Value("${" + Consts.FRAMEWORK_NAME + ".metrics.enabled:false}")
+    boolean collectMetrics;
 
-
-    public <T> T createNewDataBean(Class<T> fieldType) {
-        return this.createNewDataBean(fieldType, null);
-    }
-
-    public <T> T createNewDataBean(Class<T> fieldType, YafData data) {
-        try {
-            if (data == null) {
-                data = beanUtils.getAnnotation(fieldType, YafData.class);
-            }
-            DataReader dataReader = beanUtils.getBean(data.reader());
-            return (T) dataReader.readData(data, fieldType, testExecutionContext);
-        } catch (Exception e) {
-            throw new BeanInitYafException(e.getMessage(), e);
+    public void addMetric(YafMetric metric) {
+        if (collectMetrics) {
+            metrics.add(metric);
         }
     }
 

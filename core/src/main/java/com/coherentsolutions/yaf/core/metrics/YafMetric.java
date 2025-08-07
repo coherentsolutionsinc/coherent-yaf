@@ -22,19 +22,20 @@
  * SOFTWARE.
  */
 
-package com.coherentsolutions.yaf.allure.preprocessor;
+package com.coherentsolutions.yaf.core.metrics;
 
-import io.qameta.allure.model.TestResult;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
-/**
- * The interface Test results before write pre-processor.
- */
-public interface TestResultsBeforeWritePreProcessor {
+@Data
+@Accessors(chain = true)
+public class YafMetric<T> {
 
-    /**
-     * Process test results before write.
-     *
-     * @param testResult the test result
-     */
-    void processTestResultsBeforeWrite(TestResult testResult);
+    String type;
+    T value;
+
+    public YafMetric(String type, T value) {
+        this.type = type;
+        this.value = value;
+    }
 }
