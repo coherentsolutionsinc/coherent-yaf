@@ -28,6 +28,7 @@ import com.coherentsolutions.yaf.core.api.YafApiRequestException;
 import com.coherentsolutions.yaf.core.api.YafRequest;
 import com.coherentsolutions.yaf.core.api.auth.YafApiUser;
 import com.coherentsolutions.yaf.core.api.properties.ApiProperties;
+import com.coherentsolutions.yaf.core.api.properties.ApiPropertiesManager;
 import com.coherentsolutions.yaf.core.consts.Consts;
 import com.coherentsolutions.yaf.core.context.test.TestExecutionContext;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
@@ -43,6 +44,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -55,7 +57,7 @@ import static io.restassured.RestAssured.given;
  * The type Rest assured yaf request.
  */
 @Slf4j
-public class RestAssuredYafRequest implements YafRequest<RequestSpecification, Response>, InitializingBean {
+public class RestAssuredYafRequest implements YafRequest<RequestSpecification, Response>, InitializingBean, BeanNameAware {
     /**
      * The Auth provider.
      */
@@ -75,8 +77,6 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     /**
      * The Props.
      */
-// Be aware, that these properties are set after constructor invocation!
-    @Autowired
     @Getter
     protected ApiProperties props;
     /**
@@ -105,6 +105,11 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     @Autowired
     YafBeanUtils beanUtils;
     private Boolean baseUrlEndsWithSlash;
+    @Setter
+    protected String beanName;
+    protected String customPropertiesName;
+    @Autowired
+    protected ApiPropertiesManager apiPropertiesManager;
 
     private final ThreadLocal<CustomRequestProps> customProps = new ThreadLocal<>();
 
@@ -122,7 +127,7 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     @Builder(setterPrefix = "with")
     public RestAssuredYafRequest(RestAssuredAuthProvider authProvider, YafApiUser defaultUser,
                                  boolean takeUserFromConfig, Map<String, String> headers, RequestSpecification requestSpecification,
-                                 ResponseSpecification responseSpecification, RestAssuredConfig requestConfig) {
+                                 ResponseSpecification responseSpecification, RestAssuredConfig requestConfig, String customPropertiesName) {
         this.authProvider = authProvider;
         this.defaultUser = defaultUser;
         this.takeUserFromConfig = takeUserFromConfig;
@@ -130,10 +135,18 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
         this.requestSpecification = requestSpecification;
         this.responseSpecification = responseSpecification;
         this.requestConfig = requestConfig;
+        this.customPropertiesName = customPropertiesName;
     }
 
     @Override
     public void afterPropertiesSet() {
+        String name = customPropertiesName == null ? beanName : customPropertiesName;
+        if (!apiPropertiesManager.getProps().containsKey(name)) {
+            log.warn("Unable to find properties for api with name {}", name);
+            name = "";
+        }
+        this.props = apiPropertiesManager.getProps().get(name);
+
         processRequestSpecification();
     }
 
@@ -148,7 +161,12 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
             requestSpecification.config(requestConfig);
         }
         if (props != null) {
-            requestSpecification.contentType(props.getContentType()).accept(props.getAcceptType());
+            if (props.getContentType() != null) {
+                requestSpecification.contentType(props.getContentType());
+            }
+            if (props.getAcceptType() != null) {
+                requestSpecification.accept(props.getAcceptType());
+            }
             if (props.getBaseUrl() != null) {
                 requestSpecification.baseUri(props.getBaseUrl());
                 baseUrlEndsWithSlash = props.getBaseUrl().endsWith("/");
@@ -328,8 +346,10 @@ public class RestAssuredYafRequest implements YafRequest<RequestSpecification, R
     protected CustomRequestProps getCustomRequestProps() {
         CustomRequestProps customRequestProps = customProps.get();
         if (customRequestProps == null) {
-            customRequestProps = new CustomRequestProps();
-            customProps.set(customRequestProps);
+            synchronized (this) { //TODO remove in case of repeated concurrent issues with headers
+                customRequestProps = new CustomRequestProps();
+                customProps.set(customRequestProps);
+            }
         }
         return customRequestProps;
     }

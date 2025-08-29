@@ -26,11 +26,8 @@ package com.coherentsolutions.yaf.core.api.properties;
 
 
 import com.coherentsolutions.yaf.core.config.ModuleProperties;
-import com.coherentsolutions.yaf.core.consts.Consts;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.Map;
 
@@ -39,8 +36,6 @@ import java.util.Map;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@Configuration
-@ConfigurationProperties(prefix = Consts.FRAMEWORK_NAME + ".api.props")
 public class ApiProperties extends ModuleProperties {
 
     /**
@@ -50,11 +45,11 @@ public class ApiProperties extends ModuleProperties {
     /**
      * The Content type.
      */
-    String contentType = "application/json";
+    String contentType;
     /**
      * The Accept type.
      */
-    String acceptType = "application/json";
+    String acceptType;
     /**
      * The Validate ssl.
      */

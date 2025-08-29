@@ -45,7 +45,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
         mergeMode = TestExecutionListeners.MergeMode.MERGE_WITH_DEFAULTS
 )
 public class BaseJUnitWebTest extends BaseYafTest {
-
     /**
      * The Yaf bean utils.
      */

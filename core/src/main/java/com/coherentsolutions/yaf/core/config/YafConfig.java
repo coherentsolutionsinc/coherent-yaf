@@ -25,7 +25,11 @@
 package com.coherentsolutions.yaf.core.config;
 
 
+import com.coherentsolutions.yaf.core.api.properties.ApiProperties;
+import com.coherentsolutions.yaf.core.api.properties.ApiPropertiesHolder;
+import com.coherentsolutions.yaf.core.api.properties.ApiPropertiesManager;
 import com.coherentsolutions.yaf.core.bean.YafBean;
+import com.coherentsolutions.yaf.core.consts.Consts;
 import com.coherentsolutions.yaf.core.enums.DeviceType;
 import com.coherentsolutions.yaf.core.pom.YafComponent;
 import com.fasterxml.jackson.core.JsonParser;
@@ -37,7 +41,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -52,9 +58,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * The type Yaf config.
@@ -67,6 +71,7 @@ import java.util.Locale;
 @EnableScheduling
 @Slf4j
 @Order()
+@EnableConfigurationProperties(ApiPropertiesHolder.class)
 public class YafConfig implements AppConfig {
 
     /**
@@ -207,6 +212,23 @@ public class YafConfig implements AppConfig {
 
         }
     }
+
+    @Bean("defaultApiProps")
+    @ConfigurationProperties(prefix = Consts.FRAMEWORK_NAME + ".api.props")
+    public ApiProperties defaultApiProps() {
+        return new ApiProperties();
+    }
+
+    @Bean()
+    public ApiPropertiesManager apiPropsByKey(
+            ApiPropertiesHolder named, ApiProperties defaultApiProps) {
+        Map<String, ApiProperties> out = new LinkedHashMap<>();
+        out.put("", defaultApiProps); // default empty-name
+        named.forEach((k, v) -> out.put(k, v.getProps()));
+        return new ApiPropertiesManager(out);
+    }
+
+
 
     // interceptors
 
