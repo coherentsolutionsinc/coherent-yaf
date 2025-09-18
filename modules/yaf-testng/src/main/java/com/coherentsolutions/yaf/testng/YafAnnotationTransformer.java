@@ -24,10 +24,15 @@
 
 package com.coherentsolutions.yaf.testng;
 
+import com.coherentsolutions.yaf.core.test.YafTest;
 import com.coherentsolutions.yaf.testng.utils.EnvSkipTest;
 import com.coherentsolutions.yaf.testng.utils.YafDefaultRetryAnalyzer;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.testng.annotations.ITestAnnotation;
 import org.testng.internal.annotations.DisabledRetryAnalyzer;
 import org.testng.internal.annotations.IAnnotationTransformer;
@@ -35,6 +40,7 @@ import org.testng.internal.annotations.IAnnotationTransformer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.Properties;
 
 /**
  * The type Yaf annotation transformer.
@@ -53,11 +59,47 @@ public class YafAnnotationTransformer implements IAnnotationTransformer {
     String currentProfile;
 
     /**
+     * Ignore test execution if bugs exist.
+     */
+    Properties properties;
+
+    boolean ignoreKnownIssues;
+
+    /**
      * Instantiates a new Yaf annotation transformer.
      */
     public YafAnnotationTransformer() {
         enableRetry = System.getProperty("retry") != null;
         currentProfile = System.getProperty("spring.profiles.active");
+        this.properties = load(currentProfile);
+        this.ignoreKnownIssues = Boolean.parseBoolean(this.properties.getProperty("yaf.ignoreKnownIssues"));
+    }
+
+    @SneakyThrows
+    private static Properties load(String profile) {
+        ResourceLoader loader = new DefaultResourceLoader();
+        Properties props = new Properties();
+
+        // base application.properties
+        Resource base = loader.getResource("classpath:application.properties");
+        if (base.exists()) {
+            try (var in = base.getInputStream()) {
+                props.load(in);
+            }
+        }
+
+        // profile override, if provided
+        if (profile != null && !profile.isBlank()) {
+            String name = String.format("classpath:application-%s.properties", profile);
+            Resource prof = loader.getResource(name);
+            if (prof.exists()) {
+                try (var in = prof.getInputStream()) {
+                    props.load(in);
+                }
+            }
+        }
+
+        return props;
     }
 
     @Override
@@ -69,17 +111,24 @@ public class YafAnnotationTransformer implements IAnnotationTransformer {
             annotation.setThreadPoolSize(0);
             annotation.setDataProvider(YafTestNgTest.DATA);
         }
+
         if (enableRetry && DisabledRetryAnalyzer.class.equals(annotation.getRetryAnalyzerClass())) {
             log.debug("Appending retry analyzer for {} in {}", testMethod.getName(),
                     testMethod.getDeclaringClass().getName());
             annotation.setRetryAnalyzer(YafDefaultRetryAnalyzer.class);
         }
-        EnvSkipTest envTest = AnnotationUtils.getAnnotation(testMethod, EnvSkipTest.class);
-        if (envTest != null && currentProfile != null && envTest.skip().length > 0) {
-            boolean skipTest = Arrays.stream(envTest.skip()).anyMatch(env -> currentProfile.contains(env));
-            if (skipTest) {
+        YafTest yafTest = AnnotationUtils.getAnnotation(testMethod, YafTest.class);
+        if (yafTest != null) {
+            if (ignoreKnownIssues && yafTest.bugs().length > 0) {
+                annotation.setEnabled(false);
+            } else if (currentProfile != null && Arrays.stream(yafTest.envSkip()).anyMatch(currentProfile::contains)) {
                 annotation.setEnabled(false);
             }
+        }
+
+        EnvSkipTest envTest = AnnotationUtils.getAnnotation(testMethod, EnvSkipTest.class);
+        if (envTest != null && currentProfile != null && Arrays.stream(envTest.skip()).anyMatch(currentProfile::contains)) {
+            annotation.setEnabled(false);
         }
     }
 }
