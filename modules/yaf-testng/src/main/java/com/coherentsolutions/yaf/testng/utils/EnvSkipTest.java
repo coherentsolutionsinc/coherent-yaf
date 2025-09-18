@@ -34,6 +34,8 @@ import static java.lang.annotation.ElementType.METHOD;
  */
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
 @Target({METHOD})
+//Instead use envSkip parameter for YafTest annotation
+@Deprecated
 public @interface EnvSkipTest {
 
     /**

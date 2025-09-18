@@ -74,6 +74,13 @@ public @interface YafTest {
     Severity severity() default Severity.UNKNOWN;
 
     /**
+     * Env Skip string [ ]. Environments where tests will not be running
+     *
+     * @return the string [ ].  Array of environments.
+     */
+    String[] envSkip() default {};
+
+    /**
      * Data file string.
      *
      * @return the string
