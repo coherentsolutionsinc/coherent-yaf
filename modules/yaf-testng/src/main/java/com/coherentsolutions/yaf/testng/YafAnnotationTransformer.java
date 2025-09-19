@@ -47,7 +47,7 @@ import java.util.Properties;
  */
 @Slf4j
 public class YafAnnotationTransformer implements IAnnotationTransformer {
-
+    private final String IGNORE_KNOWN_ISSUES_PROPERTY = "yaf.ignoreKnownIssues";
     /**
      * The Enable retry.
      */
@@ -72,7 +72,9 @@ public class YafAnnotationTransformer implements IAnnotationTransformer {
         enableRetry = System.getProperty("retry") != null;
         currentProfile = System.getProperty("spring.profiles.active");
         this.properties = load(currentProfile);
-        this.ignoreKnownIssues = Boolean.parseBoolean(this.properties.getProperty("yaf.ignoreKnownIssues"));
+        this.ignoreKnownIssues = Boolean.parseBoolean(
+                System.getProperty(IGNORE_KNOWN_ISSUES_PROPERTY, this.properties.getProperty(IGNORE_KNOWN_ISSUES_PROPERTY))
+        );
     }
 
     @SneakyThrows
