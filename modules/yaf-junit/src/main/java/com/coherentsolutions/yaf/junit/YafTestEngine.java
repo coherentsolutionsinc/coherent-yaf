@@ -29,11 +29,6 @@ import com.coherentsolutions.yaf.core.exec.ExecutionService;
 import com.coherentsolutions.yaf.core.utils.ServiceProviderUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.engine.config.CachingJupiterConfiguration;
-import org.junit.jupiter.engine.config.DefaultJupiterConfiguration;
-import org.junit.jupiter.engine.config.JupiterConfiguration;
-import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
-import org.junit.jupiter.engine.execution.JupiterEngineExecutionContext;
 import org.junit.platform.engine.*;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.MethodSelector;
@@ -41,22 +36,18 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import org.junit.platform.engine.support.descriptor.ClassSource;
 import org.junit.platform.engine.support.descriptor.EngineDescriptor;
 import org.junit.platform.engine.support.descriptor.MethodSource;
-import org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine;
-import org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutorService;
-import org.junit.platform.engine.support.hierarchical.Node;
-import org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService;
+import org.junit.platform.engine.support.hierarchical.*;
 
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Slf4j
 public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context> {
 
     public static final String ENGINE_ID = "yaf-engine";
-    private JupiterConfiguration configuration;
+    private ConfigurationParameters configuration;
 
     public YafTestEngine() {
         log.info("[YAF-ENGINE] ✓ Engine loaded and registered!");
@@ -70,8 +61,8 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
     @Override
     public TestDescriptor discover(EngineDiscoveryRequest request, UniqueId uniqueId) {
         EngineDescriptor engine = new EngineDescriptor(uniqueId, "Yaf Test Engine");
-
-        configuration = new CachingJupiterConfiguration(new DefaultJupiterConfiguration(request.getConfigurationParameters()));
+        configuration = request.getConfigurationParameters();
+//        configuration = new CachingJupiterConfiguration(new DefaultJupiterConfiguration(request.getConfigurationParameters()));
 
 
         List<YafDiscoverySelector> list = Stream.concat(request.getSelectorsByType(MethodSelector.class).stream().map(s -> new YafDiscoverySelector(null, s)),
@@ -81,7 +72,7 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
                 addClassDescriptor(engine, uniqueId, s.getJavaClass(), s.getMethodName(), null, configuration)
         );
 
-        // Handle UniqueId selections (for rerunning specific tests)
+        // Handle UniqueId selections (for rerunning specific tests) //todo
 //        request.getSelectorsByType(UniqueIdSelector.class).forEach(sel -> {
 //            UniqueId selectedId = sel.getUniqueId();
 //
@@ -104,7 +95,7 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
     }
 
     private void addClassDescriptor(EngineDescriptor engine, UniqueId engineId, Class<?> clazz,
-                                    String filterMethod, String filterVariant, JupiterConfiguration configuration) {
+                                    String filterMethod, String filterVariant, ConfigurationParameters configuration) {
         UniqueId clsId = engineId.append("class", clazz.getName());
 
         // Check if already added
@@ -113,7 +104,7 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
         if (existing.isPresent()) {
             clsDesc = (ClassDescriptor) existing.get();
         } else {
-            clsDesc = new ClassDescriptor(clsId, clazz);
+            clsDesc = new ClassDescriptor(clsId, clazz, configuration);
             engine.addChild(clsDesc);
         }
 
@@ -123,7 +114,7 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
             executionService = DefaultExecutionService.getInstance();
         }
         List<String> configs = executionService.getConfiguration().getEnvironments().keySet()
-                .stream().collect(Collectors.toList());
+                .stream().toList(); //todo
 
         // Get variants from class annotation
         List<String> variants = List.of("A", "B");
@@ -148,7 +139,7 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
             if (existingMethod.isPresent()) {
                 methodDesc = (MethodDescriptor) existingMethod.get();
             } else {
-                methodDesc = new MethodDescriptor(methodId, clazz, method);
+                methodDesc = new MethodDescriptor(methodId, clazz, method, configuration);
                 clsDesc.addChild(methodDesc);
             }
 
@@ -164,8 +155,9 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
                 // Check if variant descriptor exists
                 Optional<? extends TestDescriptor> existingVariant = methodDesc.findByUniqueId(variantId);
                 if (!existingVariant.isPresent()) {
-                    TestMethodTestDescriptor ddd = new TestMethodTestDescriptor(variantId, clazz, method, configuration);
-                    VariantTestDescriptor variantDesc = new VariantTestDescriptor(variantId, clazz, method, variant, ddd);
+                    YafTestMethodDescriptor ddd = new YafTestMethodDescriptor(variantId, clazz, method, configuration);
+//                    TestMethodTestDescriptor ddd = new TestMethodTestDescriptor(variantId, clazz, method, configuration);
+                    VariantTestDescriptor variantDesc = new VariantTestDescriptor(variantId, clazz, method, variant, null);
                     methodDesc.addChild(variantDesc);
                 }
             }
@@ -195,15 +187,77 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
 
     @Override
     protected Context createExecutionContext(ExecutionRequest request) {
-        return new Context(request.getEngineExecutionListener(), configuration);
-
+        return new Context(request.getConfigurationParameters());
     }
+
 
     // ===== Execution Context =====
 
     @Override
     protected HierarchicalTestExecutorService createExecutorService(ExecutionRequest request) {
-        return new SameThreadHierarchicalTestExecutorService();
+        ConfigurationParameters config = request.getConfigurationParameters();
+
+        // Read standard JUnit Jupiter parallel execution configuration
+        boolean parallelEnabled = config.getBoolean("junit.jupiter.execution.parallel.enabled").orElse(false);
+
+        if (!parallelEnabled) {
+            System.out.println("[VARIANTS-ENGINE] Sequential execution mode (parallel disabled)");
+            return new SameThreadHierarchicalTestExecutorService();
+        }
+
+        // Calculate parallelism based on strategy
+        int parallelism = calculateParallelism(config);
+
+        System.out.println("[VARIANTS-ENGINE] ⚡ Parallel execution enabled with parallelism: " + parallelism);
+
+        // Use the platform's built-in parallel executor
+        return new ForkJoinPoolHierarchicalTestExecutorService(
+                new ParallelExecutionConfiguration() {
+                    @Override
+                    public int getParallelism() {
+                        return parallelism;
+                    }
+
+                    @Override
+                    public int getMinimumRunnable() {
+                        return config.get("junit.jupiter.execution.parallel.config.fixed.max-pool-size",
+                                Integer::parseInt).orElse(256 + parallelism);
+                    }
+
+                    @Override
+                    public int getCorePoolSize() {
+                        return parallelism;
+                    }
+
+                    @Override
+                    public int getMaxPoolSize() {
+                        return config.get("junit.jupiter.execution.parallel.config.fixed.max-pool-size",
+                                Integer::parseInt).orElse(256 + parallelism);
+                    }
+
+                    @Override
+                    public int getKeepAliveSeconds() {
+                        return config.get("junit.jupiter.execution.parallel.config.fixed.keep-alive-seconds",
+                                Integer::parseInt).orElse(30);
+                    }
+                });
+    }
+
+    private int calculateParallelism(ConfigurationParameters config) {
+        // Read strategy (fixed or dynamic)
+        String strategy = config.get("junit.jupiter.execution.parallel.config.strategy").orElse("dynamic");
+
+        if ("fixed".equals(strategy)) {
+            // Use fixed parallelism
+            return config.get("junit.jupiter.execution.parallel.config.fixed.parallelism", Integer::parseInt)
+                    .orElse(Runtime.getRuntime().availableProcessors());
+        } else {
+            // Dynamic strategy: parallelism = cores * factor
+            double factor = config.get("junit.jupiter.execution.parallel.config.dynamic.factor", Double::parseDouble)
+                    .orElse(1.0);
+            int cores = Runtime.getRuntime().availableProcessors();
+            return Math.max(1, (int) Math.ceil(cores * factor));
+        }
     }
 
     private static class UniqueIdInfo {
@@ -212,22 +266,41 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
         String variantName;
     }
 
-    static class Context extends JupiterEngineExecutionContext {
-        public Context(EngineExecutionListener executionListener, JupiterConfiguration configuration) {
-            super(executionListener, configuration);
+    static class Context implements EngineExecutionContext {
+        final ConfigurationParameters configuration;
+        final String classesMode;
+        final String methodsMode;
+
+        public Context(ConfigurationParameters configuration) {
+            this.configuration = configuration;
+
+            // Read execution mode configuration (concurrent, same_thread)
+            String defaultMode = configuration.get("junit.jupiter.execution.parallel.mode.default").orElse("same_thread");
+            this.classesMode = configuration.get("junit.jupiter.execution.parallel.mode.classes.default")
+                    .orElse(defaultMode);
+            this.methodsMode = configuration.get("junit.jupiter.execution.parallel.mode.default")
+                    .orElse(defaultMode);
         }
-        //implements EngineExecutionContext {
-        // Context can hold shared state if needed
+
+        Node.ExecutionMode getClassesExecutionMode() {
+            return "concurrent".equalsIgnoreCase(classesMode) ? Node.ExecutionMode.CONCURRENT : Node.ExecutionMode.SAME_THREAD;
+        }
+
+        Node.ExecutionMode getMethodsExecutionMode() {
+            return "concurrent".equalsIgnoreCase(methodsMode) ? Node.ExecutionMode.CONCURRENT : Node.ExecutionMode.SAME_THREAD;
+        }
     }
 
     // ===== Test Descriptors =====
 
     static class ClassDescriptor extends AbstractTestDescriptor implements Node<Context> {
         final Class<?> testClass;
+        final ConfigurationParameters configuration;
 
-        ClassDescriptor(UniqueId id, Class<?> testClass) {
+        ClassDescriptor(UniqueId id, Class<?> testClass, ConfigurationParameters configuration) {
             super(id, testClass.getSimpleName(), ClassSource.from(testClass));
             this.testClass = testClass;
+            this.configuration = configuration;
         }
 
         @Override
@@ -239,11 +312,31 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
     static class MethodDescriptor extends AbstractTestDescriptor implements Node<Context> {
         final Class<?> testClass;
         final Method method;
+        final ConfigurationParameters configuration;
 
-        MethodDescriptor(UniqueId id, Class<?> testClass, Method method) {
+        MethodDescriptor(UniqueId id, Class<?> testClass, Method method, ConfigurationParameters configuration) {
             super(id, method.getName(), MethodSource.from(method));
             this.testClass = testClass;
             this.method = method;
+            this.configuration = configuration;
+        }
+
+        @Override
+        public Type getType() {
+            return Type.CONTAINER; // Container for variant descriptors
+        }
+    }
+
+    static class YafTestMethodDescriptor extends AbstractTestDescriptor implements Node<Context> {
+        final Class<?> testClass;
+        final Method method;
+        final ConfigurationParameters configuration;
+
+        YafTestMethodDescriptor(UniqueId id, Class<?> testClass, Method method, ConfigurationParameters configuration) {
+            super(id, method.getName(), MethodSource.from(method));
+            this.testClass = testClass;
+            this.method = method;
+            this.configuration = configuration;
         }
 
         @Override
@@ -258,9 +351,9 @@ public class YafTestEngine extends HierarchicalTestEngine<YafTestEngine.Context>
         final Method method;
         final String envName;
 
-        TestMethodTestDescriptor ddd;
+        YafTestMethodDescriptor ddd;
 
-        VariantTestDescriptor(UniqueId id, Class<?> testClass, Method method, String envName, TestMethodTestDescriptor ddd) {
+        VariantTestDescriptor(UniqueId id, Class<?> testClass, Method method, String envName, YafTestMethodDescriptor ddd) {
             super(id, method.getName() + method.getName() + "[" + envName + "]", MethodSource.from(method));//todo revalidate double naming
             this.ddd = ddd;
             this.testClass = testClass;

@@ -5,6 +5,6 @@ dependencies {
     implementation "org.junit.jupiter:junit-jupiter-engine"
     implementation "org.junit.platform:junit-platform-launcher"
     implementation "org.junit.platform:junit-platform-suite"
-    implementation("net.bytebuddy:byte-buddy:1.14.15")
-    implementation("net.bytebuddy:byte-buddy-agent:1.14.15")
+    implementation "io.qameta.allure:allure-java-commons:${allureVersion}"
+    testImplementation("io.qameta.allure:allure-junit5:2.30.0")
 }
