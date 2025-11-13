@@ -26,4 +26,6 @@ include 'modules:yaf-slack'
 findProject(':modules:yaf-slack')?.name = 'yaf-slack'
 include 'modules:yaf-zephyr-scale'
 findProject(':modules:yaf-zephyr-scale')?.name = 'yaf-zephyr-scale'
+include 'modules:yaf-junit'
+findProject(':modules:yaf-junit')?.name = 'yaf-junit'
 

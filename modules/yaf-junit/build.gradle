@@ -1,0 +1,10 @@
+dependencies {
+    implementation project(":core")
+    implementation(enforcedPlatform("org.junit:junit-bom:${junitVersion}"))
+    implementation "org.junit.jupiter:junit-jupiter"
+    implementation "org.junit.jupiter:junit-jupiter-engine"
+    implementation "org.junit.platform:junit-platform-launcher"
+    implementation "org.junit.platform:junit-platform-suite"
+    implementation("net.bytebuddy:byte-buddy:1.14.15")
+    implementation("net.bytebuddy:byte-buddy-agent:1.14.15")
+}

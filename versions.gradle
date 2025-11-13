@@ -21,6 +21,7 @@ ext {
     pdfbox='3.0.2'
     slackApiVersion='1.43.0'
     htmlUnitDriverVersion = '4.13.0'
+    junitVersion = '5.13.4'
 
 // plugins
 
