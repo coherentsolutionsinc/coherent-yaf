@@ -24,22 +24,23 @@
 
 package com.coherentsolutions.yaf.junit;
 
-import io.qameta.allure.Allure;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 //@ExtendWith(SpringExtension.class)
-@Execution(ExecutionMode.CONCURRENT)
-@SpringBootTest
-public class MyJunitTest {
+//@Execution(ExecutionMode.SAME_THREAD)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@SpringBootTest
+public class MyJunitTest extends YafBaseJunitTest {
+
+    public int sharedInt;
 
     public MyJunitTest() {
         System.out.println(11111111);
@@ -58,7 +59,9 @@ public class MyJunitTest {
     @SneakyThrows
     @Test
     public void testSum() {
+        sharedInt = 123;
         String variant = Current.getEnvName();
+        System.out.println(variant + " sum " + sharedInt);
         TimeUnit.SECONDS.sleep(new Random().nextInt(3));
         System.out.println(Thread.currentThread().getId() + "  → testSum running with variant: " + variant);
         // Your test logic that uses the variant
@@ -67,21 +70,31 @@ public class MyJunitTest {
     }
 
 
+    @ParameterizedTest
+    @ValueSource(strings = {"arg1", "arg2"})
+    void testParametrized(String input) {
+        System.out.println(Current.getEnvName() + " param " + sharedInt);
+        System.out.println(Thread.currentThread().getId() + " -- " + Current.getEnvName() + " running with argument: " + input);
+        ;
+    }
+
+
     @Test
     public void testMultiply() {
+        System.out.println(Current.getEnvName() + " mumlty " + sharedInt);
         String variant = Current.getEnvName();
-
-        Allure.step("Get current variant", () -> {
-            System.out.println("  → testMultiply running with variant: " + variant);
-            Allure.parameter("variant", variant);
-        });
-
-        Allure.step("Execute test logic", () -> {
-            assert variant != null;
-            System.out.println("  → Variant " + variant + " test passed");
-        });
-
-        Allure.addAttachment("Test Result", "Test passed for variant: " + variant);
+        System.out.println(Thread.currentThread().getId() + " -- " + Current.getEnvName() + " MULTIPLY running with argument: " + variant);
+//        Allure.step("Get current variant", () -> {
+//            System.out.println("  → testMultiply running with variant: " + variant);
+//            Allure.parameter("variant", variant);
+//        });
+//
+//        Allure.step("Execute test logic", () -> {
+//            assert variant != null;
+//            System.out.println("  → Variant " + variant + " test passed");
+//        });
+//
+//        Allure.addAttachment("Test Result", "Test passed for variant: " + variant);
     }
 }
 

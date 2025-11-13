@@ -29,6 +29,7 @@ import org.junit.jupiter.engine.config.DefaultJupiterConfiguration;
 import org.junit.jupiter.engine.config.JupiterConfiguration;
 import org.junit.jupiter.engine.descriptor.JupiterEngineDescriptor;
 import org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor;
+import org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor;
 import org.junit.jupiter.engine.discovery.DiscoverySelectorResolver;
 import org.junit.jupiter.engine.execution.JupiterEngineExecutionContext;
 import org.junit.platform.engine.EngineDiscoveryRequest;
@@ -83,13 +84,23 @@ public class YafTestEngine2 extends HierarchicalTestEngine<JupiterEngineExecutio
             List<TestDescriptor> toRemove = new ArrayList<>();
             List<TestDescriptor> toAdd = new ArrayList<>();
             for (TestDescriptor methodChild : classChild.getChildren()) {
-                TestMethodTestDescriptor tmtd = (TestMethodTestDescriptor) methodChild;
-                toRemove.add(tmtd);
-                Variants.ALL.forEach(v -> {
-                    TMTD variantChild = new TMTD(tmtd, configuration, v);
-                    variantChild.modifyDisplayName();
-                    toAdd.add(variantChild);
-                });
+                if (methodChild instanceof TestMethodTestDescriptor) {
+                    TestMethodTestDescriptor tmtd = (TestMethodTestDescriptor) methodChild;
+                    toRemove.add(tmtd);
+                    Variants.ALL.forEach(v -> {
+                        YafTestMethodTestDescription variantChild = new YafTestMethodTestDescription(tmtd, configuration, v);
+                        variantChild.modifyDisplayName();
+                        toAdd.add(variantChild);
+                    });
+                } else if (methodChild instanceof TestTemplateTestDescriptor) {
+                    TestTemplateTestDescriptor tttd = (TestTemplateTestDescriptor) methodChild;
+                    toRemove.add(tttd);
+                    Variants.ALL.forEach(v -> {
+                        YafTestTemplateTestDescription variantChild = new YafTestTemplateTestDescription(tttd, configuration, v);
+                        variantChild.modifyDisplayName();
+                        toAdd.add(variantChild);
+                    });
+                }
             }
             toRemove.stream().forEach(tmtd -> {
                 classChild.removeChild(tmtd);

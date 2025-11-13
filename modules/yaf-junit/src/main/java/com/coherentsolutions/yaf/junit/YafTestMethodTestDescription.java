@@ -34,15 +34,16 @@ import org.junit.platform.engine.support.descriptor.AbstractTestDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-public class TMTD extends TestMethodTestDescriptor {
+public class YafTestMethodTestDescription extends TestMethodTestDescriptor {
 
     String variant;
 
-    public TMTD(TestMethodTestDescriptor descriptor, JupiterConfiguration configuration, String variant) {
+    public YafTestMethodTestDescription(TestMethodTestDescriptor descriptor, JupiterConfiguration configuration, String variant) {
+        //TODO check new segment name, maybe use smthing else
         this(descriptor.getUniqueId().append("variant", variant), descriptor.getTestClass(), descriptor.getTestMethod(), configuration, variant);
     }
 
-    TMTD(UniqueId uniqueId, Class<?> testClass, Method testMethod, JupiterConfiguration configuration, String variant) {
+    YafTestMethodTestDescription(UniqueId uniqueId, Class<?> testClass, Method testMethod, JupiterConfiguration configuration, String variant) {
         super(uniqueId, testClass, testMethod, configuration);
         this.variant = variant;
     }
@@ -53,11 +54,6 @@ public class TMTD extends TestMethodTestDescriptor {
         Field field = AbstractTestDescriptor.class.getDeclaredField("displayName");
         field.setAccessible(true);
         field.set(this, displayName);
-    }
-
-    @Override
-    public String getLegacyReportingName() {
-        return "NAME" + variant;
     }
 
     @Override

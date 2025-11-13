@@ -27,8 +27,6 @@ package com.coherentsolutions.yaf.junit;
 import com.coherentsolutions.yaf.core.utils.YafBeanUtils;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -36,7 +34,7 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 //@ExtendWith(SpringExtension.class)
-@Execution(ExecutionMode.CONCURRENT)
+//@Execution(ExecutionMode.CONCURRENT)
 @SpringBootTest
 public class MyJunitTest2 {
 
@@ -45,10 +43,10 @@ public class MyJunitTest2 {
 
     @SneakyThrows
     @Test
-    public void testSum() {
+    public void testSum48() {
         String variant = Current.getEnvName();
         TimeUnit.SECONDS.sleep(new Random().nextInt(3));
-        System.out.println(Thread.currentThread().getId() + "  → testSum running with v22222riant: " + variant + " utils " + ss.containsBean("a"));
+        System.out.println(Thread.currentThread().getId() + "  → XXXXXX testSum running with v22222riant: " + variant + " utils " + ss.containsBean("a"));
 
         // Your test logic that uses the variant
 //        assert variant != null : "Variant should not be null";
