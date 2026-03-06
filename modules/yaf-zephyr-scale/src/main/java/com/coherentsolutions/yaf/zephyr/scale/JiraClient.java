@@ -90,9 +90,9 @@ public class JiraClient {
      * @param issueKey the key of the Jira issue
      * @return the ID of the Jira issue
      */
-    public Integer getJiraIssueId(String issueKey) {
+    public Long getJiraIssueId(String issueKey) {
         try {
-            return given(requestSpecification).get(JiraApiUrl.GET_ISSUE_BY_KEY, issueKey).jsonPath().getInt("id");
+            return given(requestSpecification).get(JiraApiUrl.GET_ISSUE_BY_KEY, issueKey).jsonPath().getLong("id");
         } catch (Exception e) {
             log.error("Failed to get Jira issue ID for issue key: {}", issueKey, e);
             return null;

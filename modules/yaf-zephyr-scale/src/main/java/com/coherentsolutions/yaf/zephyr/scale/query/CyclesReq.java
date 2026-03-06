@@ -43,7 +43,7 @@ import java.util.Map;
 @Accessors(chain = true)
 public class CyclesReq extends PagingReq {
 
-    private Integer folderId;
+    private Long folderId;
 
     /**
      * Appends the specific parameters for cycle requests to the given map.

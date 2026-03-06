@@ -89,7 +89,7 @@ public class ZephyrScaleClient {
      * @return the created or existing folder
      * @throws YafZephyrScaleException if the folder could not be found or created
      */
-    public Folder createFolderIfNotExist(String name, Integer parentId, FolderType type) {
+    public Folder createFolderIfNotExist(String name, Long parentId, FolderType type) {
         EntityRequest<Folder, FoldersReq> foldersReq = getFoldersRequest();
         FoldersReq cycleFolderReq = new FoldersReq().setFolderType(type);
         Folder folder = foldersReq.find(cycleFolderReq, (f) -> f.getName().equals(name) && Objects.equals(f.getParentId(), parentId));
@@ -142,7 +142,7 @@ public class ZephyrScaleClient {
      * @param executionId the ID of the test execution
      * @param issueId     the ID of the issue to link
      */
-    public void createIssueLink(Integer executionId, Integer issueId) {
+    public void createIssueLink(Long executionId, Long issueId) {
         String url = String.format(ZephyrScaleApiUrl.CREATE_ISSUE_LINK, executionId);
         EntityRequest<Link, LinkRequest> linkRequest = new EntityRequest<>(requestSpecification, Link.class, url, zephyrScaleProperties.getProjectKey());
         Link link = new Link();

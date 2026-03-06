@@ -38,7 +38,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class ZephyrScaleEntity {
 
-    private Integer id;
+    private Long id;
     private String key;
     private String name;
     private String projectKey;

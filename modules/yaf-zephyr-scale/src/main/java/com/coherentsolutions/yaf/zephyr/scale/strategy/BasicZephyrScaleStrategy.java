@@ -81,7 +81,7 @@ public class BasicZephyrScaleStrategy implements ZephyrScaleStrategy {
     @Override
     public void createFolders(ExecutionStartEvent executionStartEvent) {
         List<String> foldersList = Arrays.asList(zephyrScaleProperties.getFolders().split("/"));
-        AtomicReference<Integer> parentId = new AtomicReference<>();
+        AtomicReference<Long> parentId = new AtomicReference<>();
         foldersList.forEach(x -> {
             folder = zephyrScaleClient.createFolderIfNotExist(x, parentId.get(), FolderType.TEST_CYCLE);
             parentId.set(folder.getId());
@@ -189,7 +189,7 @@ public class BasicZephyrScaleStrategy implements ZephyrScaleStrategy {
     private void createIssueLink(TestExecution execution, TestFinishEvent testFinishEvent) {
         if (Objects.nonNull(jiraClient) && Objects.nonNull(execution)) {
             Arrays.stream(testFinishEvent.getTestInfo().getYafTest().bugs()).forEach(x -> {
-                Integer jiraIssueId = jiraClient.getJiraIssueId(x);
+                Long jiraIssueId = jiraClient.getJiraIssueId(x);
                 if (Objects.nonNull(jiraIssueId)) {
                     zephyrScaleClient.createIssueLink(execution.getId(), jiraIssueId);
                 }
