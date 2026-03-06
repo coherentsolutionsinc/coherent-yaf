@@ -133,7 +133,7 @@ public class EntityRequest<T extends ZephyrScaleEntity, K extends PagingReq> {
      * @return the entity with the given ID
      */
     @SuppressWarnings("unchecked")
-    public T get(Integer id) {
+    public T get(Long id) {
         return (T) given(specification).get(url + "/" + id).as(entityClass);
     }
 
@@ -145,7 +145,7 @@ public class EntityRequest<T extends ZephyrScaleEntity, K extends PagingReq> {
      */
     public T create(T obj) {
         obj.setProjectKey(projectKey);
-        int id = given(specification).body(obj).post(url).jsonPath().getInt("id");
+        long id = given(specification).body(obj).post(url).jsonPath().getLong("id");
         obj.setId(id);
         return obj;
     }

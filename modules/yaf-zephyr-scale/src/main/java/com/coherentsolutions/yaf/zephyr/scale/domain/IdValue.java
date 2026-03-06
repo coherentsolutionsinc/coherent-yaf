@@ -36,6 +36,6 @@ import lombok.Data;
 @Data
 public class IdValue {
 
-    private Integer id;
+    private Long id;
     private String self;
 }

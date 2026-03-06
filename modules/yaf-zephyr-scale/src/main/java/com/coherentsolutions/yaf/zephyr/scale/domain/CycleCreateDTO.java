@@ -45,5 +45,5 @@ public class CycleCreateDTO extends Cycle {
     private int projectVersion;
     private String projectKey;
     private String name;
-    private Integer folderId;
+    private Long folderId;
 }

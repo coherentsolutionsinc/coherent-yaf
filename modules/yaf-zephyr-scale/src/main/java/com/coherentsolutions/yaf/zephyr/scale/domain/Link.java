@@ -43,7 +43,7 @@ import lombok.ToString;
 public class Link extends ZephyrScaleEntity {
 
     private String self;
-    private Integer issueId;
-    private Integer id;
+    private Long issueId;
+    private Long id;
 
 }

@@ -42,7 +42,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Folder extends ZephyrScaleEntity {
 
-    private Integer parentId;
+    private Long parentId;
     private Integer index;
     private FolderType folderType;
 }
