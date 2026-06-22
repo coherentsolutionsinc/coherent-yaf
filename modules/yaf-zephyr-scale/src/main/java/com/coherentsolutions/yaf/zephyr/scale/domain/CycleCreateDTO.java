@@ -25,6 +25,7 @@
 package com.coherentsolutions.yaf.zephyr.scale.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -42,7 +43,8 @@ import lombok.EqualsAndHashCode;
 public class CycleCreateDTO extends Cycle {
 
     @JsonProperty("jiraProjectVersion")
-    private int projectVersion;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Integer projectVersion;
     private String projectKey;
     private String name;
     private Long folderId;
